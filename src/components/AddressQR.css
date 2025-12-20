@@ -1,0 +1,16 @@
+.address-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.qr-canvas {
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.qr-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}

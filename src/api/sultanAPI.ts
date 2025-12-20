@@ -1,0 +1,747 @@
+/**
+ * Sultan RPC API Client
+ * 
+ * Connects to https://rpc.sltn.io for balance, transactions, and staking.
+ */
+
+const RPC_URL = 'https://rpc.sltn.io';
+
+export interface AccountBalance {
+  address: string;
+  available: string; // Base units - matches what screens expect
+  balance: string; // Alias
+  nonce: number;
+}
+
+export interface StakingInfo {
+  address: string;
+  staked: string; // Base units
+  pendingRewards: string;
+  validator?: string;
+  stakingAPY: number;
+}
+
+export interface Validator {
+  address: string;
+  name: string; // Added for screen compatibility
+  moniker: string;
+  totalStaked: string;
+  commission: number;
+  uptime: number;
+  status: 'active' | 'inactive' | 'jailed';
+}
+
+export interface Transaction {
+  hash: string;
+  from: string;
+  to: string;
+  amount: string;
+  displayAmount: string;
+  memo?: string;
+  timestamp: number;
+  status: 'pending' | 'confirmed' | 'failed';
+  blockHeight?: number;
+}
+
+export interface NetworkStatus {
+  chainId: string;
+  blockHeight: number;
+  blockTime: number;
+  validatorCount: number;
+  totalStaked: string;
+  stakingAPY: number;
+}
+
+// ============================================================================
+// Governance Types
+// ============================================================================
+
+export type ProposalType = 'ParameterChange' | 'SoftwareUpgrade' | 'CommunityPool' | 'TextProposal';
+export type ProposalStatus = 'DepositPeriod' | 'VotingPeriod' | 'Passed' | 'Rejected' | 'Failed' | 'Executed';
+export type VoteOption = 'Yes' | 'No' | 'Abstain' | 'NoWithVeto';
+
+export interface Proposal {
+  id: number;
+  proposer: string;
+  title: string;
+  description: string;
+  proposalType: ProposalType;
+  status: ProposalStatus;
+  submitHeight: number;
+  submitTime: number;
+  votingEndHeight: number;
+  totalDeposit: string;
+  finalTally?: TallyResult;
+}
+
+export interface TallyResult {
+  yes: string;
+  no: string;
+  abstain: string;
+  noWithVeto: string;
+  totalVotingPower: string;
+  quorumReached: boolean;
+  passed: boolean;
+  vetoed: boolean;
+}
+
+export interface UserVote {
+  proposalId: number;
+  voter: string;
+  option: VoteOption;
+  votingPower: string;
+}
+
+/**
+ * Make RPC request
+ */
+async function rpc<T>(method: string, params: Record<string, unknown> = {}): Promise<T> {
+  const response = await fetch(`${RPC_URL}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      id: Date.now(),
+      method,
+      params,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`RPC error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  
+  if (data.error) {
+    throw new Error(data.error.message || 'RPC error');
+  }
+
+  return data.result;
+}
+
+/**
+ * Make REST API request (for governance endpoints)
+ */
+async function restApi<T>(
+  endpoint: string, 
+  method: 'GET' | 'POST' = 'GET',
+  body?: Record<string, unknown>
+): Promise<T> {
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (body && method === 'POST') {
+    options.body = JSON.stringify(body);
+  }
+
+  const response = await fetch(`${RPC_URL}${endpoint}`, options);
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Get account balance
+ */
+export async function getBalance(address: string): Promise<AccountBalance> {
+  try {
+    const result = await rpc<{ balance: string; nonce: number }>('account_balance', { address });
+    
+    return {
+      address,
+      available: result.balance,
+      balance: result.balance,
+      nonce: result.nonce,
+    };
+  } catch {
+    // Return zero balance if account doesn't exist
+    return {
+      address,
+      available: '0',
+      balance: '0',
+      nonce: 0,
+    };
+  }
+}
+
+/**
+ * Get staking information for an address
+ */
+export async function getStakingInfo(address: string): Promise<StakingInfo> {
+  try {
+    const result = await rpc<{
+      staked: string;
+      rewards: string;
+      validator?: string;
+      apy: number;
+    }>('staking_info', { address });
+
+    return {
+      address,
+      staked: result.staked,
+      pendingRewards: result.rewards,
+      validator: result.validator,
+      stakingAPY: result.apy,
+    };
+  } catch {
+    return {
+      address,
+      staked: '0',
+      pendingRewards: '0',
+      stakingAPY: 13.33, // Default APY
+    };
+  }
+}
+
+/**
+ * Get list of validators
+ */
+export async function getValidators(): Promise<Validator[]> {
+  try {
+    const result = await rpc<{ validators: Array<{ address: string; moniker: string; stake: string; commission: number; uptime: number; status: string }> }>('validators_list', {});
+    return (result.validators || []).map(v => ({
+      address: v.address,
+      name: v.moniker,
+      moniker: v.moniker,
+      totalStaked: v.stake,
+      commission: v.commission,
+      uptime: v.uptime,
+      status: v.status as 'active' | 'inactive' | 'jailed',
+    }));
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Get transaction history for an address
+ */
+export async function getTransactions(
+  address: string,
+  limit = 20,
+  offset = 0
+): Promise<Transaction[]> {
+  try {
+    const result = await rpc<{ transactions: Transaction[] }>('account_transactions', {
+      address,
+      limit,
+      offset,
+    });
+
+    return result.transactions || [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Get network status
+ */
+export async function getNetworkStatus(): Promise<NetworkStatus> {
+  try {
+    const result = await rpc<NetworkStatus>('network_status', {});
+    return result;
+  } catch {
+    // Fallback values
+    return {
+      chainId: 'sultan-mainnet-1',
+      blockHeight: 0,
+      blockTime: 2,
+      validatorCount: 9,
+      totalStaked: '0',
+      stakingAPY: 13.33,
+    };
+  }
+}
+
+/**
+ * Broadcast a signed transaction
+ */
+export async function broadcastTransaction(
+  signedTx: {
+    transaction: {
+      from: string;
+      to: string;
+      amount: string;
+      memo?: string;
+      nonce: number;
+      timestamp: number;
+    };
+    signature: string;
+    publicKey: string;
+  }
+): Promise<{ hash: string }> {
+  const result = await rpc<{ hash: string }>('broadcast_tx', {
+    tx: signedTx.transaction,
+    signature: signedTx.signature,
+    public_key: signedTx.publicKey,
+  });
+
+  return result;
+}
+
+/**
+ * Stake tokens to a validator
+ */
+export async function stakeTokens(
+  signedTx: {
+    transaction: {
+      from: string;
+      to: string; // Validator address
+      amount: string;
+      memo?: string;
+      nonce: number;
+      timestamp: number;
+    };
+    signature: string;
+    publicKey: string;
+  }
+): Promise<{ hash: string }> {
+  const result = await rpc<{ hash: string }>('stake_tx', {
+    tx: signedTx.transaction,
+    signature: signedTx.signature,
+    public_key: signedTx.publicKey,
+  });
+
+  return result;
+}
+
+/**
+ * Unstake tokens
+ */
+export async function unstakeTokens(
+  signedTx: {
+    transaction: {
+      from: string;
+      to: string;
+      amount: string;
+      nonce: number;
+      timestamp: number;
+    };
+    signature: string;
+    publicKey: string;
+  }
+): Promise<{ hash: string }> {
+  const result = await rpc<{ hash: string }>('unstake_tx', {
+    tx: signedTx.transaction,
+    signature: signedTx.signature,
+    public_key: signedTx.publicKey,
+  });
+
+  return result;
+}
+
+/**
+ * Claim staking rewards
+ */
+export async function claimRewards(
+  signedTx: {
+    transaction: {
+      from: string;
+      to: string;
+      amount: string;
+      nonce: number;
+      timestamp: number;
+    };
+    signature: string;
+    publicKey: string;
+  }
+): Promise<{ hash: string }> {
+  const result = await rpc<{ hash: string }>('claim_rewards_tx', {
+    tx: signedTx.transaction,
+    signature: signedTx.signature,
+    public_key: signedTx.publicKey,
+  });
+
+  return result;
+}
+
+// ============================================================================
+// Simplified API for Screens
+// ============================================================================
+
+interface StakeRequest {
+  delegatorAddress: string;
+  validatorAddress: string;
+  amount: string;
+  signature: string;
+  publicKey: string;
+}
+
+interface UnstakeRequest {
+  delegatorAddress: string;
+  amount: string;
+  signature: string;
+  publicKey: string;
+}
+
+interface ClaimRewardsRequest {
+  delegatorAddress: string;
+  signature: string;
+  publicKey: string;
+}
+
+interface CreateValidatorRequest {
+  validatorAddress: string;
+  moniker: string;
+  initialStake: string;
+  commissionRate: number;
+  signature: string;
+  publicKey: string;
+}
+
+// ============================================================================
+// Governance Type Mappers (snake_case from blockchain -> camelCase for UI)
+// ============================================================================
+
+function mapProposalType(type: string): ProposalType {
+  const map: Record<string, ProposalType> = {
+    'ParameterChange': 'ParameterChange',
+    'parameter_change': 'ParameterChange',
+    'SoftwareUpgrade': 'SoftwareUpgrade',
+    'software_upgrade': 'SoftwareUpgrade',
+    'CommunityPool': 'CommunityPool',
+    'community_pool': 'CommunityPool',
+    'TextProposal': 'TextProposal',
+    'text': 'TextProposal',
+  };
+  return map[type] || 'TextProposal';
+}
+
+function mapProposalStatus(status: string): ProposalStatus {
+  const map: Record<string, ProposalStatus> = {
+    'DepositPeriod': 'DepositPeriod',
+    'deposit_period': 'DepositPeriod',
+    'VotingPeriod': 'VotingPeriod',
+    'voting_period': 'VotingPeriod',
+    'Passed': 'Passed',
+    'passed': 'Passed',
+    'Rejected': 'Rejected',
+    'rejected': 'Rejected',
+    'Failed': 'Failed',
+    'failed': 'Failed',
+    'Executed': 'Executed',
+    'executed': 'Executed',
+  };
+  return map[status] || 'VotingPeriod';
+}
+
+function mapVoteOption(option: string): VoteOption {
+  const map: Record<string, VoteOption> = {
+    'Yes': 'Yes',
+    'yes': 'Yes',
+    'No': 'No',
+    'no': 'No',
+    'Abstain': 'Abstain',
+    'abstain': 'Abstain',
+    'NoWithVeto': 'NoWithVeto',
+    'no_with_veto': 'NoWithVeto',
+  };
+  return map[option] || 'Abstain';
+}
+
+/**
+ * Unified API object for screens
+ */
+export const sultanAPI = {
+  getBalance,
+  getStakingInfo,
+  getValidators,
+  getTransactions,
+  getNetworkStatus,
+  
+  broadcastTransaction: async (tx: {
+    from: string;
+    to: string;
+    amount: string;
+    memo?: string;
+    timestamp: number;
+    signature: string;
+    publicKey: string;
+  }): Promise<{ hash: string }> => {
+    return rpc<{ hash: string }>('broadcast_tx', {
+      tx: {
+        from: tx.from,
+        to: tx.to,
+        amount: tx.amount,
+        memo: tx.memo,
+        nonce: 0, // Will be set by node
+        timestamp: tx.timestamp,
+      },
+      signature: tx.signature,
+      public_key: tx.publicKey,
+    });
+  },
+
+  stake: async (req: StakeRequest): Promise<{ hash: string }> => {
+    return rpc<{ hash: string }>('stake_tx', {
+      delegator: req.delegatorAddress,
+      validator: req.validatorAddress,
+      amount: req.amount,
+      signature: req.signature,
+      public_key: req.publicKey,
+    });
+  },
+
+  unstake: async (req: UnstakeRequest): Promise<{ hash: string }> => {
+    return rpc<{ hash: string }>('unstake_tx', {
+      delegator: req.delegatorAddress,
+      amount: req.amount,
+      signature: req.signature,
+      public_key: req.publicKey,
+    });
+  },
+
+  claimRewards: async (req: ClaimRewardsRequest): Promise<{ hash: string }> => {
+    return rpc<{ hash: string }>('claim_rewards_tx', {
+      delegator: req.delegatorAddress,
+      signature: req.signature,
+      public_key: req.publicKey,
+    });
+  },
+
+  /**
+   * Create a new validator (become a validator)
+   * Requires minimum 10,000 SLTN stake
+   * Endpoint: POST /staking/create_validator
+   */
+  createValidator: async (req: CreateValidatorRequest): Promise<{ 
+    validatorAddress: string; 
+    stake: string; 
+    commission: number;
+    status: string;
+  }> => {
+    return restApi<{ 
+      validatorAddress: string; 
+      stake: string; 
+      commission: number;
+      status: string;
+    }>('/staking/create_validator', 'POST', {
+      validator_address: req.validatorAddress,
+      moniker: req.moniker,
+      initial_stake: parseInt(req.initialStake, 10),
+      commission_rate: req.commissionRate,
+      signature: req.signature,
+      public_key: req.publicKey,
+    });
+  },
+
+  // =========================================================================
+  // Governance API (uses REST endpoints from sultan-core)
+  // =========================================================================
+
+  /**
+   * Get all governance proposals
+   * Endpoint: GET /governance/proposals
+   */
+  getProposals: async (): Promise<Proposal[]> => {
+    try {
+      // The blockchain returns snake_case, we need to map to camelCase
+      const result = await restApi<Array<{
+        id: number;
+        proposer: string;
+        title: string;
+        description: string;
+        proposal_type: string;
+        status: string;
+        submit_height: number;
+        submit_time: number;
+        voting_end_height: number;
+        total_deposit: number;
+        final_tally?: {
+          yes: number;
+          no: number;
+          abstain: number;
+          no_with_veto: number;
+          total_voting_power: number;
+          quorum_reached: boolean;
+          passed: boolean;
+          vetoed: boolean;
+        };
+      }>>('/governance/proposals');
+      
+      return result.map(p => ({
+        id: p.id,
+        proposer: p.proposer,
+        title: p.title,
+        description: p.description,
+        proposalType: mapProposalType(p.proposal_type),
+        status: mapProposalStatus(p.status),
+        submitHeight: p.submit_height,
+        submitTime: p.submit_time,
+        votingEndHeight: p.voting_end_height,
+        totalDeposit: String(p.total_deposit),
+        finalTally: p.final_tally ? {
+          yes: String(p.final_tally.yes),
+          no: String(p.final_tally.no),
+          abstain: String(p.final_tally.abstain),
+          noWithVeto: String(p.final_tally.no_with_veto),
+          totalVotingPower: String(p.final_tally.total_voting_power),
+          quorumReached: p.final_tally.quorum_reached,
+          passed: p.final_tally.passed,
+          vetoed: p.final_tally.vetoed,
+        } : undefined,
+      }));
+    } catch {
+      // Return empty array if governance not available
+      return [];
+    }
+  },
+
+  /**
+   * Get a specific proposal by ID
+   * Endpoint: GET /governance/proposal/:id
+   */
+  getProposal: async (proposalId: number): Promise<Proposal | null> => {
+    try {
+      const p = await restApi<{
+        id: number;
+        proposer: string;
+        title: string;
+        description: string;
+        proposal_type: string;
+        status: string;
+        submit_height: number;
+        submit_time: number;
+        voting_end_height: number;
+        total_deposit: number;
+        final_tally?: {
+          yes: number;
+          no: number;
+          abstain: number;
+          no_with_veto: number;
+          total_voting_power: number;
+          quorum_reached: boolean;
+          passed: boolean;
+          vetoed: boolean;
+        };
+      }>(`/governance/proposal/${proposalId}`);
+      
+      return {
+        id: p.id,
+        proposer: p.proposer,
+        title: p.title,
+        description: p.description,
+        proposalType: mapProposalType(p.proposal_type),
+        status: mapProposalStatus(p.status),
+        submitHeight: p.submit_height,
+        submitTime: p.submit_time,
+        votingEndHeight: p.voting_end_height,
+        totalDeposit: String(p.total_deposit),
+        finalTally: p.final_tally ? {
+          yes: String(p.final_tally.yes),
+          no: String(p.final_tally.no),
+          abstain: String(p.final_tally.abstain),
+          noWithVeto: String(p.final_tally.no_with_veto),
+          totalVotingPower: String(p.final_tally.total_voting_power),
+          quorumReached: p.final_tally.quorum_reached,
+          passed: p.final_tally.passed,
+          vetoed: p.final_tally.vetoed,
+        } : undefined,
+      };
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Get user's vote on a proposal
+   * Note: The blockchain tracks votes internally - this queries for a specific voter
+   */
+  getUserVote: async (proposalId: number, voterAddress: string): Promise<UserVote | null> => {
+    try {
+      // Try to get vote from proposal's vote list
+      const result = await restApi<{
+        voter: string;
+        option: string;
+        voting_power: number;
+      } | null>(`/governance/proposal/${proposalId}/vote/${voterAddress}`);
+      
+      if (!result) return null;
+      
+      return {
+        proposalId,
+        voter: result.voter,
+        option: mapVoteOption(result.option),
+        votingPower: String(result.voting_power),
+      };
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Vote on a proposal
+   * Endpoint: POST /governance/vote
+   */
+  vote: async (req: {
+    proposalId: number;
+    voter: string;
+    option: VoteOption;
+    votingPower: string;
+    signature: string;
+    publicKey: string;
+  }): Promise<{ success: boolean }> => {
+    const result = await restApi<{ proposal_id: number; voter: string; status: string }>(
+      '/governance/vote',
+      'POST',
+      {
+        proposal_id: req.proposalId,
+        voter: req.voter,
+        option: req.option.toLowerCase().replace('withveto', '_with_veto'),
+        voting_power: parseInt(req.votingPower, 10),
+        // The blockchain verifies voting power from staking state
+        // signature/publicKey would be used for tx signing in production
+      }
+    );
+    return { success: result.status === 'voted' };
+  },
+
+  /**
+   * Submit a new proposal
+   * Endpoint: POST /governance/propose
+   */
+  submitProposal: async (req: {
+    proposer: string;
+    title: string;
+    description: string;
+    proposalType: ProposalType;
+    deposit: string;
+    signature: string;
+    publicKey: string;
+    telegramDiscussionUrl?: string;
+    discordDiscussionUrl?: string;
+  }): Promise<{ proposalId: number }> => {
+    const typeMap: Record<ProposalType, string> = {
+      'ParameterChange': 'parameter_change',
+      'SoftwareUpgrade': 'software_upgrade',
+      'CommunityPool': 'community_pool',
+      'TextProposal': 'text',
+    };
+    
+    const result = await restApi<{ proposal_id: number; status: string }>(
+      '/governance/propose',
+      'POST',
+      {
+        proposer: req.proposer,
+        title: req.title,
+        description: req.description,
+        proposal_type: typeMap[req.proposalType],
+        initial_deposit: parseInt(req.deposit, 10),
+        telegram_discussion_url: req.telegramDiscussionUrl,
+        discord_discussion_url: req.discordDiscussionUrl,
+      }
+    );
+    return { proposalId: result.proposal_id };
+  },
+};

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="sultanGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00e5cc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="96" cy="96" r="90" fill="#0a0a0f"/>
+  <!-- Sultan Crown Logo -->
+  <path d="M30 135 L30 75 L58 105 L96 45 L134 105 L162 75 L162 135 L96 165 Z" fill="none" stroke="url(#sultanGradient)" stroke-width="10" stroke-linejoin="miter"/>
+</svg>

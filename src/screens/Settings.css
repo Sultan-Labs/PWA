@@ -1,0 +1,284 @@
+.settings-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+}
+
+.settings-content {
+  flex: 1;
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+}
+
+.settings-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.settings-section h3 {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-sm);
+  padding-left: var(--spacing-sm);
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.setting-item:hover {
+  border-color: var(--accent-primary);
+}
+
+.setting-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setting-label {
+  font-weight: 500;
+}
+
+.setting-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.setting-value {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.setting-badge {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.setting-badge.enabled {
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.setting-badge svg {
+  stroke: currentColor;
+}
+
+.setting-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.setting-arrow svg {
+  stroke: currentColor;
+}
+
+/* Theme Selector */
+.theme-selector {
+  cursor: default;
+}
+
+.theme-selector:hover {
+  border-color: var(--border-color);
+}
+
+.theme-options {
+  display: flex;
+  gap: var(--spacing-xs);
+  background: var(--bg-primary);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+}
+
+.theme-btn {
+  width: 40px;
+  height: 36px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
+
+.theme-btn svg {
+  stroke: currentColor;
+}
+
+.theme-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+.theme-btn.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--bg-primary);
+}
+
+.theme-btn.active svg {
+  stroke: var(--bg-primary);
+}
+
+[data-theme="light"] .theme-btn.active {
+  background: var(--accent-primary);
+  color: white;
+}
+
+[data-theme="light"] .theme-btn.active svg {
+  stroke: white;
+}
+
+.danger-section h3 {
+  color: var(--error);
+}
+
+.setting-item.danger {
+  border-color: rgba(244, 67, 54, 0.3);
+}
+
+.setting-item.danger:hover {
+  border-color: var(--error);
+  background: rgba(244, 67, 54, 0.05);
+}
+
+.setting-item.danger .setting-label {
+  color: var(--error);
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  z-index: 100;
+}
+
+.modal-content {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  width: 100%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-content h3 {
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.btn-danger {
+  background: var(--error);
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #d32f2f;
+}
+
+.btn-danger:disabled {
+  opacity: 0.5;
+}
+
+/* Accounts */
+.accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.account-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.account-item:hover,
+.account-item.active {
+  border-color: var(--accent-primary);
+}
+
+.account-item.active {
+  background: rgba(212, 175, 55, 0.05);
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.account-info .account-name {
+  font-weight: 500;
+}
+
+.account-info .account-address {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.active-badge {
+  background: var(--accent-primary);
+  color: var(--bg-primary);
+  font-size: 0.625rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.add-account-form {
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--spacing-md);
+}
+
+/* Larger modal for TOTP */
+.modal-lg {
+  max-width: 360px;
+}
+
+/* Info-only setting item (no hover effect) */
+.setting-item.info {
+  cursor: default;
+}
+
+.setting-item.info:hover {
+  border-color: var(--border-color);
+}

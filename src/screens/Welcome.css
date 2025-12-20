@@ -1,0 +1,169 @@
+/**
+ * Welcome Screen - Premium Design
+ * Matches the polished aesthetic of the Unlock screen
+ */
+
+.welcome-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  position: relative;
+}
+
+.welcome-content {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.logo-container {
+  margin-bottom: var(--spacing-xl);
+}
+
+.sultan-icon {
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  justify-content: center;
+}
+
+/* Sultan Logo image styling */
+.sultan-logo-img {
+  filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.5));
+}
+
+/* Remove glow on light mode */
+[data-theme="light"] .sultan-logo-img {
+  filter: none;
+}
+
+.sultan-icon img,
+.sultan-icon svg {
+  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.4));
+}
+
+.logo-container h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-xs);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  color: var(--text-muted);
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* Premium Features Card */
+.features-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.15), 0 0 40px rgba(0, 255, 255, 0.05);
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  text-align: center;
+}
+
+.feature-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(0, 229, 204, 0.15) 100%);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+  color: var(--accent-primary);
+}
+
+.feature-icon-wrapper svg {
+  stroke: var(--accent-primary);
+}
+
+.feature-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.feature-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.feature-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Light mode primary button override */
+[data-theme="light"] .welcome-screen .btn-primary {
+  background: linear-gradient(135deg, #00e5cc 0%, #00ccb8 100%);
+  color: #000000;
+}
+
+[data-theme="light"] .welcome-screen .btn-primary:hover {
+  background: linear-gradient(135deg, #00ffdf 0%, #00e5cc 100%);
+}
+
+/* Version */
+.version {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: var(--spacing-xl);
+  opacity: 0.6;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  position: absolute;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+  transform: scale(1.05);
+}
+
+.theme-toggle svg {
+  stroke: var(--accent-primary);
+}

@@ -1,0 +1,60 @@
+/**
+ * TOTP Verify Component Styles
+ */
+
+.totp-verify {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-lg);
+}
+
+.totp-verify-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+}
+
+.totp-verify-input {
+  width: 100%;
+  max-width: 180px;
+  padding: var(--space-md);
+  font-size: 1.8rem;
+  font-family: 'SF Mono', 'Monaco', monospace;
+  letter-spacing: 0.4em;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: border-color 0.2s ease;
+}
+
+.totp-verify-input.backup {
+  max-width: 200px;
+  font-size: 1.4rem;
+  letter-spacing: 0.1em;
+}
+
+.totp-verify-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.totp-verify-input::placeholder {
+  color: var(--text-tertiary);
+  letter-spacing: 0.3em;
+}
+
+.totp-verify .btn-primary {
+  min-width: 180px;
+}
+
+.totp-verify .btn-link {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.totp-verify .btn-link:hover {
+  color: var(--accent-primary);
+}

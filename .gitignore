@@ -1,0 +1,33 @@
+# Sultan Wallet
+
+node_modules/
+dist/
+*.local
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# PWA generated
+dev-dist/

@@ -1,0 +1,160 @@
+/**
+ * Unlock Screen
+ * 
+ * PIN entry to unlock an existing wallet.
+ * If 2FA is enabled, shows TOTP verification after PIN.
+ */
+
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useWallet } from '../hooks/useWallet';
+import PinInput from '../components/PinInput';
+import TOTPVerify from '../components/TOTPVerify';
+import { is2FAEnabled } from '../core/totp';
+import './Unlock.css';
+
+// Sultan Crown Logo - uses PNG images based on theme
+const SultanLogo = ({ size = 64, isDark }: { size?: number; isDark: boolean }) => (
+  <img 
+    src={isDark ? "/sultan-logo-dark.png" : "/sultan-logo-light.png"} 
+    alt="Sultan" 
+    width={size} 
+    height={size}
+    className="sultan-logo-img"
+  />
+);
+
+// Lock Icon for locked state
+const LockIcon = () => (
+  <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--accent-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+  </svg>
+);
+
+type UnlockStep = 'pin' | 'totp';
+
+export default function Unlock() {
+  const navigate = useNavigate();
+  const { unlock, lock, error, clearError } = useWallet();
+  
+  const [step, setStep] = useState<UnlockStep>('pin');
+  const [isLoading, setIsLoading] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    setIsDark(currentTheme !== 'light');
+  }, []);
+  const [key, setKey] = useState(0); // Force PinInput reset
+
+  const MAX_ATTEMPTS = 5;
+
+  const handlePinComplete = async (pin: string) => {
+    setIsLoading(true);
+    clearError();
+    
+    try {
+      const success = await unlock(pin);
+      if (success) {
+        // Check if 2FA is enabled
+        if (is2FAEnabled()) {
+          setStep('totp');
+        } else {
+          navigate('/dashboard');
+        }
+      } else {
+        setAttempts(prev => prev + 1);
+        setKey(prev => prev + 1); // Reset PIN input
+      }
+    } catch {
+      setAttempts(prev => prev + 1);
+      setKey(prev => prev + 1);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTOTPSuccess = () => {
+    navigate('/dashboard');
+  };
+
+  const handleTOTPCancel = () => {
+    // Lock wallet and go back to PIN
+    lock();
+    setStep('pin');
+    setKey(prev => prev + 1);
+  };
+
+  const remainingAttempts = MAX_ATTEMPTS - attempts;
+  const isLocked = attempts >= MAX_ATTEMPTS;
+
+  if (isLocked) {
+    return (
+      <div className="unlock-screen">
+        <div className="unlock-content fade-in">
+          <div className="lock-icon">
+            <LockIcon />
+          </div>
+          <h2>Wallet Locked</h2>
+          <p className="text-muted mb-lg">
+            Too many incorrect attempts. Please wait 5 minutes or restore from recovery phrase.
+          </p>
+          <button 
+            className="btn btn-secondary"
+            onClick={() => navigate('/import')}
+          >
+            Restore with Recovery Phrase
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show TOTP verification step
+  if (step === 'totp') {
+    return (
+      <div className="unlock-screen">
+        <TOTPVerify 
+          onSuccess={handleTOTPSuccess}
+          onCancel={handleTOTPCancel}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="unlock-screen">
+      <div className="unlock-content fade-in">
+        <div className="sultan-icon">
+          <SultanLogo size={64} isDark={isDark} />
+        </div>
+        
+        <h2>Welcome Back</h2>
+        <p className="text-muted mb-lg">
+          Enter your PIN to unlock
+        </p>
+
+        {isLoading ? (
+          <div className="spinner" />
+        ) : (
+          <PinInput key={key} length={6} onComplete={handlePinComplete} />
+        )}
+
+        {error && (
+          <p className="text-error mt-md">
+            Incorrect PIN. {remainingAttempts} attempts remaining.
+          </p>
+        )}
+
+        <button 
+          className="btn-link mt-xl"
+          onClick={() => navigate('/import')}
+        >
+          Restore with Recovery Phrase
+        </button>
+      </div>
+    </div>
+  );
+}
