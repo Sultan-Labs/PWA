@@ -3,10 +3,7 @@
  * Configures jsdom environment and mocks for browser APIs
  */
 
-// jsdom provides most browser APIs including:
-// - crypto.subtle (Web Crypto API)
-// - localStorage
-// - window
+import '@testing-library/jest-dom';
 
 // Mock IndexedDB is more complex - tests that need it will skip gracefully
 if (typeof globalThis.indexedDB === 'undefined') {

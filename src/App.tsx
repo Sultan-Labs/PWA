@@ -14,6 +14,7 @@ import BecomeValidator from './screens/BecomeValidator';
 import Settings from './screens/Settings';
 import Activity from './screens/Activity';
 import Governance from './screens/Governance';
+import NFTs from './screens/NFTs';
 
 function App() {
   const { isInitialized, isLocked, isLoading } = useWallet();
@@ -78,6 +79,10 @@ function App() {
       <Route 
         path="/governance" 
         element={isInitialized && !isLocked ? <Governance /> : <Navigate to="/" replace />} 
+      />
+      <Route 
+        path="/nfts" 
+        element={isInitialized && !isLocked ? <NFTs /> : <Navigate to="/" replace />} 
       />
       
       {/* Fallback */}

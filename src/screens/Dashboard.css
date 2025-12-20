@@ -433,3 +433,74 @@
 .nav-item:hover .nav-icon svg {
   stroke: var(--accent-primary);
 }
+/* DEX Banner */
+.dex-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(255, 180, 100, 0.1) 100%);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dex-banner:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 212, 170, 0.2);
+}
+
+.dex-banner-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.dex-banner-content svg {
+  color: var(--accent-primary);
+  stroke: currentColor;
+}
+
+.dex-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dex-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.dex-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.dex-arrow {
+  font-size: 1.25rem;
+  color: var(--accent-primary);
+}
+
+/* Quick actions grid for 4 items */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-sm);
+}
+
+@media (max-width: 380px) {
+  .quick-actions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+  
+  .action-btn {
+    padding: var(--spacing-sm);
+    min-width: unset;
+  }
+}

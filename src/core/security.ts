@@ -492,26 +492,193 @@ export function sanitizeInput(input: string): string {
 /**
  * Validate Sultan address format
  */
-export function validateAddress(address: string): { valid: boolean; error?: string } {
-  if (!address || typeof address !== 'string') {
-    return { valid: false, error: 'Address is required' };
-  }
+/**
+ * Supported blockchain networks for multi-chain transactions
+ */
+export type ChainType = 'sultan' | 'ethereum' | 'bitcoin' | 'solana' | 'ton';
+
+export interface AddressValidationResult {
+  valid: boolean;
+  error?: string;
+  chain?: ChainType;
+  chainName?: string;
+  wrappedToken?: string;
+}
+
+/**
+ * Detect chain type from address format
+ */
+export function detectChainFromAddress(address: string): ChainType | null {
+  if (!address || typeof address !== 'string') return null;
   
-  if (!address.startsWith('sultan1')) {
-    return { valid: false, error: 'Address must start with "sultan1"' };
-  }
+  const trimmed = address.trim();
   
+  // Sultan Chain: bech32 with sultan1 prefix
+  if (trimmed.startsWith('sultan1')) return 'sultan';
+  
+  // Ethereum: 0x prefix, 42 chars total (0x + 40 hex)
+  if (/^0x[a-fA-F0-9]{40}$/.test(trimmed)) return 'ethereum';
+  
+  // Bitcoin: bc1 (bech32 native segwit), 1 or 3 (legacy)
+  if (/^bc1[a-zA-HJ-NP-Z0-9]{25,87}$/.test(trimmed)) return 'bitcoin';
+  if (/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(trimmed)) return 'bitcoin';
+  
+  // Solana: Base58, 32-44 chars, no 0, O, I, l
+  if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(trimmed)) return 'solana';
+  
+  // TON: EQ or UQ prefix (bounceable/non-bounceable)
+  if (/^(EQ|UQ)[A-Za-z0-9_-]{46}$/.test(trimmed)) return 'ton';
+  
+  return null;
+}
+
+/**
+ * Get chain display info
+ */
+export function getChainInfo(chain: ChainType): { name: string; symbol: string; wrappedToken: string } {
+  const chainInfo: Record<ChainType, { name: string; symbol: string; wrappedToken: string }> = {
+    sultan: { name: 'Sultan Chain', symbol: 'SLTN', wrappedToken: 'SLTN' },
+    ethereum: { name: 'Ethereum', symbol: 'ETH', wrappedToken: 'sETH' },
+    bitcoin: { name: 'Bitcoin', symbol: 'BTC', wrappedToken: 'sBTC' },
+    solana: { name: 'Solana', symbol: 'SOL', wrappedToken: 'sSOL' },
+    ton: { name: 'TON', symbol: 'TON', wrappedToken: 'sTON' },
+  };
+  return chainInfo[chain];
+}
+
+/**
+ * Validate Sultan Chain address (native) - INTERNAL
+ */
+function validateSultanAddressInternal(address: string): { valid: boolean; error?: string } {
   if (address.length < 39 || address.length > 59) {
-    return { valid: false, error: 'Invalid address length' };
+    return { valid: false, error: 'Invalid Sultan address length' };
   }
   
   // Check for valid bech32 characters
   const validChars = /^sultan1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]+$/;
   if (!validChars.test(address)) {
-    return { valid: false, error: 'Address contains invalid characters' };
+    return { valid: false, error: 'Sultan address contains invalid characters' };
   }
   
   return { valid: true };
+}
+
+/**
+ * Validate Sultan-only address (for wallet Send screen)
+ * Sultan Wallet only sends to sultan1... addresses
+ */
+export function validateSultanOnlyAddress(address: string): { valid: boolean; error?: string } {
+  if (!address || typeof address !== 'string') {
+    return { valid: false, error: 'Address is required' };
+  }
+  
+  const trimmed = address.trim();
+  
+  if (!trimmed.startsWith('sultan1')) {
+    return { valid: false, error: 'Address must start with "sultan1"' };
+  }
+  
+  return validateSultanAddressInternal(trimmed);
+}
+
+/**
+ * Validate Ethereum address with checksum verification
+ */
+function validateEthereumAddress(address: string): { valid: boolean; error?: string } {
+  if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
+    return { valid: false, error: 'Invalid Ethereum address format' };
+  }
+  return { valid: true };
+}
+
+/**
+ * Validate Bitcoin address (segwit bc1 or legacy)
+ */
+function validateBitcoinAddress(address: string): { valid: boolean; error?: string } {
+  // Native SegWit (Bech32)
+  if (/^bc1[a-zA-HJ-NP-Z0-9]{25,87}$/.test(address)) {
+    return { valid: true };
+  }
+  // Legacy P2PKH (starts with 1) or P2SH (starts with 3)
+  if (/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(address)) {
+    return { valid: true };
+  }
+  return { valid: false, error: 'Invalid Bitcoin address format' };
+}
+
+/**
+ * Validate Solana address (Base58)
+ */
+function validateSolanaAddress(address: string): { valid: boolean; error?: string } {
+  if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
+    return { valid: false, error: 'Invalid Solana address format' };
+  }
+  return { valid: true };
+}
+
+/**
+ * Validate TON address
+ */
+function validateTONAddress(address: string): { valid: boolean; error?: string } {
+  if (!/^(EQ|UQ)[A-Za-z0-9_-]{46}$/.test(address)) {
+    return { valid: false, error: 'Invalid TON address format' };
+  }
+  return { valid: true };
+}
+
+/**
+ * Multi-chain address validation
+ * Automatically detects chain from address format and validates accordingly
+ */
+export function validateAddress(address: string): AddressValidationResult {
+  if (!address || typeof address !== 'string') {
+    return { valid: false, error: 'Address is required' };
+  }
+  
+  const trimmed = address.trim();
+  const chain = detectChainFromAddress(trimmed);
+  
+  if (!chain) {
+    return { 
+      valid: false, 
+      error: 'Unknown address format. Supported: Sultan (sultan1...), Ethereum (0x...), Bitcoin (bc1.../1.../3...), Solana, TON (EQ.../UQ...)' 
+    };
+  }
+  
+  // Validate based on detected chain
+  let validation: { valid: boolean; error?: string };
+  
+  switch (chain) {
+    case 'sultan':
+      validation = validateSultanAddressInternal(trimmed);
+      break;
+    case 'ethereum':
+      validation = validateEthereumAddress(trimmed);
+      break;
+    case 'bitcoin':
+      validation = validateBitcoinAddress(trimmed);
+      break;
+    case 'solana':
+      validation = validateSolanaAddress(trimmed);
+      break;
+    case 'ton':
+      validation = validateTONAddress(trimmed);
+      break;
+    default:
+      validation = { valid: false, error: 'Unsupported chain' };
+  }
+  
+  if (!validation.valid) {
+    return validation;
+  }
+  
+  const chainInfo = getChainInfo(chain);
+  return { 
+    valid: true, 
+    chain, 
+    chainName: chainInfo.name,
+    wrappedToken: chainInfo.wrappedToken
+  };
 }
 
 /**

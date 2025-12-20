@@ -744,4 +744,88 @@ export const sultanAPI = {
     );
     return { proposalId: result.proposal_id };
   },
+
+  /**
+   * Query native NFTs owned by an address (Sultan Token Factory)
+   * Endpoint: GET /nft/tokens?owner={address}
+   */
+  queryNFTs: async (ownerAddress: string): Promise<{
+    collections: Array<{
+      address: string;
+      name: string;
+      symbol: string;
+      nfts: Array<{
+        tokenId: string;
+        contractAddress: string;
+        name: string;
+        description?: string;
+        image?: string;
+        attributes?: Array<{ trait_type: string; value: string }>;
+        collection?: string;
+      }>;
+    }>;
+  }> => {
+    try {
+      const result = await restApi<{
+        collections: Array<{
+          address: string;
+          name: string;
+          symbol: string;
+          tokens: Array<{
+            token_id: string;
+            token_uri?: string;
+            extension?: {
+              name?: string;
+              description?: string;
+              image?: string;
+              attributes?: Array<{ trait_type: string; value: string }>;
+            };
+          }>;
+        }>;
+      }>(`/nft/tokens?owner=${ownerAddress}`, 'GET');
+      
+      // Transform response to frontend format
+      return {
+        collections: result.collections.map(col => ({
+          address: col.address,
+          name: col.name,
+          symbol: col.symbol,
+          nfts: col.tokens.map(token => ({
+            tokenId: token.token_id,
+            contractAddress: col.address,
+            name: token.extension?.name || `${col.name} #${token.token_id}`,
+            description: token.extension?.description,
+            image: token.extension?.image,
+            attributes: token.extension?.attributes,
+            collection: col.name,
+          })),
+        })),
+      };
+    } catch {
+      // Return empty collections if NFT endpoint not available
+      return { collections: [] };
+    }
+  },
+
+  /**
+   * Transfer a native NFT (Sultan Token Factory)
+   * Endpoint: POST /nft/transfer
+   */
+  transferNFT: async (req: {
+    contractAddress: string;
+    tokenId: string;
+    from: string;
+    to: string;
+    signature: string;
+    publicKey: string;
+  }): Promise<{ hash: string }> => {
+    return restApi<{ hash: string }>('/nft/transfer', 'POST', {
+      contract_address: req.contractAddress,
+      token_id: req.tokenId,
+      from: req.from,
+      to: req.to,
+      signature: req.signature,
+      public_key: req.publicKey,
+    });
+  },
 };

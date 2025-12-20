@@ -316,3 +316,79 @@
 .pin-input[type=number] {
   -moz-appearance: textfield;
 }
+
+/* Multi-chain detection styles */
+.chain-detected {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.chain-detected.chain-sultan {
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.15), rgba(0, 180, 150, 0.1));
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  color: var(--accent-primary);
+}
+
+.chain-detected.chain-ethereum {
+  background: linear-gradient(135deg, rgba(98, 126, 234, 0.15), rgba(130, 71, 229, 0.1));
+  border: 1px solid rgba(98, 126, 234, 0.3);
+  color: #627eea;
+}
+
+.chain-detected.chain-bitcoin {
+  background: linear-gradient(135deg, rgba(247, 147, 26, 0.15), rgba(255, 180, 60, 0.1));
+  border: 1px solid rgba(247, 147, 26, 0.3);
+  color: #f7931a;
+}
+
+.chain-detected.chain-solana {
+  background: linear-gradient(135deg, rgba(153, 69, 255, 0.15), rgba(20, 241, 149, 0.1));
+  border: 1px solid rgba(153, 69, 255, 0.3);
+  color: #9945ff;
+}
+
+.chain-detected.chain-ton {
+  background: linear-gradient(135deg, rgba(0, 136, 204, 0.15), rgba(0, 180, 255, 0.1));
+  border: 1px solid rgba(0, 136, 204, 0.3);
+  color: #0088cc;
+}
+
+.chain-icon {
+  font-size: 1.1rem;
+}
+
+.chain-name {
+  flex: 1;
+}
+
+.bridge-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cross-chain-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(255, 200, 100, 0.1));
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+  font-weight: 500;
+  color: var(--accent-primary);
+}
+
+.bridge-icon {
+  font-size: 1.25rem;
+}

@@ -107,6 +107,23 @@ const GovernanceIcon = () => (
   </svg>
 );
 
+const NFTIcon = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+    <circle cx="8.5" cy="8.5" r="1.5" />
+    <polyline points="21 15 16 10 5 21" />
+  </svg>
+);
+
+const SwapIcon = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="17 1 21 5 17 9" />
+    <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+    <polyline points="7 23 3 19 7 15" />
+    <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+  </svg>
+);
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { lock, currentAccount } = useWallet();
@@ -213,6 +230,21 @@ export default function Dashboard() {
             <span className="action-icon"><StakeIcon /></span>
             <span>Stake</span>
           </button>
+          <button className="action-btn" onClick={() => navigate('/nfts')}>
+            <span className="action-icon"><NFTIcon /></span>
+            <span>NFTs</span>
+          </button>
+        </div>
+
+        <div className="dex-banner" onClick={() => window.open('https://hodlholdings.com', '_blank')}>
+          <div className="dex-banner-content">
+            <SwapIcon />
+            <div className="dex-banner-text">
+              <span className="dex-title">Trade on HODL Holdings</span>
+              <span className="dex-subtitle">Zero-fee P2P trading</span>
+            </div>
+          </div>
+          <span className="dex-arrow">→</span>
         </div>
 
         {stakingData && stakingData.staked !== '0' && (

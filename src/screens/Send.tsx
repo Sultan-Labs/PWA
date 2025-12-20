@@ -12,7 +12,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useBalance } from '../hooks/useBalance';
 import { SultanWallet } from '../core/wallet';
 import { sultanAPI } from '../api/sultanAPI';
-import { validateAddress, validateAmount, verifySessionPin } from '../core/security';
+import { validateSultanOnlyAddress, validateAmount, verifySessionPin } from '../core/security';
 import './Send.css';
 
 // Premium SVG Icons
@@ -82,8 +82,8 @@ export default function Send() {
   const validateForm = (): boolean => {
     setError('');
 
-    // Validate recipient address
-    const addressValidation = validateAddress(recipient);
+    // Validate recipient address (Sultan-only wallet)
+    const addressValidation = validateSultanOnlyAddress(recipient);
     if (!addressValidation.valid) {
       setError(addressValidation.error || 'Invalid recipient address');
       return false;
