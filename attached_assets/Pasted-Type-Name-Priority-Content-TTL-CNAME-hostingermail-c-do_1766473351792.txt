@@ -1,0 +1,101 @@
+Type
+Name
+Priority
+Content
+TTL
+CNAME	hostingermail-c._domainkey	0	hostingermail-c.dkim.mail.hostinger.com	300	
+Delete
+Edit
+CNAME	hostingermail-b._domainkey	0	hostingermail-b.dkim.mail.hostinger.com	300	
+Delete
+Edit
+CNAME	hostingermail-a._domainkey	0	hostingermail-a.dkim.mail.hostinger.com	300	
+Delete
+Edit
+TXT	neo1._domainkey	0	"v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCtbC6yQXa2fbxlpmb/sTYa7f+jE2cZp/gdOhQUichcI6cFWl2f7/CRbdEpodjBJ4diaIf0axOAMsOJkn/1yCQr8ibczF35Bw3G7fw6ueh5aGujkTCB5IQ916fWRTBpcZSokEHAiD8MdR29oc5BEfU6C7VaRHE+O4NVECVHrACVNwIDAQAB"	3600	
+Delete
+Edit
+TXT	www	0	"replit-verify=4b8f48fa-0317-44a3-ab30-4751c9c38f6e"	3600	
+Delete
+Edit
+A	www	0	34.111.179.208	1800	
+Delete
+Edit
+TXT	wallet	0	"replit-verify=1ec39d3b-fb82-4931-bd16-70b112f0b8cd"	14400	
+Delete
+Edit
+A	wallet	0	34.111.179.208	14400	
+Delete
+Edit
+CNAME	autodiscover	0	autodiscover.mail.hostinger.com	300	
+Delete
+Edit
+A	api	0	206.189.224.142	300	
+Delete
+Edit
+CNAME	autoconfig	0	autoconfig.mail.hostinger.com	300	
+Delete
+Edit
+TXT	_dmarc	0	"v=DMARC1; p=none"	3600	
+Delete
+Edit
+A	grpc	0	206.189.224.142	300	
+Delete
+Edit
+A	rpc	0	206.189.224.142	300	
+Delete
+Edit
+CAA	@	0	0 issuewild "globalsign.com"	14400	
+Delete
+Edit
+CAA	@	0	0 issuewild "pki.goog"	14400	
+Delete
+Edit
+CAA	@	0	0 issuewild "sectigo.com"	14400	
+Delete
+Edit
+CAA	@	0	0 issue "comodoca.com"	14400	
+Delete
+Edit
+CAA	@	0	0 issue "digicert.com"	14400	
+Delete
+Edit
+CAA	@	0	0 issue "globalsign.com"	14400	
+Delete
+Edit
+CAA	@	0	0 issue "letsencrypt.org"	14400	
+Delete
+Edit
+CAA	@	0	0 issue "pki.goog"	14400	
+Delete
+Edit
+CAA	@	0	0 issue "sectigo.com"	14400	
+Delete
+Edit
+CAA	@	0	0 issuewild "comodoca.com"	14400	
+Delete
+Edit
+CAA	@	0	0 issuewild "digicert.com"	14400	
+Delete
+Edit
+CAA	@	0	0 issuewild "letsencrypt.org"	14400	
+Delete
+Edit
+TXT	@	0	"neo-verification=FFBkQtVlVl"	14400	
+Delete
+Edit
+TXT	@	0	"replit-verify=4b8f48fa-0317-44a3-ab30-4751c9c38f6e"	14400	
+Delete
+Edit
+TXT	@	0	"v=spf1 include:spf0001.neo.space -all"	14400	
+Delete
+Edit
+MX	@	20	mx0002.neo.space	3600	
+Delete
+Edit
+MX	@	20	mx0001.neo.space	3600	
+Delete
+Edit
+A	@	0	34.111.179.208	1800	
+Delete
+Edit

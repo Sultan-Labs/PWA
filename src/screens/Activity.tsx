@@ -10,6 +10,7 @@ import { useWallet } from '../hooks/useWallet';
 import { useTransactions } from '../hooks/useBalance';
 import { useTheme } from '../hooks/useTheme';
 import { SultanWallet } from '../core/wallet';
+import BackgroundAnimation from '../components/BackgroundAnimation';
 import './Activity.css';
 
 // Premium SVG Icons
@@ -137,6 +138,7 @@ export default function Activity() {
 
   return (
     <div className="activity-screen">
+      <BackgroundAnimation />
       <header className="screen-header">
         <button className="btn-back" onClick={() => navigate('/dashboard')}>
           <BackIcon />

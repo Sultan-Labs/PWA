@@ -17,6 +17,8 @@
 .create-content h2 {
   font-size: 1.75rem;
   margin-bottom: var(--spacing-sm);
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 229, 204, 0.2);
 }
 
 .warning-box {
@@ -26,6 +28,9 @@
   padding: var(--spacing-md);
   color: var(--warning);
   font-size: 0.875rem;
+  text-align: center !important;
+  display: block;
+  width: 100%;
 }
 
 .verify-inputs {

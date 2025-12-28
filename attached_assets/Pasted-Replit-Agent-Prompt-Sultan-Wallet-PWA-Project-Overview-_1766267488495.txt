@@ -1,0 +1,60 @@
+Replit Agent Prompt - Sultan Wallet PWA
+Project Overview
+
+Deploy Sultan Wallet - a React PWA for the Sultan blockchain. Sultan is a Native Rust L1 blockchain (NOT Cosmos, NOT Tendermint, NOT Substrate). No smart contracts - all features are protocol-native.
+
+Tech Stack
+
+React 18 + TypeScript
+Vite 6 (bundler)
+React Router 6
+@noble/ed25519, @noble/hashes (cryptography)
+@scure/bip39 (mnemonic)
+bech32 (address encoding)
+PWA with service worker
+File Structure to Create
+
+
+sultan-wallet/├── public/│   ├── sultan-logo-dark.png│   ├── sultan-logo-light.png│   ├── pwa-192x192.svg│   └── pwa-512x512.svg├── src/│   ├── index.css          ← DESIGN SYSTEM (change this for all styling)│   ├── main.tsx│   ├── App.tsx│   ├── api/│   │   └── sultanAPI.ts   ← RPC client for https://rpc.sltn.io│   ├── core/│   │   ├── wallet.ts      ← Ed25519 + BIP39 + Bech32│   │   ├── security.ts    ← PIN, rate limiting, session management│   │   ├── storage.secure.ts ← IndexedDB encrypted storage│   │   ├── totp.ts        ← 2FA authenticator│   │   └── logger.ts      ← Safe logging utility│   ├── hooks/│   │   ├── useWallet.tsx  ← Wallet state context│   │   ├── useBalance.tsx ← React Query hooks for API│   │   └── useTheme.tsx   ← Dark/light theme toggle│   ├── components/│   │   ├── AddressQR.tsx  ← QR code display│   │   ├── MnemonicDisplay.tsx│   │   ├── PinInput.tsx│   │   ├── TOTPSetup.tsx│   │   └── TOTPVerify.tsx│   └── screens/│       ├── Welcome.tsx + .css│       ├── CreateWallet.tsx + .css│       ├── ImportWallet.tsx + .css│       ├── Unlock.tsx + .css│       ├── Dashboard.tsx + .css│       ├── Send.tsx + .css│       ├── Receive.tsx + .css│       ├── Stake.tsx + .css│       ├── BecomeValidator.tsx + .css│       ├── NFTs.tsx + .css│       ├── Activity.tsx + .css│       ├── Governance.tsx + .css│       └── Settings.tsx + .css├── index.html├── package.json├── tsconfig.json├── vite.config.ts└── vitest.config.ts
+Design System (src/index.css)
+
+All colors, spacing, and theming are in ONE file. To change the design:
+
+
+:root, [data-theme="dark"] {  --color-bg:  #000000;  --color-bg-secondary:  #0a0e1a;  --color-primary:  #00ffff;      /* Sultan cyan */  --color-accent:  #00e5cc;  --color-text:  #ffffff;  --color-text-muted:  #888;  --color-success:  #00ff9f;  --color-error:  #ff4444;  --border-radius: 12px;  --glow-primary: 0 0 20px  rgba(0, 255, 255, 0.4);}[data-theme="light"] {  --color-bg:  #f5f7fa;  --color-primary:  #0099aa;  /* ... light theme overrides */}
+Key Architecture Rules
+
+Sultan addresses start with sultan1 (bech32 format)
+Decimals: 9 (1 SLTN = 1,000,000,000 base units)
+Send screen: Only accepts sultan1... addresses (wallet is Sultan-only)
+Wrapped assets: sBTC, sETH, sSOL, sTON come from bridges (future Bridge UI)
+Staking APY: 13.33%
+Min stake to become validator: 10,000 SLTN
+Governance deposit: 1,000 SLTN to create proposal
+RPC endpoint: https://rpc.sltn.io
+Package.json Dependencies
+
+
+{  "dependencies": {    "react": "^18.3.1",    "react-dom": "^18.3.1",    "react-router-dom": "^7.1.1",    "@noble/ed25519": "^2.2.3",    "@noble/hashes": "^1.7.1",    "@scure/bip39": "^1.5.4",    "bech32": "^2.0.0",    "@tanstack/react-query": "^5.62.16",    "qrcode": "^1.5.4",    "otpauth": "^9.3.6"  },  "devDependencies": {    "vite": "^6.0.5",    "typescript": "~5.6.2",    "@vitejs/plugin-react": "^4.3.4",    "vite-plugin-pwa": "^0.21.1",    "vitest": "^2.1.9"  }}
+Security Features Implemented
+
+Mnemonic encrypted in memory (XOR SecureString)
+Private keys derived on-demand, never cached
+PIN with SHA-256 hashing
+Rate limiting (5 failed attempts → 5 min lockout)
+Session timeout (15 min inactivity → auto-lock)
+Optional 2FA (TOTP)
+Screens Flow
+
+
+Welcome → Create/Import → Dashboard                              ↓    ┌─────────────────────────┼─────────────────────────┐    ↓           ↓           ↓           ↓           ↓  Send      Receive      Stake       NFTs      Settings    ↓                       ↓   PIN              BecomeValidator    ↓  Success
+To Change Design Globally
+
+Just edit index.css - all screens use CSS variables from there. Example:
+
+Change --color-primary to change the accent color everywhere
+Change --border-radius to make buttons more/less rounded
+Change --glow-primary to adjust the glow effect
+Source Code Repository
+
+The complete source is at: github.com/Wollnbergen/0xv7/wallet-extension

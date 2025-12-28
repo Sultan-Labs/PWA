@@ -5,8 +5,10 @@
  * Premium design matching the Unlock screen aesthetic.
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BackgroundAnimation from '../components/BackgroundAnimation';
+import BookmarkReminder from '../components/BookmarkReminder';
 import './Welcome.css';
 
 // Sultan Crown Logo - uses PNG images, switches based on theme
@@ -14,23 +16,24 @@ const SultanLogo = ({ size = 56, isDark }: { size?: number; isDark: boolean }) =
   <img 
     src={isDark ? "/sultan-logo-dark.png" : "/sultan-logo-light.png"} 
     alt="Sultan" 
-    width={size} 
-    height={size}
+    width={size}
     className="sultan-logo-img"
+    style={{ height: 'auto' }}
   />
 );
 
 // Premium SVG Icons
-const ZapIcon = () => (
+const StakeIcon = () => (
   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
   </svg>
 );
 
-const TrendingUpIcon = () => (
+const NFTIcon = () => (
   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-    <polyline points="17 6 23 6 23 12" />
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+    <circle cx="8.5" cy="8.5" r="1.5" />
+    <polyline points="21 15 16 10 5 21" />
   </svg>
 );
 
@@ -48,117 +51,109 @@ const VoteIcon = () => (
   </svg>
 );
 
-const SunIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="5" />
-    <line x1="12" y1="1" x2="12" y2="3" />
-    <line x1="12" y1="21" x2="12" y2="23" />
-    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-    <line x1="1" y1="12" x2="3" y2="12" />
-    <line x1="21" y1="12" x2="23" y2="12" />
-    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+const PlusIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
   </svg>
 );
 
-const MoonIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+const DownloadIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="7 10 12 15 17 10" />
+    <line x1="12" y1="15" x2="12" y2="3" />
   </svg>
 );
 
 export default function Welcome() {
   const navigate = useNavigate();
-  const [isDark, setIsDark] = useState(true);
+  const isDark = true;
 
   useEffect(() => {
-    // Check current theme on mount
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    setIsDark(currentTheme !== 'light');
+    // Ensure dark mode is set on welcome screen
+    document.documentElement.setAttribute('data-theme', 'dark');
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = isDark ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('sultan-wallet-theme', newTheme);
-    setIsDark(!isDark);
-  };
-
   return (
-    <div className="welcome-screen">
-      {/* Theme toggle in top right */}
-      <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
-        {isDark ? <SunIcon /> : <MoonIcon />}
-      </button>
+    <>
+      <BackgroundAnimation />
+      <BookmarkReminder />
+      <div className="welcome-screen">
 
-      <div className="welcome-content fade-in">
-        <div className="logo-container">
-          <div className="sultan-icon">
-            <SultanLogo size={56} isDark={isDark} />
+        <div className="welcome-content fade-in">
+          <div className="logo-container">
+            <div className="sultan-icon">
+              <SultanLogo size={56} isDark={isDark} />
+            </div>
+            <h1>Wallet</h1>
+            <p className="tagline">Asset management made easy: earn, own, govern</p>
           </div>
-          <h1>Wallet</h1>
+
+          <div className="features-card">
+            <div className="feature feature-item-1">
+              <div className="feature-icon-wrapper">
+                <StakeIcon />
+              </div>
+              <div className="feature-text">
+                <span className="feature-title">Staking Rewards</span>
+                <span className="feature-desc">Earn up to 13.33% APY</span>
+              </div>
+            </div>
+            <div className="feature feature-item-2">
+              <div className="feature-icon-wrapper">
+                <NFTIcon />
+              </div>
+              <div className="feature-text">
+                <span className="feature-title">NFT Gallery</span>
+                <span className="feature-desc">Manage digital collectibles</span>
+              </div>
+            </div>
+            <div className="feature feature-item-3">
+              <div className="feature-icon-wrapper">
+                <ShieldIcon />
+              </div>
+              <div className="feature-text">
+                <span className="feature-title">Self-Custody</span>
+                <span className="feature-desc">You control your keys</span>
+              </div>
+            </div>
+            <div className="feature feature-item-4">
+              <div className="feature-icon-wrapper">
+                <VoteIcon />
+              </div>
+              <div className="feature-text">
+                <span className="feature-title">Governance</span>
+                <span className="feature-desc">Vote on proposals</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="button-group">
+            <button 
+              className="btn btn-primary"
+              onClick={() => navigate('/create')}
+            >
+              <PlusIcon />
+              Create New Wallet
+            </button>
+            
+            <button 
+              className="btn btn-secondary"
+              onClick={() => navigate('/import')}
+            >
+              <DownloadIcon />
+              Import Existing Wallet
+            </button>
+          </div>
+
+          <div className="footer-badge">
+            <span>v1.0.0</span>
+            <span className="separator">•</span>
+            <span>Powered by Sultan</span>
+          </div>
         </div>
-
-        <div className="features-card">
-          <div className="feature">
-            <div className="feature-icon-wrapper">
-              <ZapIcon />
-            </div>
-            <div className="feature-text">
-              <span className="feature-title">Zero Fees</span>
-              <span className="feature-desc">No transaction costs, ever</span>
-            </div>
-          </div>
-          <div className="feature">
-            <div className="feature-icon-wrapper">
-              <TrendingUpIcon />
-            </div>
-            <div className="feature-text">
-              <span className="feature-title">13.33% APY</span>
-              <span className="feature-desc">Earn rewards by staking</span>
-            </div>
-          </div>
-          <div className="feature">
-            <div className="feature-icon-wrapper">
-              <ShieldIcon />
-            </div>
-            <div className="feature-text">
-              <span className="feature-title">Self-Custody</span>
-              <span className="feature-desc">You control your keys</span>
-            </div>
-          </div>
-          <div className="feature">
-            <div className="feature-icon-wrapper">
-              <VoteIcon />
-            </div>
-            <div className="feature-text">
-              <span className="feature-title">Governance</span>
-              <span className="feature-desc">Vote on network proposals</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="button-group">
-          <button 
-            className="btn btn-primary"
-            onClick={() => navigate('/create')}
-          >
-            Create New Wallet
-          </button>
-          
-          <button 
-            className="btn btn-secondary"
-            onClick={() => navigate('/import')}
-          >
-            Import Existing Wallet
-          </button>
-        </div>
-
-        <p className="version">
-          v1.0.0 • Sultan Chain
-        </p>
       </div>
-    </div>
+    </>
   );
 }

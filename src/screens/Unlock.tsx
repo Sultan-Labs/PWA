@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import PinInput from '../components/PinInput';
 import TOTPVerify from '../components/TOTPVerify';
+import BookmarkReminder from '../components/BookmarkReminder';
 import { is2FAEnabled } from '../core/totp';
 import './Unlock.css';
 
@@ -41,11 +42,15 @@ export default function Unlock() {
   const [step, setStep] = useState<UnlockStep>('pin');
   const [isLoading, setIsLoading] = useState(false);
   const [attempts, setAttempts] = useState(0);
-  const [isDark, setIsDark] = useState(true);
+  // Force dark mode for Unlock screen
+  const isDark = true;
 
   useEffect(() => {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    setIsDark(currentTheme !== 'light');
+    // Force dark theme on mount
+    document.documentElement.setAttribute('data-theme', 'dark');
+    
+    // Optional: Restore theme when unmounting if you want to preserve user preference elsewhere
+    // But since this is a critical flow, we might just leave it
   }, []);
   const [key, setKey] = useState(0); // Force PinInput reset
 
@@ -126,6 +131,7 @@ export default function Unlock() {
 
   return (
     <div className="unlock-screen">
+      <BookmarkReminder />
       <div className="unlock-content fade-in">
         <div className="sultan-icon">
           <SultanLogo size={64} isDark={isDark} />

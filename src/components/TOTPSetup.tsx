@@ -105,27 +105,43 @@ export default function TOTPSetup({ accountName, onClose }: TOTPSetupProps) {
       {/* Introduction Step */}
       {step === 'intro' && (
         <div className="totp-step fade-in">
-          <div className="totp-icon">🔐</div>
-          <h3>Enable 2FA</h3>
+          <div className="totp-icon-wrapper">
+            <div className="totp-icon">🔐</div>
+          </div>
+          <h3>Two-Factor Authentication</h3>
           <p className="text-muted mb-md">
-            Add an extra layer of security to your wallet using an authenticator app like 
-            Google Authenticator, Authy, or 1Password.
+            Add an extra layer of security using an authenticator app.
           </p>
           <div className="totp-benefits">
             <div className="benefit-item">
-              <span className="benefit-icon">✓</span>
-              <span>Required at login only</span>
+              <div className="benefit-icon-circle">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <span>Login verification only</span>
             </div>
             <div className="benefit-item">
-              <span className="benefit-icon">✓</span>
+              <div className="benefit-icon-circle">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
               <span>Works offline</span>
             </div>
             <div className="benefit-item">
-              <span className="benefit-icon">✓</span>
-              <span>Backup codes provided</span>
+              <div className="benefit-icon-circle">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <span>Recovery codes included</span>
             </div>
           </div>
-          <button className="btn btn-primary" onClick={handleStartSetup}>
+          <p className="totp-apps-hint">
+            Compatible with Google Authenticator, Authy, 1Password
+          </p>
+          <button className="btn btn-primary mt-md" onClick={handleStartSetup}>
             Set Up 2FA
           </button>
           <button className="btn btn-secondary mt-sm" onClick={onClose}>

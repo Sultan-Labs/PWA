@@ -49,7 +49,7 @@ interface WalletContextValue extends WalletState {
   // Computed
   currentAccount: SultanAccount | null;
   isLockedOut: boolean;
-  
+
   // Actions
   createWallet: (pin: string) => Promise<string>;
   importWallet: (mnemonic: string, pin: string) => Promise<void>;
@@ -79,7 +79,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   // Session timeout interval ref
   const sessionTimeoutRef = useRef<number | null>(null);
   const lockoutIntervalRef = useRef<number | null>(null);
-  
+
   // Setup activity tracking for session timeout
   useEffect(() => {
     const handleActivity = () => {
@@ -87,20 +87,20 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         updateActivity();
       }
     };
-    
+
     // Track user activity
     const events = ['mousedown', 'keydown', 'touchstart', 'scroll'];
     events.forEach(event => {
       window.addEventListener(event, handleActivity, { passive: true });
     });
-    
+
     return () => {
       events.forEach(event => {
         window.removeEventListener(event, handleActivity);
       });
     };
   }, [state.isLocked, state.wallet]);
-  
+
   // Session timeout check interval
   useEffect(() => {
     if (!state.isLocked && state.wallet) {
@@ -120,7 +120,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         }
       }, 30000); // Check every 30 seconds
     }
-    
+
     return () => {
       if (sessionTimeoutRef.current) {
         clearInterval(sessionTimeoutRef.current);
@@ -128,14 +128,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }
     };
   }, [state.isLocked, state.wallet]);
-  
+
   // Update lockout timer display
   useEffect(() => {
     if (isLockedOut()) {
       const updateLockout = () => {
         const remaining = getRemainingLockoutTime();
         setState(prev => ({ ...prev, lockoutRemainingSeconds: remaining }));
-        
+
         if (remaining === 0) {
           if (lockoutIntervalRef.current) {
             clearInterval(lockoutIntervalRef.current);
@@ -143,11 +143,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           }
         }
       };
-      
+
       updateLockout();
       lockoutIntervalRef.current = window.setInterval(updateLockout, 1000);
     }
-    
+
     return () => {
       if (lockoutIntervalRef.current) {
         clearInterval(lockoutIntervalRef.current);
@@ -162,14 +162,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       try {
         const exists = await hasWallet();
         const sessionPin = getSessionPin();
-        
+
         if (exists && sessionPin) {
           // Try to restore session
           try {
             const mnemonic = await loadWallet(sessionPin);
             const wallet = await SultanWallet.fromMnemonic(mnemonic);
             const accounts = wallet.getAccounts();
-            
+
             setState({
               isLoading: false,
               isInitialized: true,
@@ -211,21 +211,21 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       if (!pinValidation.valid) {
         throw new Error(pinValidation.error);
       }
-      
+
       const mnemonic = SultanWallet.generateMnemonic();
       const wallet = await SultanWallet.fromMnemonic(mnemonic);
-      
+
       await saveWallet(mnemonic, pin);
       setSessionPin(pin);
-      
+
       // Initialize security session
       startSession(() => {
         wallet.destroy();
         clearSession();
       });
-      
+
       const accounts = wallet.getAccounts();
-      
+
       setState({
         isLoading: false,
         isInitialized: true,
@@ -252,20 +252,20 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       if (!pinValidation.valid) {
         throw new Error(pinValidation.error);
       }
-      
+
       const wallet = await SultanWallet.fromMnemonic(mnemonic);
-      
+
       await saveWallet(mnemonic, pin);
       setSessionPin(pin);
-      
+
       // Initialize security session
       startSession(() => {
         wallet.destroy();
         clearSession();
       });
-      
+
       const accounts = wallet.getAccounts();
-      
+
       setState({
         isLoading: false,
         isInitialized: true,
@@ -294,19 +294,19 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }));
       return false;
     }
-    
+
     try {
       const mnemonic = await loadWallet(pin);
       const wallet = await SultanWallet.fromMnemonic(mnemonic);
-      
+
       // Successful unlock - clear failed attempts
       clearFailedAttempts();
       setSessionPin(pin);
-      
+
       // SECURITY: Store hashed PIN for transaction verification
       const pinHash = hashPinForVerification(pin);
       setSessionPinHash(pinHash);
-      
+
       // Initialize security session with auto-lock callback
       startSession(() => {
         // This will be called when session expires
@@ -314,9 +314,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         clearSession();
         clearSessionPinHash();
       });
-      
+
       const accounts = wallet.getAccounts();
-      
+
       setState(prev => ({
         ...prev,
         isLocked: false,
@@ -330,7 +330,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       // Record failed attempt for rate limiting
       const result = recordFailedAttempt();
       let message: string;
-      
+
       if (isLockedOut()) {
         const remaining = getRemainingLockoutTime();
         message = `Too many failed attempts. Try again in ${remaining} seconds.`;
@@ -348,7 +348,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     clearSession();
     clearSessionPinHash(); // SECURITY: Clear PIN hash on lock
     endSecuritySession(); // End the security session timer
-    
+
     setState(prev => ({
       ...prev,
       isLocked: true,
@@ -358,20 +358,34 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, [state.wallet]);
 
   const deleteWalletData = useCallback(async () => {
-    state.wallet?.destroy();
-    clearSession();
-    await deleteWallet();
-    
-    setState({
-      isLoading: false,
-      isInitialized: false,
-      isLocked: true,
-      wallet: null,
-      accounts: [],
-      activeAccountIndex: 0,
-      error: null,
-      lockoutRemainingSeconds: 0,
-    });
+    try {
+      await deleteWallet();
+      clearSessionPinHash();
+      endSecuritySession();
+      clearSession();
+      clearFailedAttempts();
+
+      if (state.wallet) {
+        state.wallet.destroy();
+      }
+
+      setState({
+        isLoading: false,
+        isInitialized: false,
+        isLocked: true,
+        wallet: null,
+        accounts: [],
+        activeAccountIndex: 0,
+        error: null,
+        lockoutRemainingSeconds: 0,
+      });
+    } catch (err) {
+      setState(prev => ({ 
+        ...prev, 
+        error: err instanceof Error ? err.message : 'Failed to delete wallet' 
+      }));
+      throw err;
+    }
   }, [state.wallet]);
 
   const setActiveAccount = useCallback((index: number) => {
@@ -387,7 +401,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
     const nextIndex = state.accounts.length;
     const account = await state.wallet.deriveAccount(nextIndex, name);
-    
+
     setState(prev => ({
       ...prev,
       accounts: [...prev.accounts, account],

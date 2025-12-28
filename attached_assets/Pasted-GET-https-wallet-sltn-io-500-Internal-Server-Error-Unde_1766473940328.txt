@@ -1,0 +1,33 @@
+GET https://wallet.sltn.io/ 500 (Internal Server Error)Understand this error
+98extensionPageScript.js:4332 Uncaught Error: Attempting to use a disconnected port object
+    at sendToOrigin (chrome-extension://fldfpgipfncgndfolcbkdeeknbbbnhcc/extensionServiceWorker.js:59158:12)
+    at chrome-extension://fldfpgipfncgndfolcbkdeeknbbbnhcc/extensionServiceWorker.js:59307:5
+decodeError @ extensionPageScript.js:4332
+onMessage @ extensionPageScript.js:4453
+handleMessage @ extensionPageScript.js:4481
+postMessage
+sendToPage @ extensionContentScript.js:821Understand this error
+extensionPageScript.js:4332 Uncaught TypeError: Cannot read properties of undefined (reading 'ton')
+    at requestAccounts (chrome-extension://fldfpgipfncgndfolcbkdeeknbbbnhcc/extensionServiceWorker.js:75667:12)
+    at async onDappSendUpdates (chrome-extension://fldfpgipfncgndfolcbkdeeknbbbnhcc/extensionServiceWorker.js:75645:20)
+decodeError @ extensionPageScript.js:4332
+onMessage @ extensionPageScript.js:4453
+handleMessage @ extensionPageScript.js:4481
+postMessage
+sendToPage @ extensionContentScript.js:821Understand this error
+104extensionPageScript.js:4332 Uncaught Error: Attempting to use a disconnected port object
+    at sendToOrigin (chrome-extension://fldfpgipfncgndfolcbkdeeknbbbnhcc/extensionServiceWorker.js:59158:12)
+    at chrome-extension://fldfpgipfncgndfolcbkdeeknbbbnhcc/extensionServiceWorker.js:59307:5
+decodeError @ extensionPageScript.js:4332
+onMessage @ extensionPageScript.js:4453
+handleMessage @ extensionPageScript.js:4481
+postMessage
+sendToPage @ extensionContentScript.js:821Understand this error
+extensionPageScript.js:4332 Uncaught TypeError: Cannot read properties of undefined (reading 'ton')
+    at requestAccounts (chrome-extension://fldfpgipfncgndfolcbkdeeknbbbnhcc/extensionServiceWorker.js:75667:12)
+    at async onDappSendUpdates (chrome-extension://fldfpgipfncgndfolcbkdeeknbbbnhcc/extensionServiceWorker.js:75645:20)
+decodeError @ extensionPageScript.js:4332
+onMessage @ extensionPageScript.js:4453
+handleMessage @ extensionPageScript.js:4481
+postMessage
+sendToPage @ extensionContentScript.js:821Understand this error

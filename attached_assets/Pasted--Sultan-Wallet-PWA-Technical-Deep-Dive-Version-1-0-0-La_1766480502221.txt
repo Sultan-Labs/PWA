@@ -1,0 +1,786 @@
+# Sultan Wallet PWA - Technical Deep Dive
+
+**Version:** 1.0.0  
+**Last Updated:** January 2025  
+**Author:** Sultan L1 Engineering Team
+
+---
+
+## Table of Contents
+
+1. [Executive Summary](#executive-summary)
+2. [Architecture Overview](#architecture-overview)
+3. [Technology Stack](#technology-stack)
+4. [Security Architecture](#security-architecture)
+5. [Cryptographic Implementation](#cryptographic-implementation)
+6. [State Management](#state-management)
+7. [API Layer](#api-layer)
+8. [Screen Components](#screen-components)
+9. [PWA Configuration](#pwa-configuration)
+10. [Build & Deployment](#build--deployment)
+11. [Testing Strategy](#testing-strategy)
+12. [Security Audit Notes](#security-audit-notes)
+
+---
+
+## Executive Summary
+
+Sultan Wallet is a **Progressive Web Application (PWA)** for the Sultan L1 blockchain - a zero-fee, high-performance Layer 1 with 64,000 TPS capacity across 16 shards. The wallet is designed as a browser-first application with production-grade security that rivals native mobile and desktop wallets.
+
+### Key Features
+- **Zero-Fee Transactions**: All transfers on Sultan L1 are completely free
+- **13.33% Staking APY**: Stake SLTN tokens with network validators
+- **Ed25519 Signatures**: Fast, secure cryptographic operations
+- **Offline Capable**: Service worker caching for core functionality
+- **Optional 2FA**: TOTP-based two-factor authentication
+- **Sultan-Only Design**: Focused single-chain experience (no multi-chain complexity)
+
+---
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        PWA Shell                                 │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │                   React Router                           │    │
+│  │  ┌───────────────────────────────────────────────────┐   │    │
+│  │  │                 Screen Components                  │   │    │
+│  │  │  Dashboard │ Send │ Receive │ Stake │ Governance   │   │    │
+│  │  └───────────────────────────────────────────────────┘   │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                              │                                    │
+│  ┌───────────────────────────┼───────────────────────────────┐   │
+│  │                     Hooks Layer                            │   │
+│  │   useWallet │ useBalance │ useTheme │ React Query         │   │
+│  └───────────────────────────┼───────────────────────────────┘   │
+│                              │                                    │
+│  ┌───────────────────────────┼───────────────────────────────┐   │
+│  │                    Core Layer                              │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │   │
+│  │  │ wallet.ts│  │security.ts│ │storage.ts│  │ totp.ts  │   │   │
+│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │   │
+│  └───────────────────────────────────────────────────────────┘   │
+│                              │                                    │
+│  ┌───────────────────────────┼───────────────────────────────┐   │
+│  │                   API Layer                                │   │
+│  │                  sultanAPI.ts                              │   │
+│  │              https://rpc.sltn.io                           │   │
+│  └───────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │  Sultan L1 Network   │
+                    │  16 Shards · 5 Val   │
+                    │  2s Blocks · 64K TPS │
+                    └─────────────────────┘
+```
+
+### Directory Structure
+
+```
+wallet-extension/
+├── src/
+│   ├── App.tsx              # Main router component
+│   ├── main.tsx             # Entry point
+│   ├── index.css            # Global styles
+│   ├── api/
+│   │   └── sultanAPI.ts     # REST API client (860 lines)
+│   ├── core/
+│   │   ├── wallet.ts        # Key management (545 lines)
+│   │   ├── security.ts      # Security primitives (779 lines)
+│   │   ├── storage.secure.ts # Encrypted storage (469 lines)
+│   │   ├── totp.ts          # 2FA implementation (405 lines)
+│   │   ├── clipboard.ts     # Secure clipboard
+│   │   ├── csp.ts           # Content Security Policy
+│   │   └── logger.ts        # Audit logging
+│   ├── components/
+│   │   ├── AddressQR.tsx    # QR code generation
+│   │   ├── MnemonicDisplay.tsx
+│   │   ├── PinInput.tsx
+│   │   ├── TOTPSetup.tsx
+│   │   └── TOTPVerify.tsx
+│   ├── hooks/
+│   │   ├── useWallet.tsx    # Wallet state context (438 lines)
+│   │   ├── useBalance.ts    # Balance queries
+│   │   └── useTheme.tsx     # Dark/light theme
+│   └── screens/
+│       ├── Welcome.tsx      # Onboarding
+│       ├── CreateWallet.tsx # Mnemonic generation
+│       ├── ImportWallet.tsx # Mnemonic import
+│       ├── Unlock.tsx       # PIN entry
+│       ├── Dashboard.tsx    # Main wallet view
+│       ├── Send.tsx         # Send transactions
+│       ├── Receive.tsx      # Receive with QR
+│       ├── Stake.tsx        # Staking interface
+│       ├── BecomeValidator.tsx
+│       ├── Governance.tsx   # Proposal voting
+│       ├── NFTs.tsx         # NFT gallery
+│       ├── Activity.tsx     # Transaction history
+│       └── Settings.tsx     # Wallet configuration
+├── public/
+│   ├── pwa-192x192.svg
+│   └── pwa-512x512.svg
+├── vite.config.ts           # Vite + PWA configuration
+└── package.json
+```
+
+---
+
+## Technology Stack
+
+### Frontend Framework
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| React | 18.3.1 | UI framework |
+| React Router | 7.1.0 | Client-side routing |
+| TypeScript | 5.6.2 | Type safety |
+| Vite | 6.0.5 | Build tooling |
+
+### Cryptography (All Pure JavaScript)
+| Library | Version | Purpose |
+|---------|---------|---------|
+| @noble/ed25519 | 2.2.3 | Ed25519 signatures |
+| @noble/hashes | 1.7.1 | SHA-256, SHA-512, HMAC |
+| @scure/bip39 | 1.5.4 | BIP39 mnemonic handling |
+| bech32 | 2.0.0 | Address encoding |
+
+### State & Data
+| Library | Version | Purpose |
+|---------|---------|---------|
+| @tanstack/react-query | 5.62.16 | Server state management |
+| IndexedDB | Native | Encrypted persistent storage |
+| Web Crypto API | Native | AES-GCM, PBKDF2 |
+
+### PWA & Build
+| Library | Version | Purpose |
+|---------|---------|---------|
+| vite-plugin-pwa | 0.21.1 | Service worker generation |
+| Workbox | 7.3.0 | Runtime caching strategies |
+
+---
+
+## Security Architecture
+
+### Threat Model
+
+The wallet defends against:
+1. **Memory forensics** - Sensitive data encrypted with XOR in memory
+2. **Shoulder surfing** - PIN-protected access, auto-lock timeout
+3. **Brute force attacks** - Rate limiting with exponential backoff
+4. **XSS/injection** - Input validation, CSP headers
+5. **Clipboard sniffing** - Auto-clear clipboard after copy
+6. **Session hijacking** - Session timeout with auto-lock
+
+### Security Constants
+
+```typescript
+// From security.ts
+const MIN_PIN_LENGTH = 6;
+const MAX_PIN_LENGTH = 12;
+const MAX_PIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 5 * 60 * 1000;     // 5 minutes
+const SESSION_TIMEOUT_MS = 5 * 60 * 1000;      // 5 minutes
+const PBKDF2_ITERATIONS = 600_000;             // OWASP 2024 recommendation
+const SALT_LENGTH = 32;                         // 256 bits
+const IV_LENGTH = 12;                           // AES-GCM standard
+```
+
+### SecureString Class
+
+Sensitive strings (mnemonics, PINs) are never stored as plain JavaScript strings. The `SecureString` class XOR-encrypts data in memory:
+
+```typescript
+export class SecureString {
+  private data: Uint8Array;
+  private key: Uint8Array;
+  
+  constructor(value: string) {
+    const encoder = new TextEncoder();
+    const plaintext = encoder.encode(value);
+    
+    // Generate random XOR key
+    this.key = randomBytes(plaintext.length);
+    
+    // XOR encrypt the data
+    this.data = new Uint8Array(plaintext.length);
+    for (let i = 0; i < plaintext.length; i++) {
+      this.data[i] = plaintext[i] ^ this.key[i];
+    }
+    
+    // Wipe plaintext
+    secureWipe(plaintext);
+  }
+  
+  reveal(): string {
+    const decrypted = new Uint8Array(this.data.length);
+    for (let i = 0; i < this.data.length; i++) {
+      decrypted[i] = this.data[i] ^ this.key[i];
+    }
+    return new TextDecoder().decode(decrypted);
+  }
+  
+  destroy(): void {
+    secureWipe(this.data);
+    secureWipe(this.key);
+  }
+}
+```
+
+### Secure Memory Wiping
+
+All sensitive buffers are wiped with a multi-pass algorithm:
+
+```typescript
+export function secureWipe(data: Uint8Array): void {
+  if (!data || data.length === 0) return;
+  
+  // First pass: random data
+  const random = randomBytes(data.length);
+  data.set(random);
+  
+  // Second pass: zeros
+  data.fill(0);
+  
+  // Third pass: ones (helps with some memory types)
+  data.fill(0xFF);
+  
+  // Final pass: zeros
+  data.fill(0);
+}
+```
+
+### Rate Limiting
+
+Failed PIN attempts trigger exponential backoff lockout:
+
+```typescript
+function recordFailedAttempt(): void {
+  attempts++;
+  if (attempts >= MAX_PIN_ATTEMPTS) {
+    lockedUntil = Date.now() + LOCKOUT_DURATION_MS;
+  }
+}
+
+function isLockedOut(): boolean {
+  return Date.now() < lockedUntil;
+}
+```
+
+---
+
+## Cryptographic Implementation
+
+### Chain Specifications
+
+```typescript
+// Sultan chain constants
+export const SULTAN_DECIMALS = 9;        // 1 SLTN = 1,000,000,000 base units
+export const SULTAN_PREFIX = 'sultan';    // bech32 address prefix
+export const SULTAN_COIN_TYPE = 1984;    // BIP44 coin type
+export const MIN_STAKE = 10_000;         // 10,000 SLTN minimum stake
+```
+
+### Key Derivation Path
+
+Sultan uses SLIP-0010 for Ed25519 key derivation:
+
+```
+m/44'/1984'/0'/0'/{index}
+```
+
+- `44'` - BIP44 purpose
+- `1984'` - Sultan coin type
+- `0'` - Account (hardened)
+- `0'` - Change (hardened)
+- `{index}` - Address index
+
+### Mnemonic Generation
+
+24-word BIP39 mnemonic with 256-bit entropy:
+
+```typescript
+static generateMnemonic(): string {
+  return generateMnemonic(wordlist, 256); // 256 bits = 24 words
+}
+```
+
+### Address Derivation
+
+Addresses are bech32-encoded with the `sultan` prefix:
+
+```typescript
+private publicKeyToAddress(publicKey: Uint8Array): string {
+  // SHA-256 hash of public key
+  const hash = sha256(publicKey);
+  
+  // Take first 20 bytes
+  const address20 = hash.slice(0, 20);
+  
+  // Convert to 5-bit words for bech32
+  const words = bech32.toWords(address20);
+  
+  // Encode with 'sultan' prefix
+  return bech32.encode(SULTAN_PREFIX, words);
+}
+```
+
+### Transaction Signing
+
+Transactions are signed with Ed25519:
+
+```typescript
+async sign(tx: SultanTransaction): Promise<SignedTransaction> {
+  this.ensureNotDestroyed();
+  
+  // Get the account to sign with
+  const account = this.accounts.get(this.activeIndex);
+  if (!account) throw new Error('No active account');
+  
+  // Derive private key on-demand (never cached)
+  const mnemonic = this.secureMnemonic!.reveal();
+  const seed = mnemonicToSeedSync(mnemonic);
+  const privateKey = this.deriveEd25519Key(seed, account.path);
+  
+  // Serialize transaction for signing
+  const message = this.serializeTransaction(tx);
+  
+  // Sign with Ed25519
+  const signature = await ed25519.signAsync(message, privateKey);
+  
+  // SECURITY: Wipe private key immediately
+  secureWipe(privateKey);
+  
+  return {
+    transaction: tx,
+    signature: Buffer.from(signature).toString('hex'),
+    publicKey: account.publicKey,
+  };
+}
+```
+
+**Security Note**: Private keys are derived on-demand for each signing operation and immediately wiped. They are NEVER cached in memory.
+
+---
+
+## State Management
+
+### Wallet Context
+
+The `useWallet` hook provides global wallet state via React Context:
+
+```typescript
+interface WalletState {
+  isLoading: boolean;
+  isInitialized: boolean;
+  isLocked: boolean;
+  wallet: SultanWallet | null;
+  accounts: SultanAccount[];
+  activeAccountIndex: number;
+  error: string | null;
+  lockoutRemainingSeconds: number;
+}
+
+interface WalletContextValue extends WalletState {
+  // Computed
+  currentAccount: SultanAccount | null;
+  isLockedOut: boolean;
+  
+  // Actions
+  createWallet: (pin: string) => Promise<string>;
+  importWallet: (mnemonic: string, pin: string) => Promise<void>;
+  unlock: (pin: string) => Promise<boolean>;
+  lock: () => void;
+  deleteWalletData: () => Promise<void>;
+  setActiveAccount: (index: number) => void;
+  deriveNewAccount: (name?: string) => Promise<SultanAccount>;
+  clearError: () => void;
+}
+```
+
+### Session Timeout
+
+The wallet automatically locks after 5 minutes of inactivity:
+
+```typescript
+// Track user activity
+const events = ['mousedown', 'keydown', 'touchstart', 'scroll'];
+events.forEach(event => {
+  window.addEventListener(event, handleActivity, { passive: true });
+});
+
+// Check every 30 seconds
+useEffect(() => {
+  if (!state.isLocked && state.wallet) {
+    const interval = setInterval(() => {
+      if (checkSessionTimeout()) {
+        state.wallet?.destroy();
+        clearSession();
+        setState(prev => ({
+          ...prev,
+          isLocked: true,
+          wallet: null,
+          error: 'Session expired - please unlock again',
+        }));
+      }
+    }, 30000);
+    return () => clearInterval(interval);
+  }
+}, [state.isLocked, state.wallet]);
+```
+
+### Balance Queries
+
+React Query manages server state with automatic refetching:
+
+```typescript
+const { data: balanceData, isLoading } = useBalance(currentAccount?.address);
+const { data: stakingData } = useStakingInfo(currentAccount?.address);
+const { data: validators } = useValidators();
+const { data: networkStatus } = useNetworkStatus();
+```
+
+---
+
+## API Layer
+
+### RPC Configuration
+
+```typescript
+// Production RPC endpoint - NYC Bootstrap validator (HTTPS via nginx)
+const RPC_URL = 'https://rpc.sltn.io';
+```
+
+### REST API Client
+
+All API calls use a unified REST client:
+
+```typescript
+async function restApi<T>(
+  endpoint: string, 
+  method: 'GET' | 'POST' = 'GET',
+  body?: Record<string, unknown>
+): Promise<T> {
+  const options: RequestInit = {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  if (body && method === 'POST') {
+    options.body = JSON.stringify(body);
+  }
+
+  const response = await fetch(`${RPC_URL}${endpoint}`, options);
+
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+
+  return response.json();
+}
+```
+
+### Available Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/balance/{address}` | GET | Account balance and nonce |
+| `/staking/delegations/{address}` | GET | Staking info |
+| `/staking/validators` | GET | Validator list |
+| `/status` | GET | Network status |
+| `/tx` | POST | Broadcast transaction |
+| `/governance/proposals` | GET | Governance proposals |
+| `/governance/proposals/{id}` | GET | Single proposal |
+| `/governance/proposals/{id}/vote` | POST | Submit vote |
+| `/staking/create_validator` | POST | Register validator |
+
+### Type Definitions
+
+```typescript
+export interface AccountBalance {
+  address: string;
+  available: string;  // Base units
+  balance: string;    // Alias
+  nonce: number;
+}
+
+export interface StakingInfo {
+  address: string;
+  staked: string;
+  pendingRewards: string;
+  validator?: string;
+  stakingAPY: number;  // 13.33%
+}
+
+export interface Validator {
+  address: string;
+  name: string;
+  moniker: string;
+  totalStaked: string;
+  commission: number;
+  uptime: number;
+  status: 'active' | 'inactive' | 'jailed';
+}
+
+export interface NetworkStatus {
+  chainId: string;        // 'sultan-mainnet-1'
+  blockHeight: number;
+  blockTime: number;      // 2 seconds
+  validatorCount: number;
+  totalStaked: string;
+  stakingAPY: number;
+}
+```
+
+---
+
+## Screen Components
+
+### Navigation Flow
+
+```
+Welcome ─┬─> CreateWallet ──> Dashboard
+         └─> ImportWallet ──> Dashboard
+                              │
+Unlock ──────────────────────┤
+                              │
+Dashboard ─┬─> Send
+           ├─> Receive
+           ├─> Stake ────────> BecomeValidator
+           ├─> Governance
+           ├─> NFTs
+           ├─> Activity
+           └─> Settings
+```
+
+### Screen Responsibilities
+
+| Screen | Purpose | Key Features |
+|--------|---------|--------------|
+| **Welcome** | Onboarding | Create/Import options |
+| **CreateWallet** | Mnemonic generation | 24-word display, backup verification |
+| **ImportWallet** | Mnemonic import | Word-by-word entry, validation |
+| **Unlock** | PIN authentication | Rate limiting, lockout display |
+| **Dashboard** | Main wallet view | Balance, quick actions, network status |
+| **Send** | Send transactions | Amount validation, PIN confirmation |
+| **Receive** | Display address | QR code, copy address |
+| **Stake** | Staking interface | Validator selection, stake/unstake |
+| **BecomeValidator** | Validator registration | 10,000 SLTN minimum stake |
+| **Governance** | Proposal voting | Yes/No/Abstain/NoWithVeto |
+| **NFTs** | NFT gallery | CW721 token display |
+| **Activity** | Transaction history | Pending, confirmed, failed |
+| **Settings** | Configuration | Theme, 2FA, export mnemonic |
+
+### Route Protection
+
+Protected routes require initialized and unlocked wallet:
+
+```typescript
+<Route 
+  path="/dashboard" 
+  element={isInitialized && !isLocked ? <Dashboard /> : <Navigate to="/" replace />} 
+/>
+```
+
+---
+
+## PWA Configuration
+
+### Service Worker
+
+Generated by `vite-plugin-pwa` with Workbox:
+
+```typescript
+VitePWA({
+  registerType: 'autoUpdate',
+  includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+  manifest: {
+    name: 'Sultan Wallet',
+    short_name: 'Sultan',
+    description: 'Zero-fee blockchain wallet for SLTN',
+    theme_color: '#000000',
+    background_color: '#000000',
+    display: 'standalone',
+    orientation: 'portrait',
+    scope: '/',
+    start_url: '/',
+    icons: [
+      { src: 'pwa-192x192.svg', sizes: '192x192', type: 'image/svg+xml' },
+      { src: 'pwa-512x512.svg', sizes: '512x512', type: 'image/svg+xml' },
+      { src: 'pwa-512x512.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+    ]
+  },
+  workbox: {
+    globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+    runtimeCaching: [
+      {
+        urlPattern: /^https:\/\/rpc\.sltn\.io\/.*/i,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'sultan-rpc-cache',
+          expiration: {
+            maxEntries: 50,
+            maxAgeSeconds: 60  // 1 minute for RPC responses
+          },
+          cacheableResponse: {
+            statuses: [0, 200]
+          }
+        }
+      }
+    ]
+  }
+})
+```
+
+### Caching Strategy
+
+- **Static Assets**: Precached during install
+- **RPC Responses**: NetworkFirst with 60-second stale fallback
+- **App Shell**: Cached for offline access
+
+---
+
+## Build & Deployment
+
+### Build Commands
+
+```bash
+# Development server
+npm run dev
+
+# Production build
+npm run build
+
+# Preview production build
+npm run preview
+
+# Run tests
+npm run test
+```
+
+### Build Output
+
+```
+dist/
+├── index.html
+├── assets/
+│   ├── index-[hash].js
+│   └── index-[hash].css
+├── pwa-192x192.svg
+├── pwa-512x512.svg
+├── manifest.webmanifest
+└── sw.js
+```
+
+### Deployment Requirements
+
+- **Static hosting** (no Node.js server required)
+- **HTTPS required** for PWA features
+- **Output directory**: `dist/`
+
+### Replit Deployment
+
+```toml
+# .replit
+run = "npm run build && npx serve dist"
+entrypoint = "index.html"
+
+[deployment]
+publicDir = "dist"
+deploymentTarget = "static"
+```
+
+---
+
+## Testing Strategy
+
+### Test Framework
+
+```json
+{
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@vitest/coverage-v8": "^2.1.9",
+    "vitest": "^2.1.8"
+  }
+}
+```
+
+### Test Commands
+
+```bash
+# Run all tests
+npm run test
+
+# Watch mode
+npm run test:watch
+
+# With coverage
+npx vitest --coverage
+```
+
+### Test Categories
+
+1. **Core Module Tests** (`src/core/__tests__/`)
+   - Mnemonic generation/validation
+   - Key derivation
+   - Address encoding
+   - Transaction signing
+   - Encryption/decryption
+
+2. **Component Tests** (`src/__tests__/`)
+   - Screen rendering
+   - User interactions
+   - Navigation flows
+
+3. **Integration Tests**
+   - API mocking
+   - Full user journeys
+
+---
+
+## Security Audit Notes
+
+### ✅ Implemented
+
+- [x] Ed25519 signatures (audited @noble/ed25519)
+- [x] BIP39 mnemonic generation (audited @scure/bip39)
+- [x] AES-256-GCM encryption for storage
+- [x] PBKDF2 key derivation (600K iterations)
+- [x] Secure memory wiping (multi-pass)
+- [x] PIN rate limiting (5 attempts, 5-minute lockout)
+- [x] Session timeout (5 minutes)
+- [x] Private keys derived on-demand, never cached
+- [x] XOR-encrypted SecureString for sensitive data
+- [x] Input validation for addresses and amounts
+- [x] Sultan-only address validation (prevents cross-chain mistakes)
+
+### 📋 Recommendations
+
+1. **CSP Headers**: Implement strict Content-Security-Policy
+2. **Subresource Integrity**: Add SRI for external resources
+3. **Regular Dependency Audits**: `npm audit` on each release
+4. **Formal Audit**: Consider third-party security audit before mainnet
+
+---
+
+## Appendix: Chain Information
+
+| Parameter | Value |
+|-----------|-------|
+| Chain ID | sultan-mainnet-1 |
+| Block Time | 2 seconds |
+| TPS Capacity | 64,000 |
+| Shard Count | 16 |
+| Decimals | 9 |
+| Address Prefix | sultan |
+| BIP44 Coin Type | 1984 |
+| Staking APY | 13.33% |
+| Min Validator Stake | 10,000 SLTN |
+| RPC Endpoint | https://rpc.sltn.io |
+
+---
+
+*This document is maintained alongside the codebase. For the latest updates, see the wallet-extension source code.*

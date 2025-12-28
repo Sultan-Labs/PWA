@@ -1,0 +1,100 @@
+.background-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  background: var(--bg-gradient);
+  pointer-events: none;
+}
+
+.line {
+  position: absolute;
+  top: -50%;
+  width: 1px;
+  height: 200%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 255, 255, 0) 0%,
+    rgba(0, 255, 255, 0.5) 40%,
+    rgba(0, 255, 255, 0.6) 50%,
+    rgba(0, 255, 255, 0.5) 60%,
+    rgba(0, 255, 255, 0) 100%
+  );
+  /* Use variables for independent control */
+  --float-duration: 15s;
+  --pulse-duration: 4s;
+  --pulse-delay: 0s;
+
+  animation: 
+    float-lines var(--float-duration) infinite cubic-bezier(0.4, 0, 0.2, 1), 
+    pulse-teal var(--pulse-duration) ease-in-out infinite;
+  animation-delay: 0s, var(--pulse-delay);
+
+  opacity: 0.15;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.line-1 { 
+  left: 8%; 
+  --float-duration: 18s; 
+  --pulse-duration: 7s; 
+  --pulse-delay: 0s;
+}
+
+.line-2 { 
+  left: 24%; 
+  --float-duration: 25s; 
+  --pulse-duration: 12s; 
+  --pulse-delay: -3s;
+}
+
+.line-3 { 
+  left: 62%; 
+  width: 2px; 
+  --float-duration: 20s; 
+  --pulse-duration: 9s; 
+  --pulse-delay: -1s;
+}
+
+.line-4 { 
+  left: 75%; 
+  --float-duration: 22s; 
+  --pulse-duration: 14s; 
+  --pulse-delay: -5s;
+}
+
+.line-5 { 
+  left: 93%; 
+  --float-duration: 17s; 
+  --pulse-duration: 10s; 
+  --pulse-delay: -2s;
+}
+
+@keyframes pulse-teal {
+  0% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0.15;
+  }
+}
+
+@keyframes float-lines {
+  0% {
+    transform: translateY(-20%);
+  }
+  50% {
+    transform: translateY(10%);
+  }
+  100% {
+    transform: translateY(-20%);
+  }
+}

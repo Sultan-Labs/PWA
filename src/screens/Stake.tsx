@@ -51,11 +51,25 @@ const GiftIcon = () => (
   </svg>
 );
 
+const SettingsIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+  </svg>
+);
+
+const LockIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+  </svg>
+);
+
 type Tab = 'stake' | 'unstake' | 'validators';
 
 export default function Stake() {
   const navigate = useNavigate();
-  const { wallet, currentAccount } = useWallet();
+  const { wallet, currentAccount, lock } = useWallet();
   const { theme, setTheme } = useTheme();
   const { data: balanceData } = useBalance(currentAccount?.address);
   const { data: stakingData, refetch: refetchStaking } = useStakingInfo(currentAccount?.address);
@@ -170,6 +184,11 @@ export default function Stake() {
     }
   };
 
+  const handleLock = () => {
+    lock();
+    navigate('/unlock');
+  };
+
   const handleClaimRewards = async () => {
     if (!wallet || !currentAccount) return;
 
@@ -207,9 +226,17 @@ export default function Stake() {
           <BackIcon />
         </button>
         <h2>Staking</h2>
-        <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
-          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
+            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          </button>
+          <button className="btn-icon" onClick={() => navigate('/settings')} title="Settings">
+            <SettingsIcon />
+          </button>
+          <button className="btn-icon" onClick={handleLock} title="Lock Wallet">
+            <LockIcon />
+          </button>
+        </div>
       </header>
 
       <div className="stake-content fade-in">
@@ -378,13 +405,19 @@ export default function Stake() {
             )}
 
             {/* Become Validator CTA */}
-            <div className="become-validator-cta">
-              <p>Want to run your own validator?</p>
+            <div className="validator-cta-card">
+              <div className="cta-content" style={{ textAlign: 'center', display: 'block' }}>
+                <div className="cta-text">
+                  <h3>Run a Validator</h3>
+                  <p>Earn commission & secure the network</p>
+                </div>
+              </div>
               <button 
-                className="btn btn-secondary"
+                className="btn btn-secondary cta-btn"
                 onClick={() => navigate('/become-validator')}
+                style={{ margin: '0 auto' }}
               >
-                🚀 Become a Validator
+                Start Now <span style={{ fontSize: '1.2em', marginLeft: '4px' }}>→</span>
               </button>
             </div>
           </div>

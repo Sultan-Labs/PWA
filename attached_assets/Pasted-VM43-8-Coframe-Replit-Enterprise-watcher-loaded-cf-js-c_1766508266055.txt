@@ -1,0 +1,611 @@
+VM43:8 [Coframe] Replit Enterprise watcher loaded
+cf.js?config=%257B%2522projectId%2522%253A%252268c9ad4d4cddb58cf3a1f93d%2522%252C%2522startTime%2522%253A1766507316461%252C%2522timeoutMs%2522%253A1000%252C%2522currentUrl%2522%253A%2522https%253A%252F%252Freplit.com%252F%7E%2522%252C%2522trackingOnly%2522%253Atrue%257D:10 [Coframe] failed to send event beacon
+V @ cf.js?config=%257B%2522projectId%2522%253A%252268c9ad4d4cddb58cf3a1f93d%2522%252C%2522startTime%2522%253A1766507316461%252C%2522timeoutMs%2522%253A1000%252C%2522currentUrl%2522%253A%2522https%253A%252F%252Freplit.com%252F%7E%2522%252C%2522trackingOnly%2522%253Atrue%257D:10Understand this warning
+12The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.Understand this error
+12The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?Understand this error
+12The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.Understand this error
+/~:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.Understand this error
+/~:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?Understand this error
+/~:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.Understand this error
+4e974bb74d916ad1.js:2 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+4e974bb74d916ad1.js:2 Download the Apollo DevTools for a better development experience: https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm
+4e974bb74d916ad1.js:2 [ai-chat] Creating connection with chat proxy enabled
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 [LaunchDarkly] LaunchDarkly client initialized
+ [Report Only] Refused to compile or instantiate WebAssembly module because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self'".
+
+contentScripts.bundle.js:2 [Report Only] Refused to compile or instantiate WebAssembly module because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self'".
+
+ [Report Only] Refused to compile or instantiate WebAssembly module because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self'".
+
+injectedScript.bundle.js:2 [Report Only] Refused to compile or instantiate WebAssembly module because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self'".
+
+/~:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+4e974bb74d916ad1.js:2 [Coframe] failed to send event beacon
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 [ai-chat] Creating connection with chat proxy enabled
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 [Coframe] failed to send event beacon
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 commitComplete listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:54796)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fileDirty listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:54924)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fileClean listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:55047)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 commitStart listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:55172)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 promptUserReconnect listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:56477)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 cursor listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:55275)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 removeCursor listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:55379)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fileSavedChanged listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:55493)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 error listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:56774)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fsError listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:56984)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 transparentReconnect listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:57819)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 changes listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:59723)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:2269611
+    at Array.map (<anonymous>)
+    at 494f7ec6417894e4.js:2:2269586
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at ed1e693c96a75807.js:2:116037
+    at iB (ed1e693c96a75807.js:2:116103)
+    at iT (ed1e693c96a75807.js:2:100745)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:98123
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+stallwart.build.js:1 stallwart: failed ping 1
+4e974bb74d916ad1.js:2 [ai-chat] Creating connection with chat proxy enabled
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 [Coframe] failed to send event beacon
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+84WARNING: Too many active WebGL contexts. Oldest context will be lost.Understand this warning
+4e974bb74d916ad1.js:2 task queue exceeded allotted deadline by 30ms
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+454e974bb74d916ad1.js:2 webglcontextlost event received
+234e974bb74d916ad1.js:2 webgl context not restored; firing onContextLoss
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+lockdown-install.js:1 SES_UNCAUGHT_EXCEPTION: null
+(anonymous) @ lockdown-install.js:1Understand this error
+214e974bb74d916ad1.js:2 webgl context not restored; firing onContextLoss
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 webglcontextrestored event received
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+24WebGL: INVALID_OPERATION: delete: object does not belong to this contextUnderstand this warning
+t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://rpc.sltn.io&size=32:1  Failed to load resource: the server responded with a status of 404 ()Understand this error
+t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://rpc.sltn.io/&size=32:1  Failed to load resource: the server responded with a status of 404 ()Understand this error
+ed1e693c96a75807.js:2 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+z @ ed1e693c96a75807.js:2Understand this error
+ed1e693c96a75807.js:2 Unrecognized feature: 'ambient-light-sensor'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'battery'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'execution-while-not-rendered'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'execution-while-out-of-viewport'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'layout-animations'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'legacy-image-formats'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'navigation-override'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'oversized-images'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'publickey-credentials'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'speaker-selection'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'unoptimized-images'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'unsized-media'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Unrecognized feature: 'pointer-lock'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Allow attribute will take precedence over 'allowfullscreen'.
+z @ ed1e693c96a75807.js:2Understand this warning
+ed1e693c96a75807.js:2 Allow attribute will take precedence over 'allowpaymentrequest'.
+z @ ed1e693c96a75807.js:2Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html?initialPath=%2F&id=%3Ar2ag%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://rpc.sltn.io&size=32:1  Failed to load resource: the server responded with a status of 404 ()Understand this error
+t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://rpc.sltn.io/&size=32:1  Failed to load resource: the server responded with a status of 404 ()Understand this error
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 commitComplete listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:54796)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:255422
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fileDirty listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:54924)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:255422
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fileClean listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:55047)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:255422
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 commitStart listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:55172)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:255422
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 promptUserReconnect listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:56477)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at 494f7ec6417894e4.js:2:255422
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 cursor listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:55275)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at r.value (494f7ec6417894e4.js:2:1955933)
+    at new r (494f7ec6417894e4.js:2:1955585)
+    at t.create (06f09140a8a8f9dc.js:2:106483)
+    at t.value (06f09140a8a8f9dc.js:2:106942)
+    at t.value (06f09140a8a8f9dc.js:2:219904)
+    at t.value (06f09140a8a8f9dc.js:2:217104)
+    at t.dispatchTransactions (06f09140a8a8f9dc.js:2:213505)
+    at t.value (06f09140a8a8f9dc.js:2:215247)
+    at 0e7013c2d06fc573.js:2:946
+    at e.value (5cae048afe4aacb8.js:2:20029)
+    at e.value (0e7013c2d06fc573.js:2:1498)
+    at 0e7013c2d06fc573.js:2:10589
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 removeCursor listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:55379)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at r.value (494f7ec6417894e4.js:2:1955933)
+    at new r (494f7ec6417894e4.js:2:1955585)
+    at t.create (06f09140a8a8f9dc.js:2:106483)
+    at t.value (06f09140a8a8f9dc.js:2:106942)
+    at t.value (06f09140a8a8f9dc.js:2:219904)
+    at t.value (06f09140a8a8f9dc.js:2:217104)
+    at t.dispatchTransactions (06f09140a8a8f9dc.js:2:213505)
+    at t.value (06f09140a8a8f9dc.js:2:215247)
+    at 0e7013c2d06fc573.js:2:946
+    at e.value (5cae048afe4aacb8.js:2:20029)
+    at e.value (0e7013c2d06fc573.js:2:1498)
+    at 0e7013c2d06fc573.js:2:10589
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fileSavedChanged listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:55493)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at r.value (494f7ec6417894e4.js:2:1955933)
+    at new r (494f7ec6417894e4.js:2:1955585)
+    at t.create (06f09140a8a8f9dc.js:2:106483)
+    at t.value (06f09140a8a8f9dc.js:2:106942)
+    at t.value (06f09140a8a8f9dc.js:2:219904)
+    at t.value (06f09140a8a8f9dc.js:2:217104)
+    at t.dispatchTransactions (06f09140a8a8f9dc.js:2:213505)
+    at t.value (06f09140a8a8f9dc.js:2:215247)
+    at 0e7013c2d06fc573.js:2:946
+    at e.value (5cae048afe4aacb8.js:2:20029)
+    at e.value (0e7013c2d06fc573.js:2:1498)
+    at 0e7013c2d06fc573.js:2:10589
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 error listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:56774)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at r.value (494f7ec6417894e4.js:2:1955933)
+    at new r (494f7ec6417894e4.js:2:1955585)
+    at t.create (06f09140a8a8f9dc.js:2:106483)
+    at t.value (06f09140a8a8f9dc.js:2:106942)
+    at t.value (06f09140a8a8f9dc.js:2:219904)
+    at t.value (06f09140a8a8f9dc.js:2:217104)
+    at t.dispatchTransactions (06f09140a8a8f9dc.js:2:213505)
+    at t.value (06f09140a8a8f9dc.js:2:215247)
+    at 0e7013c2d06fc573.js:2:946
+    at e.value (5cae048afe4aacb8.js:2:20029)
+    at e.value (0e7013c2d06fc573.js:2:1498)
+    at 0e7013c2d06fc573.js:2:10589
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fsError listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:56984)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at r.value (494f7ec6417894e4.js:2:1955933)
+    at new r (494f7ec6417894e4.js:2:1955585)
+    at t.create (06f09140a8a8f9dc.js:2:106483)
+    at t.value (06f09140a8a8f9dc.js:2:106942)
+    at t.value (06f09140a8a8f9dc.js:2:219904)
+    at t.value (06f09140a8a8f9dc.js:2:217104)
+    at t.dispatchTransactions (06f09140a8a8f9dc.js:2:213505)
+    at t.value (06f09140a8a8f9dc.js:2:215247)
+    at 0e7013c2d06fc573.js:2:946
+    at e.value (5cae048afe4aacb8.js:2:20029)
+    at e.value (0e7013c2d06fc573.js:2:1498)
+    at 0e7013c2d06fc573.js:2:10589
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 transparentReconnect listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:57819)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at r.value (494f7ec6417894e4.js:2:1955933)
+    at new r (494f7ec6417894e4.js:2:1955585)
+    at t.create (06f09140a8a8f9dc.js:2:106483)
+    at t.value (06f09140a8a8f9dc.js:2:106942)
+    at t.value (06f09140a8a8f9dc.js:2:219904)
+    at t.value (06f09140a8a8f9dc.js:2:217104)
+    at t.dispatchTransactions (06f09140a8a8f9dc.js:2:213505)
+    at t.value (06f09140a8a8f9dc.js:2:215247)
+    at 0e7013c2d06fc573.js:2:946
+    at e.value (5cae048afe4aacb8.js:2:20029)
+    at e.value (0e7013c2d06fc573.js:2:1498)
+    at 0e7013c2d06fc573.js:2:10589
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+4e974bb74d916ad1.js:2 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 changes listeners added. Use emitter.setMaxListeners() to increase limit
+    at l (8e88696883e64ef1.js:2:30453)
+    at s.addListener (8e88696883e64ef1.js:2:33022)
+    at v (7bc1adefb2b132a2.js:2:59723)
+    at Object.watchTextFile (7bc1adefb2b132a2.js:2:60671)
+    at r.value (494f7ec6417894e4.js:2:1955933)
+    at new r (494f7ec6417894e4.js:2:1955585)
+    at t.create (06f09140a8a8f9dc.js:2:106483)
+    at t.value (06f09140a8a8f9dc.js:2:106942)
+    at t.value (06f09140a8a8f9dc.js:2:219904)
+    at t.value (06f09140a8a8f9dc.js:2:217104)
+    at t.dispatchTransactions (06f09140a8a8f9dc.js:2:213505)
+    at t.value (06f09140a8a8f9dc.js:2:215247)
+    at 0e7013c2d06fc573.js:2:946
+    at e.value (5cae048afe4aacb8.js:2:20029)
+    at e.value (0e7013c2d06fc573.js:2:1498)
+    at 0e7013c2d06fc573.js:2:10589
+    at uV (ed1e693c96a75807.js:2:88634)
+    at iH (ed1e693c96a75807.js:2:117651)
+    at iT (ed1e693c96a75807.js:2:100483)
+    at r6 (ed1e693c96a75807.js:2:49151)
+    at ed1e693c96a75807.js:2:116097
+    at iB (ed1e693c96a75807.js:2:116103)
+    at i_ (ed1e693c96a75807.js:2:99486)
+    at C (ed1e693c96a75807.js:2:1564)
+    at M (ed1e693c96a75807.js:2:2094)
+    at setImmediate.js:40:13
+    at y (setImmediate.js:69:21)
+    at c (setImmediate.js:109:17)
+(anonymous) @ 4e974bb74d916ad1.js:2Understand this warning
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2

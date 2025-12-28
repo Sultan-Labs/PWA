@@ -2,7 +2,38 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg-primary);
+  background: var(--bg-gradient);
+  position: relative;
+  overflow: hidden;
+}
+
+.screen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  padding-top: max(var(--spacing-md), env(safe-area-inset-top));
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: var(--glass-border);
+  gap: var(--spacing-sm);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: var(--glass-shadow);
+}
+
+.screen-header h2 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--text-primary);
 }
 
 .nft-content {

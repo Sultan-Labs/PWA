@@ -1,0 +1,52 @@
+[plugin:vite:react-babel] /home/runner/workspace/src/screens/Dashboard.tsx: Identifier 'SettingsIcon' has already been declared. (86:6)
+  89 |     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+/home/runner/workspace/src/screens/Dashboard.tsx:86:6
+84 |  );
+85 |  
+86 |  const SettingsIcon = () => (
+   |        ^
+87 |    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+88 |      <circle cx="12" cy="12" r="3" />
+    at constructor (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:367:19)
+    at TypeScriptParserMixin.raise (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:6624:19)
+    at TypeScriptScopeHandler.checkRedeclarationInScope (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:1646:19)
+    at TypeScriptScopeHandler.declareName (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:1612:12)
+    at TypeScriptScopeHandler.declareName (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:4909:11)
+    at TypeScriptParserMixin.declareNameFromIdentifier (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:7594:16)
+    at TypeScriptParserMixin.checkIdentifier (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:7590:12)
+    at TypeScriptParserMixin.checkLVal (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:7527:12)
+    at TypeScriptParserMixin.parseVarId (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:13488:10)
+    at TypeScriptParserMixin.parseVarId (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:9805:11)
+    at TypeScriptParserMixin.parseVar (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:13459:12)
+    at TypeScriptParserMixin.parseVarStatement (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:13306:10)
+    at TypeScriptParserMixin.parseVarStatement (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:9469:31)
+    at TypeScriptParserMixin.parseStatementContent (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:12927:23)
+    at TypeScriptParserMixin.parseStatementContent (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:9569:18)
+    at TypeScriptParserMixin.parseStatementLike (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:12843:17)
+    at TypeScriptParserMixin.parseModuleItem (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:12820:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:13392:36)
+    at TypeScriptParserMixin.parseBlockBody (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:13385:10)
+    at TypeScriptParserMixin.parseProgram (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:12698:10)
+    at TypeScriptParserMixin.parseTopLevel (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:12688:25)
+    at TypeScriptParserMixin.parse (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:14568:25)
+    at TypeScriptParserMixin.parse (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:10183:18)
+    at parse (/home/runner/workspace/node_modules/@babel/parser/lib/index.js:14602:38)
+    at parser (/home/runner/workspace/node_modules/@babel/core/lib/parser/index.js:41:34)
+    at parser.next (<anonymous>)
+    at normalizeFile (/home/runner/workspace/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+    at normalizeFile.next (<anonymous>)
+    at run (/home/runner/workspace/node_modules/@babel/core/lib/transformation/index.js:22:50)
+    at run.next (<anonymous>)
+    at transform (/home/runner/workspace/node_modules/@babel/core/lib/transform.js:22:33)
+    at transform.next (<anonymous>)
+    at step (/home/runner/workspace/node_modules/gensync/index.js:261:32)
+    at /home/runner/workspace/node_modules/gensync/index.js:273:13
+    at async.call.result.err.err (/home/runner/workspace/node_modules/gensync/index.js:223:11)
+    at /home/runner/workspace/node_modules/gensync/index.js:189:28
+    at /home/runner/workspace/node_modules/@babel/core/lib/gensync-utils/async.js:67:7
+    at /home/runner/workspace/node_modules/gensync/index.js:113:33
+    at step (/home/runner/workspace/node_modules/gensync/index.js:287:14)
+    at /home/runner/workspace/node_modules/gensync/index.js:273:13
+    at async.call.result.err.err (/home/runner/workspace/node_modules/gensync/index.js:223:11
+Click outside, press Esc key, or fix the code to dismiss.
+You can also disable this overlay by setting server.hmr.overlay to false in vite.config.js.

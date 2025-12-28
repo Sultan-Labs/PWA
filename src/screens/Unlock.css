@@ -5,7 +5,9 @@
   justify-content: center;
   align-items: center;
   padding: var(--spacing-lg);
-  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  /* Force dark background for Unlock screen */
+  background: radial-gradient(circle at 50% 50%, #0d1424 0%, #000000 100%);
+  color: #ffffff; /* Force white text */
 }
 
 .unlock-content {
@@ -17,6 +19,16 @@
 .unlock-content h2 {
   font-size: 1.75rem;
   margin-bottom: var(--spacing-sm);
+  color: #ffffff;
+  text-align: center;
+  width: 100%;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 229, 204, 0.2);
+}
+
+.unlock-content p {
+  color: rgba(255, 255, 255, 0.7); /* Force white text */
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
 }
 
 .sultan-icon {
@@ -26,12 +38,36 @@
 }
 
 .sultan-logo-img {
-  filter: drop-shadow(0 0 20px rgba(0, 212, 170, 0.5));
   transition: filter 0.3s ease;
+  animation: logo-glow 2.5s infinite alternate;
+}
+
+/* Dark mode: bright cyan/teal glow */
+@keyframes logo-glow-dark {
+  0% {
+    filter: drop-shadow(0 0 8px rgba(0, 212, 170, 0.6));
+  }
+  100% {
+    filter: drop-shadow(0 0 16px rgba(0, 212, 170, 0.8));
+  }
+}
+
+/* Light mode: muted teal glow */
+@keyframes logo-glow-light {
+  0% {
+    filter: drop-shadow(0 0 8px rgba(0, 153, 170, 0.5));
+  }
+  100% {
+    filter: drop-shadow(0 0 16px rgba(0, 153, 170, 0.7));
+  }
+}
+
+[data-theme="dark"] .sultan-logo-img {
+  animation: logo-glow-dark 2.5s infinite alternate;
 }
 
 [data-theme="light"] .sultan-logo-img {
-  filter: none;
+  animation: logo-glow-light 2.5s infinite alternate;
 }
 
 .lock-icon {

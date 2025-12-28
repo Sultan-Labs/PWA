@@ -2,7 +2,38 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg-primary);
+  background: var(--bg-gradient);
+  position: relative;
+  overflow: hidden;
+}
+
+.screen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-lg);
+  padding-top: max(var(--spacing-md), env(safe-area-inset-top));
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: var(--glass-border);
+  gap: var(--spacing-sm);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: var(--glass-shadow);
+}
+
+.screen-header h2 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--text-primary);
 }
 
 .stake-content {
@@ -32,11 +63,13 @@
 .overview-label {
   font-size: 0.75rem;
   color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .overview-value {
   font-size: 1rem;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .overview-value.accent {
@@ -104,6 +137,7 @@
 
 .validator-name {
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .unstake-notice {
@@ -171,6 +205,7 @@
 
 .validator-stats .stat-value {
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 .text-success {
@@ -179,26 +214,6 @@
 
 .text-center {
   text-align: center;
-}
-
-/* Become Validator CTA */
-.become-validator-cta {
-  margin-top: var(--spacing-xl);
-  padding: var(--spacing-lg);
-  background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(0, 212, 170, 0.05) 100%);
-  border: 1px solid rgba(0, 212, 170, 0.2);
-  border-radius: var(--radius-lg);
-  text-align: center;
-}
-
-.become-validator-cta p {
-  margin: 0 0 var(--spacing-md);
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.become-validator-cta .btn {
-  font-weight: 600;
 }
 
 /* Validator Search */
@@ -217,4 +232,81 @@
   font-size: 0.75rem;
   color: var(--text-muted);
   text-align: center;
+}
+
+/* Premium Validator CTA Card */
+.validator-cta-card {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(0, 212, 170, 0.05) 100%);
+  border: 1px solid rgba(0, 212, 170, 0.2);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--spacing-md);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.validator-cta-card .cta-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.validator-cta-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.validator-cta-card p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Light mode specific override for better contrast if needed, but var usage should cover it */
+[data-theme="light"] .validator-cta-card {
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.15) 0%, rgba(0, 212, 170, 0.05) 100%);
+  border-color: rgba(0, 212, 170, 0.3);
+}
+
+[data-theme="light"] .validator-cta-card h3 {
+  color: #00776b; /* Darker teal for light mode text */
+}
+
+[data-theme="light"] .validator-cta-card p {
+  color: #556677;
+}
+
+.validator-cta-card .cta-btn {
+  background: rgba(0, 212, 170, 0.15);
+  border: 1px solid rgba(0, 212, 170, 0.4);
+  color: var(--accent-primary);
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-top: var(--spacing-sm);
+}
+
+.validator-cta-card .cta-btn:hover {
+  background: rgba(0, 212, 170, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 212, 170, 0.2);
+}
+
+/* Ensure light mode button text is readable */
+[data-theme="light"] .validator-cta-card .cta-btn {
+  color: #00776b;
+  border-color: #00b3a0;
+  background: rgba(0, 212, 170, 0.1);
+}
+
+[data-theme="light"] .validator-cta-card .cta-btn:hover {
+  background: rgba(0, 212, 170, 0.2);
 }

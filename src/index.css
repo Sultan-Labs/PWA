@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+
 :root,
 [data-theme="dark"] {
   /* Sultan Brand Colors - Dark Theme */
@@ -8,7 +10,7 @@
   --color-accent: #00e5cc;
   --color-secondary: #0d1424;
   --color-text: #ffffff;
-  --color-text-muted: #888;
+  --color-text-muted: #aaa;
   --color-success: #00ff9f;
   --color-warning: #ffc107;
   --color-error: #ff4444;
@@ -22,6 +24,19 @@
   /* Sultan glow effects */
   --glow-primary: 0 0 20px rgba(0, 255, 255, 0.4);
   --glow-success: 0 0 15px rgba(0, 255, 159, 0.4);
+  
+  /* Card Glow Silhouette */
+  --card-glow: 0 0 20px rgba(0, 255, 255, 0.1);
+  
+  /* Glassmorphism Variables */
+  --glass-bg: rgba(10, 14, 26, 0.6);
+  --glass-border: 1px solid rgba(0, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --glass-blur: blur(16px);
+
+  /* Background Gradient */
+  --bg-gradient: radial-gradient(circle at 50% 50%, #0d1424 0%, #000000 100%);
+  --line-color: rgba(0, 255, 255, 0.2);
   
   /* Legacy variable aliases for backward compatibility */
   --bg-primary: var(--color-bg);
@@ -50,7 +65,7 @@
   --color-accent: #00b3a0;
   --color-secondary: #e8ecf0;
   --color-text: #1a1a2e;
-  --color-text-muted: #666;
+  --color-text-muted: #888;
   --color-success: #00aa6e;
   --color-warning: #e6a800;
   --color-error: #dd3333;
@@ -58,6 +73,19 @@
   /* Light theme glow effects (subtle) */
   --glow-primary: 0 4px 20px rgba(0, 153, 170, 0.2);
   --glow-success: 0 4px 15px rgba(0, 170, 110, 0.2);
+
+  /* Card Glow Silhouette - Stronger for light mode visibility */
+  --card-glow: 0 0 20px rgba(0, 153, 170, 0.25);
+
+  /* Glassmorphism Variables - Light Mode */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: 1px solid rgba(0, 153, 170, 0.15);
+  --glass-shadow: 0 8px 32px rgba(0, 153, 170, 0.1);
+  --glass-blur: blur(16px);
+  
+  /* Background Gradient */
+  --bg-gradient: radial-gradient(circle at 50% 50%, #f0f4f8 0%, #e2e8f0 100%);
+  --line-color: rgba(0, 153, 170, 0.15);
   
   /* Legacy aliases update */
   --bg-primary: var(--color-bg);
@@ -81,11 +109,13 @@
 
 html, body {
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background: var(--color-bg);
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: transparent; /* Allow background animation to show */
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: none; /* Prevent pull-to-refresh on mobile */
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
 
 #root {
@@ -103,9 +133,21 @@ html, body {
 }
 
 .card {
-  background: var(--color-bg-secondary);
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border-radius: var(--border-radius);
   padding: var(--spacing-lg);
+  box-shadow: var(--glass-shadow), var(--card-glow);
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
 }
 
 .btn {
@@ -215,6 +257,23 @@ html, body {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Title gradient glow animation */
+@keyframes title-glow {
+  0% {
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3), 0 0 20px rgba(0, 212, 255, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.6), 0 0 40px rgba(0, 212, 255, 0.4), 0 0 60px rgba(0, 229, 204, 0.2);
+  }
+  100% {
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3), 0 0 20px rgba(0, 212, 255, 0.2);
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', inherit;
 }
 
 /* Safe area for mobile */

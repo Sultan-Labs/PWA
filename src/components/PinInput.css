@@ -2,6 +2,8 @@
   display: flex;
   justify-content: center;
   gap: var(--spacing-sm);
+  margin: 0 auto; /* Ensure centering */
+  max-width: 100%;
 }
 
 .pin-digit {

@@ -13,6 +13,7 @@ import PinInput from '../components/PinInput';
 import MnemonicDisplay from '../components/MnemonicDisplay';
 import TOTPSetup from '../components/TOTPSetup';
 import { is2FAEnabled } from '../core/totp';
+import BackgroundAnimation from '../components/BackgroundAnimation';
 import './Settings.css';
 
 // Premium SVG Icons
@@ -73,7 +74,7 @@ type Modal = 'none' | 'backup' | 'delete' | 'accounts' | 'totp';
 
 export default function Settings() {
   const navigate = useNavigate();
-  const { lock, deriveNewAccount, accounts, currentAccount, switchAccount } = useWallet();
+  const { lock, deriveNewAccount, accounts, currentAccount, switchAccount, deleteWalletData } = useWallet();
   const { theme, setTheme } = useTheme();
   
   const [modal, setModal] = useState<Modal>('none');
@@ -114,9 +115,8 @@ export default function Settings() {
     
     setIsDeleting(true);
     try {
-      await walletStorage.deleteWallet();
-      lock();
-      navigate('/');
+      await deleteWalletData();
+      navigate('/', { replace: true });
     } catch (err) {
       console.error('Failed to delete wallet:', err);
     } finally {
@@ -139,6 +139,7 @@ export default function Settings() {
 
   return (
     <div className="settings-screen">
+      <BackgroundAnimation />
       <header className="screen-header">
         <button className="btn-back" onClick={() => navigate('/dashboard')}>
           <BackIcon />
@@ -161,41 +162,51 @@ export default function Settings() {
         </div>
 
         <div className="settings-section">
-          <h3>Appearance</h3>
+          <h3>Preferences & Security</h3>
           
-          <div className="setting-item theme-selector">
-            <div className="setting-info">
-              <span className="setting-label">Theme</span>
-              <span className="setting-hint">Choose your preferred appearance</span>
+          <div className="settings-grid">
+            <div className="setting-item theme-selector">
+              <div className="setting-info">
+                <span className="setting-label">Theme</span>
+                <span className="setting-hint">Choose appearance</span>
+              </div>
+              <div className="theme-options">
+                <button 
+                  className={`theme-btn ${theme === 'light' ? 'active' : ''}`}
+                  onClick={() => setTheme('light')}
+                  title="Light"
+                >
+                  <SunIcon />
+                </button>
+                <button 
+                  className={`theme-btn ${theme === 'dark' ? 'active' : ''}`}
+                  onClick={() => setTheme('dark')}
+                  title="Dark"
+                >
+                  <MoonIcon />
+                </button>
+                <button 
+                  className={`theme-btn ${theme === 'system' ? 'active' : ''}`}
+                  onClick={() => setTheme('system')}
+                  title="System"
+                >
+                  <MonitorIcon />
+                </button>
+              </div>
             </div>
-            <div className="theme-options">
-              <button 
-                className={`theme-btn ${theme === 'light' ? 'active' : ''}`}
-                onClick={() => setTheme('light')}
-                title="Light"
-              >
-                <SunIcon />
-              </button>
-              <button 
-                className={`theme-btn ${theme === 'dark' ? 'active' : ''}`}
-                onClick={() => setTheme('dark')}
-                title="Dark"
-              >
-                <MoonIcon />
-              </button>
-              <button 
-                className={`theme-btn ${theme === 'system' ? 'active' : ''}`}
-                onClick={() => setTheme('system')}
-                title="System"
-              >
-                <MonitorIcon />
-              </button>
+
+            <div className="setting-item" onClick={handleLock}>
+              <div className="setting-info">
+                <span className="setting-label">Lock Wallet</span>
+                <span className="setting-hint">Require PIN access</span>
+              </div>
+              <span className="setting-arrow"><LockIcon /></span>
             </div>
           </div>
         </div>
 
         <div className="settings-section">
-          <h3>Security</h3>
+          <h3>Security Details</h3>
           
           <div className="setting-item" onClick={() => setModal('totp')}>
             <div className="setting-info">
@@ -217,18 +228,10 @@ export default function Settings() {
             <span className="setting-arrow"><ChevronRightIcon /></span>
           </div>
           
-          <div className="setting-item" onClick={handleLock}>
-            <div className="setting-info">
-              <span className="setting-label">Lock Wallet</span>
-              <span className="setting-hint">Require PIN to access</span>
-            </div>
-            <span className="setting-arrow"><LockIcon /></span>
-          </div>
-          
           <div className="setting-item info">
             <div className="setting-info">
               <span className="setting-label">Auto-Lock</span>
-              <span className="setting-hint">Wallet locks after 5 minutes of inactivity</span>
+              <span className="setting-hint">Locks after 5 min</span>
             </div>
             <span className="setting-value">5 min</span>
           </div>

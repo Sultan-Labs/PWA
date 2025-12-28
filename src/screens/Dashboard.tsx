@@ -8,8 +8,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import { useTheme } from '../hooks/useTheme';
-import { useBalance, useStakingInfo, useTransactions, useNetworkStatus } from '../hooks/useBalance';
+import { useBalance, useStakingInfo, useTransactions } from '../hooks/useBalance';
 import { SultanWallet } from '../core/wallet';
+import { hapticFeedback } from '../utils/haptics';
+import BackgroundAnimation from '../components/BackgroundAnimation';
+import BookmarkReminder from '../components/BookmarkReminder';
 import './Dashboard.css';
 
 // Premium SVG Icons - matching Welcome screen style
@@ -36,32 +39,6 @@ const ReceiveIcon = () => (
 
 const StakeIcon = () => (
   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
-);
-
-const HomeIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-    <polyline points="9 22 9 12 15 12 15 22" />
-  </svg>
-);
-
-const ActivityIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-  </svg>
-);
-
-const SettingsIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="3" />
-    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-  </svg>
-);
-
-const NavStakeIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
   </svg>
 );
@@ -100,10 +77,10 @@ const MoonIcon = () => (
   </svg>
 );
 
-const GovernanceIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-    <polyline points="22 4 12 14.01 9 11.01" />
+const SettingsIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
   </svg>
 );
 
@@ -124,6 +101,13 @@ const SwapIcon = () => (
   </svg>
 );
 
+
+const GovernanceIcon = () => (
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+  </svg>
+);
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { lock, currentAccount } = useWallet();
@@ -131,16 +115,17 @@ export default function Dashboard() {
   const { data: balanceData, isLoading: balanceLoading } = useBalance(currentAccount?.address);
   const { data: stakingData, isLoading: stakingLoading } = useStakingInfo(currentAccount?.address);
   const { data: transactions, isLoading: txLoading } = useTransactions(currentAccount?.address, 3);
-  const { data: networkStatus, isLoading: networkLoading, isError: networkError } = useNetworkStatus();
   
   const [showCopied, setShowCopied] = useState(false);
 
   const toggleTheme = () => {
+    hapticFeedback.soft();
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   const handleCopyAddress = async () => {
     if (currentAccount?.address) {
+      hapticFeedback.success();
       await navigator.clipboard.writeText(currentAccount.address);
       setShowCopied(true);
       setTimeout(() => setShowCopied(false), 2000);
@@ -148,6 +133,7 @@ export default function Dashboard() {
   };
 
   const handleLock = () => {
+    hapticFeedback.medium();
     lock();
     navigate('/unlock');
   };
@@ -166,23 +152,26 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-screen">
+      <BackgroundAnimation />
+      <BookmarkReminder context="dashboard" delay={5000} />
       <header className="dashboard-header">
-        <div className="account-selector">
-          <span className="account-name">{currentAccount?.name || 'Account 1'}</span>
-          <span className="account-address" onClick={handleCopyAddress}>
-            {currentAccount?.address ? formatAddress(currentAccount.address) : '...'}
-            {showCopied && <span className="copied-badge">Copied!</span>}
-          </span>
-        </div>
-        <div className="header-right">
-          <div className={`network-status ${networkError ? 'error' : networkLoading ? 'loading' : 'connected'}`} title={networkStatus ? `Block #${networkStatus.blockHeight.toLocaleString()}` : 'Connecting...'}>
-            <span className="network-dot"></span>
-            <span className="network-name">Sultan</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+          <div className="account-selector">
+            <span className="account-name">{currentAccount?.name || 'Account 1'}</span>
+            <span className="account-address" onClick={handleCopyAddress}>
+              {currentAccount?.address ? formatAddress(currentAccount.address) : '...'}
+              {showCopied && <span className="copied-badge">Copied!</span>}
+            </span>
           </div>
-          <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
+        </div>
+        <div className="header-right" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px' }}>
+          <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
-          <button className="btn-icon" onClick={handleLock} title="Lock Wallet">
+          <button className="btn-icon" onClick={() => navigate('/settings')} title="Settings" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <SettingsIcon />
+          </button>
+          <button className="btn-icon" onClick={handleLock} title="Lock Wallet" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <LockIcon />
           </button>
         </div>
@@ -218,19 +207,23 @@ export default function Dashboard() {
         </div>
 
         <div className="quick-actions">
-          <button className="action-btn" onClick={() => navigate('/send')}>
+          <button className="action-btn" onClick={() => { hapticFeedback.soft(); navigate('/send'); }}>
             <span className="action-icon"><SendIcon /></span>
             <span>Send</span>
           </button>
-          <button className="action-btn" onClick={() => navigate('/receive')}>
+          <button className="action-btn" onClick={() => { hapticFeedback.soft(); navigate('/receive'); }}>
             <span className="action-icon"><ReceiveIcon /></span>
             <span>Receive</span>
           </button>
-          <button className="action-btn" onClick={() => navigate('/stake')}>
+          <button className="action-btn" onClick={() => { hapticFeedback.soft(); navigate('/stake'); }}>
             <span className="action-icon"><StakeIcon /></span>
             <span>Stake</span>
           </button>
-          <button className="action-btn" onClick={() => navigate('/nfts')}>
+          <button className="action-btn" onClick={() => { hapticFeedback.soft(); navigate('/governance'); }}>
+            <span className="action-icon"><GovernanceIcon /></span>
+            <span>Governance</span>
+          </button>
+          <button className="action-btn" onClick={() => { hapticFeedback.soft(); navigate('/nfts'); }}>
             <span className="action-icon"><NFTIcon /></span>
             <span>NFTs</span>
           </button>
@@ -249,7 +242,7 @@ export default function Dashboard() {
 
         {stakingData && stakingData.staked !== '0' && (
           <div className="staking-summary">
-            <h3>Staking Rewards</h3>
+            <h3>Earn</h3>
             <div className="staking-info">
               <div className="staking-stat">
                 <span className="stat-label">APY</span>
@@ -304,28 +297,6 @@ export default function Dashboard() {
         </div>
       </main>
 
-      <nav className="dashboard-nav">
-        <button className="nav-item active">
-          <span className="nav-icon"><HomeIcon /></span>
-          <span>Home</span>
-        </button>
-        <button className="nav-item" onClick={() => navigate('/activity')}>
-          <span className="nav-icon"><ActivityIcon /></span>
-          <span>Activity</span>
-        </button>
-        <button className="nav-item" onClick={() => navigate('/stake')}>
-          <span className="nav-icon"><NavStakeIcon /></span>
-          <span>Stake</span>
-        </button>
-        <button className="nav-item" onClick={() => navigate('/governance')}>
-          <span className="nav-icon"><GovernanceIcon /></span>
-          <span>Vote</span>
-        </button>
-        <button className="nav-item" onClick={() => navigate('/settings')}>
-          <span className="nav-icon"><SettingsIcon /></span>
-          <span>Settings</span>
-        </button>
-      </nav>
     </div>
   );
 }

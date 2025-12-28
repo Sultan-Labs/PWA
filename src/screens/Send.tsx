@@ -49,7 +49,7 @@ const CheckCircleIcon = () => (
   </svg>
 );
 
-type Step = 'form' | 'confirm' | 'pin' | 'pending' | 'success';
+type Step = 'form' | 'confirm' | 'pin' | 'success';
 
 export default function Send() {
   const navigate = useNavigate();
@@ -64,10 +64,6 @@ export default function Send() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [txHash, setTxHash] = useState('');
-  const [confirmationStatus, setConfirmationStatus] = useState('Broadcasting...');
-  
-  // Store original recipient balance to detect confirmation
-  const [originalRecipientBalance, setOriginalRecipientBalance] = useState<string | null>(null);
   
   // PIN verification state
   const [pin, setPin] = useState(['', '', '', '', '', '']);
@@ -186,18 +182,10 @@ export default function Send() {
     try {
       const atomicAmount = SultanWallet.parseSLTN(amount);
       
-      // Fetch the current nonce from the blockchain
+      // Fetch current nonce from blockchain BEFORE signing
       const currentNonce = await sultanAPI.getNonce(currentAccount.address);
       
-      // Get recipient's current balance to detect confirmation later
-      try {
-        const recipientBalance = await sultanAPI.getBalance(recipient);
-        setOriginalRecipientBalance(recipientBalance.available || '0');
-      } catch {
-        setOriginalRecipientBalance('0');
-      }
-      
-      // Sign the transaction (includes nonce for replay protection)
+      // Sign the transaction
       const txData = {
         from: currentAccount.address,
         to: recipient,
@@ -217,8 +205,7 @@ export default function Send() {
       });
 
       setTxHash(result.hash);
-      setConfirmationStatus('Confirming on blockchain...');
-      setStep('pending');
+      setStep('success');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Transaction failed');
     } finally {
@@ -232,104 +219,6 @@ export default function Send() {
       pinInputRefs.current[0]?.focus();
     }
   }, [step]);
-
-  // Poll for transaction confirmation when in pending step
-  useEffect(() => {
-    if (step !== 'pending' || !originalRecipientBalance) return;
-
-    let cancelled = false;
-    let attempts = 0;
-    const maxAttempts = 30; // 60 seconds max (2s per poll)
-    const atomicAmount = SultanWallet.parseSLTN(amount);
-
-    const pollConfirmation = async () => {
-      if (cancelled) return;
-      attempts++;
-
-      try {
-        const newBalance = await sultanAPI.getBalance(recipient);
-        const originalBigInt = BigInt(originalRecipientBalance);
-        const newBigInt = BigInt(newBalance.available || '0');
-        const expectedBigInt = originalBigInt + BigInt(atomicAmount);
-
-        // Check if recipient balance increased by expected amount
-        if (newBigInt >= expectedBigInt) {
-          setConfirmationStatus('Transaction confirmed!');
-          setTimeout(() => {
-            if (!cancelled) setStep('success');
-          }, 500);
-          return;
-        }
-      } catch {
-        // Ignore polling errors, keep trying
-      }
-
-      // Update status message
-      if (attempts < 5) {
-        setConfirmationStatus('Confirming on blockchain...');
-      } else if (attempts < 15) {
-        setConfirmationStatus('Waiting for block confirmation...');
-      } else {
-        setConfirmationStatus('Still confirming... (cross-shard transactions may take longer)');
-      }
-
-      // If not confirmed yet and under max attempts, poll again
-      if (!cancelled && attempts < maxAttempts) {
-        setTimeout(pollConfirmation, 2000);
-      } else if (attempts >= maxAttempts) {
-        // Timeout - allow user to proceed anyway since tx was broadcast
-        setConfirmationStatus('Transaction broadcast. Confirmation taking longer than expected.');
-        setTimeout(() => {
-          if (!cancelled) setStep('success');
-        }, 2000);
-      }
-    };
-
-    // Start polling after a short delay (let block propagate)
-    const initialDelay = setTimeout(pollConfirmation, 2000);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(initialDelay);
-    };
-  }, [step, recipient, originalRecipientBalance, amount]);
-
-  // Pending step - show while waiting for confirmation
-  if (step === 'pending') {
-    return (
-      <div className="send-screen">
-        <div className="send-content fade-in">
-          <div className="pending-animation">
-            <div className="spinner-ring"></div>
-            <div className="pulse-dot"></div>
-          </div>
-          <h2>Processing Transaction</h2>
-          <p className="text-muted mb-lg">{confirmationStatus}</p>
-          
-          <div className="tx-details">
-            <div className="detail-row">
-              <span>Amount</span>
-              <span>{amount} SLTN</span>
-            </div>
-            <div className="detail-row">
-              <span>To</span>
-              <span className="address">{recipient.slice(0, 16)}...</span>
-            </div>
-            {txHash && (
-              <div className="detail-row">
-                <span>TX Hash</span>
-                <span className="address">{txHash.slice(0, 16)}...</span>
-              </div>
-            )}
-          </div>
-
-          <p className="text-muted text-sm mt-lg">
-            Please wait while your transaction is being confirmed on the Sultan blockchain.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   if (step === 'success') {
     return (
