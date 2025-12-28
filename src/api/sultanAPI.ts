@@ -181,46 +181,52 @@ export async function getStakingInfo(address: string): Promise<StakingInfo> {
 export async function getValidators(): Promise<Validator[]> {
   try {
     // Use REST API: GET /staking/validators
+    // Node returns: validator_address, total_stake, commission_rate, jailed
     const result = await restApi<Array<{ 
-      address: string; 
-      moniker: string; 
-      stake: number; 
-      commission: number; 
-      uptime: number; 
-      status: string;
+      validator_address: string; 
+      self_stake: number;
+      delegated_stake: number;
+      total_stake: number; 
+      commission_rate: number; 
+      jailed: boolean;
+      blocks_signed: number;
+      blocks_missed: number;
     }>>('/staking/validators');
     
-    // If empty, return mock validators for the known network validators
-    // Stakes are in base units (1 SLTN = 1,000,000 base units)
+    // If empty array, return empty (no fallback to mocks)
     if (!result || result.length === 0) {
-      return [
-        { address: 'sultan1v9x7k...e3f2', name: 'Polaris Stake', moniker: 'Polaris Stake', totalStaked: '45000000000', commission: 0.05, uptime: 99.8, status: 'active' },
-        { address: 'sultan1m4hp2...7a91', name: 'Titanium Node', moniker: 'Titanium Node', totalStaked: '32000000000', commission: 0.05, uptime: 99.9, status: 'active' },
-        { address: 'sultan1q8wnf...c4b6', name: 'CryptoForge', moniker: 'CryptoForge', totalStaked: '28500000000', commission: 0.04, uptime: 99.7, status: 'active' },
-        { address: 'sultan1k3jem...5d28', name: 'BlockSentinel', moniker: 'BlockSentinel', totalStaked: '19000000000', commission: 0.05, uptime: 99.9, status: 'active' },
-        { address: 'sultan1z6rvt...8f4e', name: 'Nexus Labs', moniker: 'Nexus Labs', totalStaked: '15500000000', commission: 0.03, uptime: 99.6, status: 'active' },
-      ];
+      return [];
     }
     
-    return result.map(v => ({
-      address: v.address,
-      name: v.moniker,
-      moniker: v.moniker,
-      totalStaked: v.stake.toString(),
-      commission: v.commission,
-      uptime: v.uptime,
-      status: v.status as 'active' | 'inactive' | 'jailed',
-    }));
-  } catch {
-    // Fallback to known validators
-    // Stakes are in base units (1 SLTN = 1,000,000 base units)
-    return [
-      { address: 'sultan1v9x7k...e3f2', name: 'Polaris Stake', moniker: 'Polaris Stake', totalStaked: '45000000000', commission: 0.05, uptime: 99.8, status: 'active' },
-      { address: 'sultan1m4hp2...7a91', name: 'Titanium Node', moniker: 'Titanium Node', totalStaked: '32000000000', commission: 0.05, uptime: 99.9, status: 'active' },
-      { address: 'sultan1q8wnf...c4b6', name: 'CryptoForge', moniker: 'CryptoForge', totalStaked: '28500000000', commission: 0.04, uptime: 99.7, status: 'active' },
-      { address: 'sultan1k3jem...5d28', name: 'BlockSentinel', moniker: 'BlockSentinel', totalStaked: '19000000000', commission: 0.05, uptime: 99.9, status: 'active' },
-      { address: 'sultan1z6rvt...8f4e', name: 'Nexus Labs', moniker: 'Nexus Labs', totalStaked: '15500000000', commission: 0.03, uptime: 99.6, status: 'active' },
-    ];
+    // Map real validator data to Validator interface
+    // Use friendly names based on validator address
+    const validatorNames: Record<string, string> = {
+      'sultanval1london': 'London Validator',
+      'sultanval2singapore': 'Singapore Validator', 
+      'sultanval3amsterdam': 'Amsterdam Validator',
+      'sultanval6newyork': 'New York Validator',
+    };
+    
+    return result.map(v => {
+      const name = validatorNames[v.validator_address] || v.validator_address;
+      // Calculate uptime from blocks signed/missed
+      const totalBlocks = v.blocks_signed + v.blocks_missed;
+      const uptime = totalBlocks > 0 ? (v.blocks_signed / totalBlocks) * 100 : 99.9;
+      
+      return {
+        address: v.validator_address,
+        name: name,
+        moniker: name,
+        totalStaked: v.total_stake.toString(),
+        commission: v.commission_rate,
+        uptime: Math.round(uptime * 10) / 10,
+        status: v.jailed ? 'jailed' as const : 'active' as const,
+      };
+    });
+  } catch (error) {
+    console.error('Failed to fetch validators:', error);
+    // Return empty array on error - no fake validators
+    return [];
   }
 }
 
