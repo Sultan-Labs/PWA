@@ -1,3 +1,8 @@
+
+/**
+ * Floating Vertical Lines Background
+ */
+
 .background-animation {
   position: fixed;
   top: 0;
@@ -10,91 +15,134 @@
   pointer-events: none;
 }
 
-.line {
+/* Floating Vertical Lines Background */
+.floating-lines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.floating-line {
   position: absolute;
-  top: -50%;
   width: 1px;
-  height: 200%;
+  height: 100%;
   background: linear-gradient(
     to bottom,
-    rgba(0, 255, 255, 0) 0%,
-    rgba(0, 255, 255, 0.5) 40%,
-    rgba(0, 255, 255, 0.6) 50%,
-    rgba(0, 255, 255, 0.5) 60%,
-    rgba(0, 255, 255, 0) 100%
+    transparent 0%,
+    var(--line-color-1) 20%,
+    var(--line-color-2) 50%,
+    var(--line-color-1) 80%,
+    transparent 100%
   );
-  /* Use variables for independent control */
-  --float-duration: 15s;
-  --pulse-duration: 4s;
-  --pulse-delay: 0s;
-
-  animation: 
-    float-lines var(--float-duration) infinite cubic-bezier(0.4, 0, 0.2, 1), 
-    pulse-teal var(--pulse-duration) ease-in-out infinite;
-  animation-delay: 0s, var(--pulse-delay);
-
-  opacity: 0.15;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
-  will-change: transform, opacity;
-  transform: translateZ(0);
+  animation: float 20s ease-in-out infinite;
+  opacity: 0.9;
 }
 
-.line-1 { 
-  left: 8%; 
-  --float-duration: 18s; 
-  --pulse-duration: 7s; 
-  --pulse-delay: 0s;
+.floating-line:nth-child(1) {
+  left: 10%;
+  animation: float 18s ease-in-out infinite, linePulse1 6.4s ease-in-out infinite;
+  animation-play-state: running;
+  --line-color-1: rgba(0, 255, 255, 0.6);
+  --line-color-2: rgba(0, 255, 255, 0.8);
 }
 
-.line-2 { 
-  left: 24%; 
-  --float-duration: 25s; 
-  --pulse-duration: 12s; 
-  --pulse-delay: -3s;
+.floating-line:nth-child(2) {
+  left: 35%;
+  animation: float 22s ease-in-out infinite, linePulse2 5.6s ease-in-out infinite;
+  animation-delay: -5s, -1.2s;
+  animation-play-state: running;
+  --line-color-1: rgba(0, 191, 255, 0.6);
+  --line-color-2: rgba(0, 191, 255, 0.8);
 }
 
-.line-3 { 
-  left: 62%; 
-  width: 2px; 
-  --float-duration: 20s; 
-  --pulse-duration: 9s; 
-  --pulse-delay: -1s;
+.floating-line:nth-child(3) {
+  left: 60%;
+  animation: float 20s ease-in-out infinite, linePulse3 7.0s ease-in-out infinite;
+  animation-delay: -10s, -2.8s;
+  animation-play-state: running;
+  --line-color-1: rgba(0, 255, 255, 0.6);
+  --line-color-2: rgba(0, 255, 255, 0.8);
 }
 
-.line-4 { 
-  left: 75%; 
-  --float-duration: 22s; 
-  --pulse-duration: 14s; 
-  --pulse-delay: -5s;
+.floating-line:nth-child(4) {
+  left: 25%;
+  animation: float 24s ease-in-out infinite, linePulse4 6.0s ease-in-out infinite;
+  animation-delay: -15s, -0.5s;
+  animation-play-state: running;
+  --line-color-1: rgba(0, 191, 255, 0.6);
+  --line-color-2: rgba(0, 191, 255, 0.8);
 }
 
-.line-5 { 
-  left: 93%; 
-  --float-duration: 17s; 
-  --pulse-duration: 10s; 
-  --pulse-delay: -2s;
+.floating-line:nth-child(5) {
+  left: 50%;
+  animation: float 19s ease-in-out infinite, linePulse5 5.0s ease-in-out infinite;
+  animation-delay: -7s, -3.5s;
+  animation-play-state: running;
+  --line-color-1: rgba(0, 255, 255, 0.6);
+  --line-color-2: rgba(0, 255, 255, 0.8);
 }
 
-@keyframes pulse-teal {
-  0% {
-    opacity: 0.15;
+.floating-line:nth-child(6) {
+  left: 85%;
+  animation: float 21s ease-in-out infinite, linePulse6 7.6s ease-in-out infinite;
+  animation-delay: -3s, -1.8s;
+  animation-play-state: running;
+  --line-color-1: rgba(0, 191, 255, 0.6);
+  --line-color-2: rgba(0, 191, 255, 0.8);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(-5%) scaleY(1);
   }
   50% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 0.15;
+    transform: translateY(5%) scaleY(1.05);
   }
 }
 
-@keyframes float-lines {
-  0% {
-    transform: translateY(-20%);
+@keyframes linePulse1 {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes linePulse2 {
+  0%, 100% { opacity: 0.25; }
+  60% { opacity: 0.95; }
+}
+
+@keyframes linePulse3 {
+  0%, 100% { opacity: 0.15; }
+  45% { opacity: 0.85; }
+}
+
+@keyframes linePulse4 {
+  0%, 100% { opacity: 0.2; }
+  55% { opacity: 0.9; }
+}
+
+@keyframes linePulse5 {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes linePulse6 {
+  0%, 100% { opacity: 0.2; }
+  65% { opacity: 0.85; }
+}
+
+/* Hide one line on mobile */
+@media (max-width: 768px) {
+  .floating-line:nth-child(5) {
+    display: none;
   }
-  50% {
-    transform: translateY(10%);
-  }
-  100% {
-    transform: translateY(-20%);
-  }
+  .floating-line:nth-child(1) { left: 5% !important; }
+  .floating-line:nth-child(2) { left: 22% !important; }
+  .floating-line:nth-child(3) { left: 42% !important; }
+  .floating-line:nth-child(4) { left: 68% !important; }
+  .floating-line:nth-child(6) { left: 92% !important; }
 }
