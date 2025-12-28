@@ -152,26 +152,28 @@ export async function getBalance(address: string): Promise<AccountBalance> {
 export async function getStakingInfo(address: string): Promise<StakingInfo> {
   try {
     // Use REST API: GET /staking/delegations/{address}
-    const result = await restApi<{
-      staked: number;
-      rewards: number;
-      validator?: string;
-    }>(`/staking/delegations/${address}`);
+    // Node returns an array of Delegation objects
+    const result = await restApi<Array<{
+      delegator_address: string;
+      validator_address: string;
+      amount: number;
+      rewards_accumulated: number;
+    }>>(`/staking/delegations/${address}`);
+
+    // Sum up all delegations for this address
+    const totalStaked = result.reduce((sum, d) => sum + (d.amount || 0), 0);
+    const totalRewards = result.reduce((sum, d) => sum + (d.rewards_accumulated || 0), 0);
+    const firstValidator = result.length > 0 ? result[0].validator_address : undefined;
 
     return {
       address,
-      staked: (result.staked || 0).toString(),
-      pendingRewards: (result.rewards || 0).toString(),
-      validator: result.validator,
-      stakingAPY: 13.33, // Fixed APY
+      staked: totalStaked.toString(),
+      pendingRewards: totalRewards.toString(),
+      validator: firstValidator,
+      stakingAPY: 13.33,
     };
   } catch {
-    return {
-      address,
-      staked: '0',
-      pendingRewards: '0',
-      stakingAPY: 13.33, // Default APY
-    };
+    return { address, staked: '0', pendingRewards: '0', stakingAPY: 13.33 };
   }
 }
 
@@ -270,7 +272,7 @@ export async function getTransactions(
       amount: tx.amount.toString(),
       displayAmount: formatAmount(tx.amount.toString()),
       memo: tx.memo || '',
-      timestamp: tx.timestamp,
+      timestamp: tx.timestamp < 4102444800 ? tx.timestamp * 1000 : tx.timestamp,
       blockHeight: tx.block_height,
       status: tx.status as 'pending' | 'confirmed' | 'failed',
     }));
