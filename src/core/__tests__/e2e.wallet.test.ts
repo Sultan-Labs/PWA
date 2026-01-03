@@ -5,9 +5,9 @@
  * These tests ensure the complete flow works as expected.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { ed25519 } from '@noble/curves/ed25519';
-import { hexToBytes, bytesToHex } from '@noble/hashes/utils';
+import { describe, it, expect, afterEach } from 'vitest';
+import * as ed25519 from '@noble/ed25519';
+import { hexToBytes } from '@noble/hashes/utils';
 import { sha256 } from '@noble/hashes/sha256';
 import stringify from 'fast-json-stable-stringify';
 import {

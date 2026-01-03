@@ -4,7 +4,7 @@
  * Tests for production-safe logging with sensitive data filtering.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 // We need to test the SENSITIVE_PATTERNS logic directly
 // since the logger behavior depends on environment variables
