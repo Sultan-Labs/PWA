@@ -117,7 +117,7 @@ export default function Governance() {
   const [telegramUrl, setTelegramUrl] = useState('');
 
   const votingPower = SultanWallet.formatSLTN(stakingData?.staked || '0');
-  const availableBalance = Number(SultanWallet.formatSLTN(balanceData?.available || '0'));
+  const availableBalance = Number(SultanWallet.formatSLTN(balanceData?.available || '0').replace(/,/g, '')) || 0;
 
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
@@ -323,13 +323,23 @@ export default function Governance() {
     return (
       <div className="governance-screen">
         <header className="screen-header">
-          <button className="btn-back" onClick={() => { setView('list'); setError(''); }}>
-            <BackIcon />
-          </button>
+          <div className="header-left">
+            <button className="btn-back" onClick={() => { setView('list'); setError(''); }}>
+              <BackIcon />
+            </button>
+          </div>
           <h2>New Proposal</h2>
-          <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
-            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-          </button>
+          <div className="header-right">
+            <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
+              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+            </button>
+            <button className="btn-icon" onClick={() => navigate('/settings')} title="Settings">
+              <SettingsIcon />
+            </button>
+            <button className="btn-icon" onClick={handleLock} title="Lock Wallet">
+              <LockIcon />
+            </button>
+          </div>
         </header>
 
         <div className="governance-content fade-in">
@@ -456,13 +466,23 @@ export default function Governance() {
     return (
       <div className="governance-screen">
         <header className="screen-header">
-          <button className="btn-back" onClick={() => { setView('list'); setSelectedProposal(null); }}>
-            <BackIcon />
-          </button>
+          <div className="header-left">
+            <button className="btn-back" onClick={() => { setView('list'); setSelectedProposal(null); }}>
+              <BackIcon />
+            </button>
+          </div>
           <h2>Proposal #{selectedProposal.id}</h2>
-          <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
-            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-          </button>
+          <div className="header-right">
+            <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
+              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+            </button>
+            <button className="btn-icon" onClick={() => navigate('/settings')} title="Settings">
+              <SettingsIcon />
+            </button>
+            <button className="btn-icon" onClick={handleLock} title="Lock Wallet">
+              <LockIcon />
+            </button>
+          </div>
         </header>
 
         <div className="governance-content fade-in">
@@ -559,11 +579,13 @@ export default function Governance() {
   return (
     <div className="governance-screen">
       <header className="screen-header">
-        <button className="btn-back" onClick={() => navigate('/dashboard')}>
-          <BackIcon />
-        </button>
+        <div className="header-left">
+          <button className="btn-back" onClick={() => navigate('/dashboard')}>
+            <BackIcon />
+          </button>
+        </div>
         <h2>Governance</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="header-right">
           <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>

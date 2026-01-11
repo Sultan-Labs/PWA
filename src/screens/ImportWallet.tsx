@@ -4,7 +4,7 @@
  * Allows users to restore wallet from mnemonic phrase.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import PinInput from '../components/PinInput';
@@ -21,6 +21,11 @@ export default function ImportWallet() {
   const [pin, setPin] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [mnemonicError, setMnemonicError] = useState('');
+
+  // Force dark mode for Import Wallet screen
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }, []);
 
   const handleWordChange = (index: number, value: string) => {
     const newWords = [...mnemonicWords];
@@ -91,37 +96,40 @@ export default function ImportWallet() {
 
   if (isLoading) {
     return (
-      <div className="import-screen">
-        <div className="import-content">
-          <div className="spinner" />
-          <p className="mt-md">Importing your wallet...</p>
+      <>
+        <div className="import-screen">
+          <div className="import-content">
+            <div className="spinner" />
+            <p className="mt-md">Importing your wallet...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="import-screen">
-      <div className="import-content fade-in">
-        {step === 'mnemonic' && (
-          <>
-            <h2>Import Wallet</h2>
-            <p className="text-muted mb-md">
-              Enter your 12 or 24-word recovery phrase
-            </p>
-            
-            <div className="mnemonic-input-grid" onPaste={handlePaste}>
-              {mnemonicWords.map((word, index) => (
-                <div key={index} className="mnemonic-input-item">
-                  <span className="word-number">{index + 1}</span>
-                  <input
-                    type="text"
-                    className="input word-input"
-                    value={word}
-                    onChange={e => handleWordChange(index, e.target.value)}
-                    autoComplete="off"
-                    autoCapitalize="off"
-                  />
+    <>
+      <div className="import-screen">
+        <div className="import-content fade-in">
+          {step === 'mnemonic' && (
+            <>
+              <h2>Import Wallet</h2>
+              <p className="text-muted mb-md">
+                Enter your 12 or 24-word recovery phrase
+              </p>
+              
+              <div className="mnemonic-input-grid" onPaste={handlePaste}>
+                {mnemonicWords.map((word, index) => (
+                  <div key={index} className="mnemonic-input-item">
+                    <span className="word-number">{index + 1}</span>
+                    <input
+                      type="text"
+                      className="input word-input"
+                      value={word}
+                      onChange={e => handleWordChange(index, e.target.value)}
+                      autoComplete="off"
+                      autoCapitalize="off"
+                    />
                 </div>
               ))}
             </div>
@@ -173,5 +181,6 @@ export default function ImportWallet() {
         </button>
       </div>
     </div>
+    </>
   );
 }

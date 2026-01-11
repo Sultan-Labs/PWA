@@ -13,7 +13,6 @@ import PinInput from '../components/PinInput';
 import MnemonicDisplay from '../components/MnemonicDisplay';
 import TOTPSetup from '../components/TOTPSetup';
 import { is2FAEnabled } from '../core/totp';
-import BackgroundAnimation from '../components/BackgroundAnimation';
 import './Settings.css';
 
 // Premium SVG Icons
@@ -139,7 +138,6 @@ export default function Settings() {
 
   return (
     <div className="settings-screen">
-      <BackgroundAnimation />
       <header className="screen-header">
         <button className="btn-back" onClick={() => navigate('/dashboard')}>
           <BackIcon />
@@ -208,6 +206,22 @@ export default function Settings() {
         <div className="settings-section">
           <h3>Security Details</h3>
           
+          <div className="setting-item" onClick={() => navigate('/connected-apps')}>
+            <div className="setting-info">
+              <span className="setting-label">Connected Apps</span>
+              <span className="setting-hint">Manage dApp connections</span>
+            </div>
+            <span className="setting-arrow"><ChevronRightIcon /></span>
+          </div>
+          
+          <div className="setting-item" onClick={() => navigate('/walletlink')}>
+            <div className="setting-info">
+              <span className="setting-label">WalletLink</span>
+              <span className="setting-hint">Connect to desktop dApps via QR</span>
+            </div>
+            <span className="setting-arrow"><ChevronRightIcon /></span>
+          </div>
+          
           <div className="setting-item" onClick={() => setModal('totp')}>
             <div className="setting-info">
               <span className="setting-label">Two-Factor Authentication</span>
@@ -243,7 +257,7 @@ export default function Settings() {
           <div className="setting-item">
             <div className="setting-info">
               <span className="setting-label">Version</span>
-              <span className="setting-value">1.0.0</span>
+              <span className="setting-value">1.6.0</span>
             </div>
           </div>
           
@@ -252,6 +266,14 @@ export default function Settings() {
               <span className="setting-label">Network</span>
               <span className="setting-value">Sultan Mainnet</span>
             </div>
+          </div>
+          
+          <div className="setting-item" onClick={() => window.open('https://sltn.io/privacy.html', '_blank')}>
+            <div className="setting-info">
+              <span className="setting-label">Privacy Policy</span>
+              <span className="setting-hint">View our privacy practices</span>
+            </div>
+            <span className="setting-arrow"><ChevronRightIcon /></span>
           </div>
         </div>
 

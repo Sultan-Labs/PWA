@@ -6,11 +6,14 @@
 .mnemonic-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
 }
 
-.visibility-toggle,
-.copy-btn {
+/* Use specific selector to avoid conflicts with other .copy-btn styles */
+.mnemonic-header .visibility-toggle,
+.mnemonic-header .copy-btn {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
@@ -19,10 +22,19 @@
   cursor: pointer;
   color: var(--text-primary);
   transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  min-width: 80px;
+  position: relative;
+  top: auto;
+  right: auto;
+  box-sizing: border-box;
 }
 
-.visibility-toggle:hover,
-.copy-btn:hover {
+.mnemonic-header .visibility-toggle:hover,
+.mnemonic-header .copy-btn:hover {
   border-color: var(--accent-primary);
 }
 

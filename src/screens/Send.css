@@ -1,5 +1,7 @@
 .send-screen {
-  min-height: 100vh;
+  height: 600px;
+  min-height: 600px;
+  max-height: 600px;
   display: flex;
   flex-direction: column;
   background: var(--bg-gradient);
@@ -9,68 +11,38 @@
 
 .screen-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: var(--spacing-md) var(--spacing-lg);
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .screen-header h2 {
-  font-size: 1.125rem;
   flex: 1;
   text-align: center;
+  font-size: 1.125rem;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.btn-back,
-.btn-icon,
-.theme-toggle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: transparent;
-  border: 1px solid var(--border-color);
-  cursor: pointer;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-  padding: 0;
-  margin: 0;
-}
-
-.btn-back svg,
-.btn-icon svg,
-.theme-toggle svg {
-  stroke: currentColor;
-  width: 18px;
-  height: 18px;
-}
-
-.btn-back:hover,
-.btn-icon:hover,
-.theme-toggle:hover {
-  background: var(--bg-primary);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-}
-
-.theme-toggle:hover {
-  background: var(--bg-primary);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-}
-
 .send-content {
   flex: 1;
   padding: var(--spacing-lg);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .form-group {

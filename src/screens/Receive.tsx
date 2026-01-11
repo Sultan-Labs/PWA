@@ -10,7 +10,6 @@ import { useWallet } from '../hooks/useWallet';
 import { useTheme } from '../hooks/useTheme';
 import { hapticFeedback } from '../utils/haptics';
 import AddressQR from '../components/AddressQR';
-import BackgroundAnimation from '../components/BackgroundAnimation';
 import './Receive.css';
 
 // Premium SVG Icons
@@ -125,13 +124,14 @@ export default function Receive() {
 
   return (
     <div className="receive-screen">
-      <BackgroundAnimation />
       <header className="screen-header">
-        <button className="btn-back" onClick={() => navigate('/dashboard')}>
-          <BackIcon />
-        </button>
+        <div className="header-left">
+          <button className="btn-back" onClick={() => navigate('/dashboard')}>
+            <BackIcon />
+          </button>
+        </div>
         <h2>Receive SLTN</h2>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div className="header-right">
           <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>

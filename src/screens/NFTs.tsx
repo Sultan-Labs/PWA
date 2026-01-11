@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import { useTheme } from '../hooks/useTheme';
 import { sultanAPI } from '../api/sultanAPI';
-import BackgroundAnimation from '../components/BackgroundAnimation';
 import './NFTs.css';
 
 // Premium SVG Icons
@@ -185,13 +184,23 @@ export default function NFTs() {
     return (
       <div className="nft-screen">
         <header className="screen-header">
-          <button className="btn-back" onClick={() => setSelectedNFT(null)}>
-            <BackIcon />
-          </button>
+          <div className="header-left">
+            <button className="btn-back" onClick={() => setSelectedNFT(null)}>
+              <BackIcon />
+            </button>
+          </div>
           <h2>{selectedNFT.name}</h2>
-          <button className="btn-icon theme-toggle" onClick={toggleTheme}>
-            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-          </button>
+          <div className="header-right">
+            <button className="btn-icon theme-toggle" onClick={toggleTheme}>
+              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+            </button>
+            <button className="btn-icon" onClick={() => navigate('/settings')} title="Settings">
+              <SettingsIcon />
+            </button>
+            <button className="btn-icon" onClick={handleLock} title="Lock Wallet">
+              <LockIcon />
+            </button>
+          </div>
         </header>
 
         <div className="nft-detail fade-in">
@@ -259,13 +268,14 @@ export default function NFTs() {
 
   return (
     <div className="nft-screen">
-      <BackgroundAnimation />
       <header className="screen-header">
-        <button className="btn-back" onClick={() => navigate('/dashboard')}>
-          <BackIcon />
-        </button>
+        <div className="header-left">
+          <button className="btn-back" onClick={() => navigate('/dashboard')}>
+            <BackIcon />
+          </button>
+        </div>
         <h2>NFT Gallery</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="header-right">
           <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>

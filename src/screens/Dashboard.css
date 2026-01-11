@@ -36,8 +36,12 @@
 
 .btn-icon,
 .theme-toggle {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  max-width: 36px;
+  max-height: 36px;
   border-radius: 50%;
   background: transparent;
   border: 1px solid var(--border-color);
@@ -50,6 +54,8 @@
   flex-shrink: 0;
   padding: 0;
   margin: 0;
+  aspect-ratio: 1 / 1;
+  box-sizing: border-box;
 }
 
 .btn-icon svg,
@@ -582,4 +588,289 @@
   .action-btn {
     min-width: 70px;
   }
+}
+
+/* ============================================
+   SKELETON LOADER STYLES
+   ============================================ */
+.balance-skeleton {
+  padding: var(--spacing-md) 0;
+}
+
+.skeleton-line {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-title {
+  width: 100px;
+  height: 14px;
+  margin: 0 auto var(--spacing-sm);
+}
+
+.skeleton-amount {
+  width: 200px;
+  height: 40px;
+  margin: 0 auto var(--spacing-md);
+}
+
+.skeleton-breakdown {
+  display: flex;
+  justify-content: space-around;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.skeleton-item {
+  width: 80px;
+  height: 32px;
+}
+
+@keyframes skeleton-wave {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Transaction skeleton */
+.tx-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) 0;
+}
+
+.tx-skeleton-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.skeleton-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skeleton-lines .skeleton-line {
+  height: 12px;
+  width: 100%;
+}
+
+.skeleton-lines .skeleton-line.short {
+  width: 60%;
+}
+
+.skeleton-line.amount {
+  width: 60px;
+  height: 16px;
+}
+
+/* ============================================
+   ENHANCED BALANCE CARD
+   ============================================ */
+.balance-card-loaded {
+  animation: card-appear 0.4s ease-out;
+}
+
+@keyframes card-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.balance-value {
+  position: relative;
+  display: inline-block;
+}
+
+.breakdown-value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ============================================
+   STAKING OPPORTUNITY CARD
+   ============================================ */
+.staking-opportunity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.15) 0%, rgba(0, 255, 255, 0.05) 100%);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0, 212, 170, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(0, 212, 170, 0.2); }
+}
+
+.staking-opportunity:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 24px rgba(0, 212, 170, 0.3);
+}
+
+.opportunity-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.opportunity-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 212, 170, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
+}
+
+.opportunity-icon svg {
+  stroke: currentColor;
+}
+
+.opportunity-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.opportunity-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--accent-primary);
+}
+
+.opportunity-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.opportunity-arrow {
+  font-size: 1.5rem;
+  color: var(--accent-primary);
+  transition: transform 0.2s ease;
+}
+
+.staking-opportunity:hover .opportunity-arrow {
+  transform: translateX(4px);
+}
+
+/* ============================================
+   ENHANCED STAKING SUMMARY (when staked)
+   ============================================ */
+.staking-summary.staking-active {
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(138, 43, 226, 0.05) 100%);
+  border: 1px solid rgba(0, 212, 170, 0.25);
+}
+
+.staking-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.staking-header h3 {
+  font-size: 1rem;
+}
+
+.staking-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  background: rgba(0, 255, 159, 0.2);
+  color: var(--success);
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value.rewards {
+  color: var(--success);
+}
+
+/* ============================================
+   ENHANCED ACTIVITY SECTION
+   ============================================ */
+.tx-animate {
+  animation: tx-slide-in 0.3s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes tx-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.empty-activity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl);
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.6;
+}
+
+.empty-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.btn-link {
+  font-size: 0.875rem;
+  color: var(--accent-primary);
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.btn-link:hover {
+  opacity: 0.8;
 }

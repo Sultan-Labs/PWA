@@ -465,21 +465,26 @@ export async function getNetworkStatus(): Promise<NetworkStatus> {
 }
 
 /**
+ * Type for broadcast transaction request
+ */
+export interface BroadcastTxRequest {
+  transaction: {
+    from: string;
+    to: string;
+    amount: string;
+    memo?: string;
+    nonce: number;
+    timestamp: number;
+  };
+  signature: string;
+  publicKey: string;
+}
+
+/**
  * Broadcast a signed transaction
  */
 export async function broadcastTransaction(
-  signedTx: {
-    transaction: {
-      from: string;
-      to: string;
-      amount: string;
-      memo?: string;
-      nonce: number;
-      timestamp: number;
-    };
-    signature: string;
-    publicKey: string;
-  }
+  signedTx: BroadcastTxRequest
 ): Promise<{ hash: string }> {
   // Use REST API: POST /tx with Zod validation
   const result = await restApi(

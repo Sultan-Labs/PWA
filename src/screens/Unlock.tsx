@@ -10,8 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import PinInput from '../components/PinInput';
 import TOTPVerify from '../components/TOTPVerify';
-import BookmarkReminder from '../components/BookmarkReminder';
 import { is2FAEnabled } from '../core/totp';
+import { getPendingApprovals, isExtensionContext } from '../core/extension-bridge';
 import './Unlock.css';
 
 // Sultan Crown Logo - uses PNG images based on theme
@@ -56,6 +56,26 @@ export default function Unlock() {
 
   const MAX_ATTEMPTS = 5;
 
+  /**
+   * Navigate to appropriate screen after successful unlock
+   * Checks for pending approvals first
+   */
+  const navigateAfterUnlock = async () => {
+    if (isExtensionContext()) {
+      try {
+        const pending = await getPendingApprovals();
+        if (pending.length > 0) {
+          navigate('/approve');
+          return;
+        }
+      } catch (e) {
+        // If we can't check, just go to dashboard
+        console.error('Failed to check pending approvals:', e);
+      }
+    }
+    navigate('/dashboard');
+  };
+
   const handlePinComplete = async (pin: string) => {
     setIsLoading(true);
     clearError();
@@ -67,7 +87,7 @@ export default function Unlock() {
         if (is2FAEnabled()) {
           setStep('totp');
         } else {
-          navigate('/dashboard');
+          await navigateAfterUnlock();
         }
       } else {
         setAttempts(prev => prev + 1);
@@ -82,7 +102,7 @@ export default function Unlock() {
   };
 
   const handleTOTPSuccess = () => {
-    navigate('/dashboard');
+    navigateAfterUnlock();
   };
 
   const handleTOTPCancel = () => {
@@ -131,7 +151,6 @@ export default function Unlock() {
 
   return (
     <div className="unlock-screen">
-      <BookmarkReminder />
       <div className="unlock-content fade-in">
         <div className="sultan-icon">
           <SultanLogo size={64} isDark={isDark} />

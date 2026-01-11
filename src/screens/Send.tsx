@@ -42,6 +42,20 @@ const MoonIcon = () => (
   </svg>
 );
 
+const SettingsIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+  </svg>
+);
+
+const LockIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+  </svg>
+);
+
 const CheckCircleIcon = () => (
   <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -53,7 +67,7 @@ type Step = 'form' | 'confirm' | 'pin' | 'success';
 
 export default function Send() {
   const navigate = useNavigate();
-  const { wallet, currentAccount } = useWallet();
+  const { wallet, currentAccount, lock } = useWallet();
   const { theme, setTheme } = useTheme();
   const { data: balanceData } = useBalance(currentAccount?.address);
   
@@ -403,13 +417,23 @@ export default function Send() {
   return (
     <div className="send-screen">
       <header className="screen-header">
-        <button className="btn-back" onClick={() => navigate('/dashboard')}>
-          <BackIcon />
-        </button>
+        <div className="header-left">
+          <button className="btn-back" onClick={() => navigate('/dashboard')}>
+            <BackIcon />
+          </button>
+        </div>
         <h2>Send SLTN</h2>
-        <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
-          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-        </button>
+        <div className="header-right">
+          <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
+            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          </button>
+          <button className="btn-icon" onClick={() => navigate('/settings')} title="Settings">
+            <SettingsIcon />
+          </button>
+          <button className="btn-icon" onClick={() => { lock(); navigate('/unlock'); }} title="Lock Wallet">
+            <LockIcon />
+          </button>
+        </div>
       </header>
 
       <div className="send-content fade-in">

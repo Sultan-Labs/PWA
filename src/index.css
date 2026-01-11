@@ -108,20 +108,28 @@
 }
 
 html, body {
-  height: 100%;
+  height: 600px;
+  max-height: 600px;
+  width: 380px;
+  max-width: 380px;
   font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: transparent; /* Allow background animation to show */
+  background: var(--bg-gradient);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-y: none; /* Prevent pull-to-refresh on mobile */
   -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+  overflow: hidden;
 }
 
 #root {
-  min-height: 100%;
+  height: 600px;
+  max-height: 600px;
+  width: 380px;
+  max-width: 380px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* Utility classes */
@@ -281,4 +289,88 @@ h1, h2, h3, h4, h5, h6 {
   .container {
     padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
   }
+}
+
+/* ============================================
+   GLOBAL CIRCULAR ICON BUTTONS
+   Ensures all icon buttons are perfect circles
+   ============================================ */
+.btn-icon,
+.btn-back,
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  max-width: 36px;
+  max-height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+  margin: 0;
+  aspect-ratio: 1 / 1;
+  box-sizing: border-box;
+}
+
+.btn-icon svg,
+.btn-back svg,
+.theme-toggle svg {
+  stroke: currentColor;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.btn-icon:hover,
+.btn-back:hover,
+.theme-toggle:hover {
+  background: var(--bg-primary);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* ============================================
+   GLOBAL SCREEN HEADER
+   Consistent header styling with proper spacing
+   ============================================ */
+.screen-header {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.screen-header h2 {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
 }

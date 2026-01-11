@@ -4,16 +4,47 @@
  * Main wallet view with balance and quick actions.
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import { useTheme } from '../hooks/useTheme';
 import { useBalance, useStakingInfo, useTransactions } from '../hooks/useBalance';
 import { SultanWallet } from '../core/wallet';
 import { hapticFeedback } from '../utils/haptics';
-import BackgroundAnimation from '../components/BackgroundAnimation';
-import BookmarkReminder from '../components/BookmarkReminder';
 import './Dashboard.css';
+
+// Animated counter hook for smooth balance transitions
+function useAnimatedNumber(value: number, duration: number = 500) {
+  const [displayValue, setDisplayValue] = useState(value);
+  const previousValue = useRef(value);
+  
+  useEffect(() => {
+    if (value === previousValue.current) return;
+    
+    const startValue = previousValue.current;
+    const diff = value - startValue;
+    const startTime = performance.now();
+    
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayValue(startValue + diff * eased);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        previousValue.current = value;
+      }
+    };
+    
+    requestAnimationFrame(animate);
+  }, [value, duration]);
+  
+  return displayValue;
+}
 
 // Premium SVG Icons - matching Welcome screen style
 const LockIcon = () => (
@@ -108,6 +139,41 @@ const GovernanceIcon = () => (
   </svg>
 );
 
+// Trending up icon for staking opportunity
+const TrendingUpIcon = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+    <polyline points="17 6 23 6 23 12" />
+  </svg>
+);
+
+// Skeleton loader component
+const BalanceSkeleton = () => (
+  <div className="balance-skeleton">
+    <div className="skeleton-line skeleton-title"></div>
+    <div className="skeleton-line skeleton-amount"></div>
+    <div className="skeleton-breakdown">
+      <div className="skeleton-line skeleton-item"></div>
+      <div className="skeleton-line skeleton-item"></div>
+    </div>
+  </div>
+);
+
+const TransactionSkeleton = () => (
+  <div className="tx-skeleton">
+    {[1, 2, 3].map(i => (
+      <div key={i} className="tx-skeleton-item">
+        <div className="skeleton-circle"></div>
+        <div className="skeleton-lines">
+          <div className="skeleton-line"></div>
+          <div className="skeleton-line short"></div>
+        </div>
+        <div className="skeleton-line amount"></div>
+      </div>
+    ))}
+  </div>
+);
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { lock, currentAccount } = useWallet();
@@ -147,13 +213,22 @@ export default function Dashboard() {
     return SultanWallet.formatSLTN(atomicBalance);
   };
 
-  const totalBalance = Number(formatBalance(balanceData?.available)) + 
-                       Number(formatBalance(stakingData?.staked));
+  // Parse formatted balance string to number (removes commas)
+  const parseFormattedBalance = (formatted: string): number => {
+    return Number(formatted.replace(/,/g, '')) || 0;
+  };
+
+  const totalBalance = parseFormattedBalance(formatBalance(balanceData?.available)) + 
+                       parseFormattedBalance(formatBalance(stakingData?.staked));
+  
+  // Animated balance display
+  const animatedBalance = useAnimatedNumber(totalBalance, 600);
+  const animatedAvailable = useAnimatedNumber(parseFormattedBalance(formatBalance(balanceData?.available)), 600);
+  const animatedStaked = useAnimatedNumber(parseFormattedBalance(formatBalance(stakingData?.staked)), 600);
+  const isLoading = balanceLoading || stakingLoading;
 
   return (
     <div className="dashboard-screen">
-      <BackgroundAnimation />
-      <BookmarkReminder context="dashboard" delay={5000} />
       <header className="dashboard-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
           <div className="account-selector">
@@ -178,33 +253,35 @@ export default function Dashboard() {
       </header>
 
       <main className="dashboard-main fade-in">
-        <div className="balance-card">
-          <span className="balance-label">Total Balance</span>
-          <h1 className="balance-amount">
-            {balanceLoading || stakingLoading ? (
-              <span className="loading-shimmer">Loading...</span>
-            ) : (
-              <>
-                {totalBalance.toLocaleString(undefined, { 
+        {isLoading ? (
+          <div className="balance-card">
+            <BalanceSkeleton />
+          </div>
+        ) : (
+          <div className="balance-card balance-card-loaded">
+            <span className="balance-label">Total Balance</span>
+            <h1 className="balance-amount">
+              <span className="balance-value">
+                {animatedBalance.toLocaleString(undefined, { 
                   minimumFractionDigits: 2, 
                   maximumFractionDigits: 4 
                 })}
-                <span className="balance-currency"> SLTN</span>
-              </>
-            )}
-          </h1>
-          
-          <div className="balance-breakdown">
-            <div className="breakdown-item">
-              <span>Available</span>
-              <span>{formatBalance(balanceData?.available)} SLTN</span>
-            </div>
-            <div className="breakdown-item">
-              <span>Staked</span>
-              <span>{formatBalance(stakingData?.staked)} SLTN</span>
+              </span>
+              <span className="balance-currency"> SLTN</span>
+            </h1>
+            
+            <div className="balance-breakdown">
+              <div className="breakdown-item">
+                <span>Available</span>
+                <span className="breakdown-value">{animatedAvailable.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} SLTN</span>
+              </div>
+              <div className="breakdown-item">
+                <span>Staked</span>
+                <span className="breakdown-value">{animatedStaked.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} SLTN</span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="quick-actions">
           <button className="action-btn" onClick={() => { hapticFeedback.soft(); navigate('/send'); }}>
@@ -234,25 +311,44 @@ export default function Dashboard() {
             <SwapIcon />
             <div className="dex-banner-text">
               <span className="dex-title">Trade on HODL Holdings</span>
-              <span className="dex-subtitle">Zero-fee P2P trading</span>
             </div>
           </div>
           <span className="dex-arrow">→</span>
         </div>
 
-        {stakingData && stakingData.staked !== '0' && (
-          <div className="staking-summary">
-            <h3>Earn</h3>
+        {stakingData && stakingData.staked !== '0' ? (
+          <div className="staking-summary staking-active">
+            <div className="staking-header">
+              <h3>💎 Your Staking</h3>
+              <span className="staking-badge">Active</span>
+            </div>
             <div className="staking-info">
               <div className="staking-stat">
                 <span className="stat-label">APY</span>
-                <span className="stat-value accent">13.33%</span>
+                <span className="stat-value accent">{stakingData?.stakingAPY || 13.33}%</span>
               </div>
               <div className="staking-stat">
                 <span className="stat-label">Pending Rewards</span>
-                <span className="stat-value">{formatBalance(stakingData.pendingRewards)} SLTN</span>
+                <span className="stat-value rewards">{formatBalance(stakingData.pendingRewards)} SLTN</span>
+              </div>
+              <div className="staking-stat">
+                <span className="stat-label">Staked</span>
+                <span className="stat-value">{formatBalance(stakingData.staked)} SLTN</span>
               </div>
             </div>
+          </div>
+        ) : (
+          <div className="staking-opportunity" onClick={() => { hapticFeedback.soft(); navigate('/stake'); }}>
+            <div className="opportunity-content">
+              <div className="opportunity-icon">
+                <TrendingUpIcon />
+              </div>
+              <div className="opportunity-text">
+                <span className="opportunity-title">Start Earning ~{stakingData?.stakingAPY || 13.33}% APY</span>
+                <span className="opportunity-subtitle">Stake your SLTN to earn rewards</span>
+              </div>
+            </div>
+            <span className="opportunity-arrow">→</span>
           </div>
         )}
 
@@ -260,19 +356,21 @@ export default function Dashboard() {
           <div className="section-header">
             <h3>Recent Activity</h3>
             <button className="btn-link" onClick={() => navigate('/activity')}>
-              See All
+              See All →
             </button>
           </div>
           {txLoading ? (
-            <div className="empty-activity">
-              <div className="spinner"></div>
-            </div>
+            <TransactionSkeleton />
           ) : transactions && transactions.length > 0 ? (
             <div className="recent-transactions">
-              {transactions.map((tx) => {
+              {transactions.map((tx, index) => {
                 const isSent = tx.from === currentAccount?.address;
                 return (
-                  <div key={tx.hash} className="tx-preview">
+                  <div 
+                    key={tx.hash} 
+                    className="tx-preview tx-animate" 
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
                     <span className={`tx-icon ${isSent ? 'sent' : 'received'}`}>
                       {isSent ? <ArrowUpIcon /> : <ArrowDownIcon />}
                     </span>
@@ -291,7 +389,9 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="empty-activity">
+              <div className="empty-icon">📭</div>
               <p className="text-muted">No recent transactions</p>
+              <p className="empty-hint">Send or receive SLTN to see activity here</p>
             </div>
           )}
         </div>

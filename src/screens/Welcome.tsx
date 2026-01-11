@@ -8,7 +8,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackgroundAnimation from '../components/BackgroundAnimation';
-import BookmarkReminder from '../components/BookmarkReminder';
+import { isExtensionContext, getPendingApprovals, rejectRequest } from '../core/extension-bridge';
 import './Welcome.css';
 
 // Sultan Crown Logo - uses PNG images, switches based on theme
@@ -73,12 +73,22 @@ export default function Welcome() {
   useEffect(() => {
     // Ensure dark mode is set on welcome screen
     document.documentElement.setAttribute('data-theme', 'dark');
+    
+    // If running as extension and there are pending approvals,
+    // reject them since no wallet exists yet
+    if (isExtensionContext()) {
+      getPendingApprovals().then(pending => {
+        if (pending.length > 0) {
+          console.log('[Sultan] Rejecting pending approvals - no wallet created');
+          pending.forEach(req => rejectRequest(req.id));
+        }
+      }).catch(() => {});
+    }
   }, []);
 
   return (
     <>
       <BackgroundAnimation />
-      <BookmarkReminder />
       <div className="welcome-screen">
 
         <div className="welcome-content fade-in">

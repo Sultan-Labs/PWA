@@ -4,18 +4,16 @@
  */
 
 .welcome-screen {
-  min-height: 100vh;
+  height: 600px;
+  max-height: 600px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--spacing-lg);
-  position: absolute; /* Changed from fixed to absolute to allow scrolling */
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  z-index: 5;
-  overflow-y: auto; /* Enable vertical scrolling */
+  position: relative;
+  width: 380px;
+  z-index: 10;
+  overflow-y: auto;
 }
 
 /* Ensure container allows scrolling on small screens */

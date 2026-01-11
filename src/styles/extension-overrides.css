@@ -1,0 +1,1496 @@
+/**
+ * Sultan Wallet - Browser Extension Overrides
+ * 
+ * Optimizes the PWA design for the 380×600 extension popup.
+ * These styles make the UI more compact while preserving brand identity.
+ */
+
+/* ============================================
+   GLOBAL EXTENSION OPTIMIZATIONS
+   ============================================ */
+
+/* Reduce base spacing for compact layout */
+:root {
+  --ext-spacing-xs: 2px;
+  --ext-spacing-sm: 6px;
+  --ext-spacing-md: 12px;
+  --ext-spacing-lg: 16px;
+  --ext-spacing-xl: 20px;
+}
+
+/* Base body sizing */
+body {
+  font-size: 14px;
+  width: 380px !important;
+  height: 600px !important;
+  overflow: hidden !important;
+}
+
+/* Root scrollable container */
+#root {
+  width: 380px !important;
+  height: 600px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  position: relative !important;
+}
+
+/* All screen containers - fixed 600px height to fill extension popup */
+.dashboard-screen,
+.settings-screen,
+.stake-screen,
+.governance-screen,
+.activity-screen,
+.nft-screen,
+.send-screen,
+.receive-screen,
+.become-validator-screen,
+.connected-apps-screen,
+.validator-screen {
+  height: 600px !important;
+  min-height: 600px !important;
+  max-height: 600px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  background: var(--bg-gradient) !important;
+}
+
+/* Content areas fill remaining space and scroll */
+.send-content,
+.stake-content,
+.nft-content,
+.governance-content,
+.settings-content,
+.receive-content,
+.validator-content,
+.activity-content {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--bg-gradient) !important;
+}
+
+/* Empty states fill content area */
+.nft-empty,
+.nft-loading,
+.nft-error,
+.empty-state,
+.loading-state {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 400px !important;
+}
+
+/* ============================================
+   SCREEN HEADERS - Compact & Title Between Buttons
+   ============================================ */
+
+.screen-header {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--ext-spacing-sm) !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+}
+
+/* Title fills space between buttons - centered within that space */
+.screen-header h2 {
+  flex: 1 !important;
+  text-align: center !important;
+  font-size: 1rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Header button groups */
+.header-left,
+.header-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Header buttons - compact */
+.screen-header .btn-back,
+.screen-header .btn-icon,
+.screen-header .theme-toggle {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  flex-shrink: 0 !important;
+}
+
+.screen-header .btn-back svg,
+.screen-header .btn-icon svg,
+.screen-header .theme-toggle svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Override inline styles on header icon groups */
+.screen-header > div {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+/* ============================================
+   PRE-LOGIN SCREENS - Always Dark Theme
+   These screens force dark mode via JavaScript
+   ============================================ */
+
+/* Welcome Screen */
+.welcome-screen {
+  min-height: 600px !important;
+  height: 600px !important;
+  padding: var(--ext-spacing-lg) !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background: transparent !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.welcome-content {
+  gap: var(--ext-spacing-lg) !important;
+  max-width: 340px !important;
+}
+
+.logo-container {
+  padding-top: var(--ext-spacing-sm) !important;
+}
+
+.logo-container h1 {
+  font-size: 1.75rem !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+  color: #ffffff !important;
+}
+
+.logo-container .tagline {
+  font-size: 0.9rem !important;
+  color: #ffffff !important;
+}
+
+.sultan-icon img {
+  width: 64px !important;
+  height: auto !important;
+}
+
+/* ============================================
+   UNLOCK SCREEN - Centered & Proportional
+   ============================================ */
+
+.unlock-screen {
+  min-height: 600px !important;
+  height: 600px !important;
+  padding: var(--ext-spacing-lg) !important;
+  justify-content: center !important;
+  align-items: center !important;
+  display: flex !important;
+  background: transparent !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.unlock-content {
+  max-width: 340px !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.unlock-content h2 {
+  font-size: 1.5rem !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+  color: #ffffff !important;
+}
+
+.unlock-content p {
+  font-size: 0.95rem !important;
+  margin-bottom: var(--ext-spacing-lg) !important;
+  color: #aaaaaa !important;
+}
+
+.unlock-content .sultan-icon {
+  margin-bottom: var(--ext-spacing-lg) !important;
+}
+
+.unlock-content .sultan-icon img {
+  width: 72px !important;
+  height: auto !important;
+}
+
+.unlock-content .lock-icon svg {
+  width: 56px !important;
+  height: 56px !important;
+}
+
+/* PIN Input - Fits within 380px popup */
+.unlock-screen .pin-input,
+.create-screen .pin-input {
+  gap: 6px !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 280px !important;
+}
+
+.unlock-screen .pin-digit,
+.create-screen .pin-digit {
+  width: 38px !important;
+  height: 46px !important;
+  font-size: 1.1rem !important;
+  border-radius: 6px !important;
+}
+
+.unlock-content .btn-primary {
+  padding: var(--ext-spacing-md) var(--ext-spacing-lg) !important;
+  font-size: 1rem !important;
+  min-height: 48px !important;
+  width: 100% !important;
+  max-width: 280px !important;
+  margin-top: var(--ext-spacing-lg) !important;
+}
+
+.unlock-content .btn-link {
+  font-size: 0.9rem !important;
+  margin-top: var(--ext-spacing-lg) !important;
+  padding: var(--ext-spacing-sm) !important;
+}
+
+.unlock-content .btn-secondary {
+  padding: var(--ext-spacing-md) var(--ext-spacing-lg) !important;
+  font-size: 0.95rem !important;
+  min-height: 44px !important;
+}
+
+.unlock-content .text-error {
+  font-size: 0.85rem !important;
+  margin-top: var(--ext-spacing-md) !important;
+}
+
+.unlock-content .spinner {
+  width: 40px !important;
+  height: 40px !important;
+  margin: var(--ext-spacing-lg) auto !important;
+}
+
+/* Features card - more compact */
+.features-card {
+  padding: var(--ext-spacing-md) !important;
+  gap: var(--ext-spacing-sm) !important;
+}
+
+.feature {
+  padding: var(--ext-spacing-sm) !important;
+  gap: var(--ext-spacing-sm) !important;
+}
+
+.feature-icon-wrapper {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.feature-icon-wrapper svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.feature-title {
+  font-size: 0.8rem !important;
+}
+
+.feature-desc {
+  font-size: 0.7rem !important;
+}
+
+/* Action buttons */
+.welcome-actions {
+  gap: var(--ext-spacing-sm) !important;
+  padding: 0 !important;
+}
+
+.welcome-actions .btn-primary,
+.welcome-actions .btn-secondary {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  font-size: 0.875rem !important;
+  min-height: 44px !important;
+}
+
+/* ============================================
+   DASHBOARD - Compact Balance & Actions
+   ============================================ */
+
+.dashboard-screen {
+  padding: var(--ext-spacing-md) !important;
+}
+
+/* Account selector */
+.account-selector {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  margin-bottom: var(--ext-spacing-md) !important;
+}
+
+/* Balance card */
+.balance-card {
+  padding: var(--ext-spacing-md) !important;
+  margin-bottom: var(--ext-spacing-md) !important;
+}
+
+.balance-label {
+  font-size: 0.75rem !important;
+}
+
+.balance-amount {
+  font-size: 1.75rem !important;
+}
+
+.balance-usd {
+  font-size: 0.8rem !important;
+}
+
+/* Quick actions */
+.quick-actions {
+  gap: var(--ext-spacing-sm) !important;
+  margin-bottom: var(--ext-spacing-md) !important;
+}
+
+.quick-action-btn {
+  padding: var(--ext-spacing-sm) !important;
+  min-width: 60px !important;
+}
+
+.quick-action-btn svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.quick-action-btn span {
+  font-size: 0.7rem !important;
+}
+
+/* Token list */
+.token-list {
+  gap: var(--ext-spacing-sm) !important;
+}
+
+.token-item {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+}
+
+.token-icon {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.token-symbol {
+  font-size: 0.875rem !important;
+}
+
+.token-name {
+  font-size: 0.7rem !important;
+}
+
+.token-balance {
+  font-size: 0.875rem !important;
+}
+
+.token-value {
+  font-size: 0.7rem !important;
+}
+
+/* ============================================
+   SEND/RECEIVE SCREENS - Fill 600px
+   ============================================ */
+
+.send-screen,
+.receive-screen {
+  height: 600px !important;
+  min-height: 600px !important;
+  max-height: 600px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  background: var(--bg-gradient) !important;
+}
+
+.send-content,
+.receive-content {
+  flex: 1 1 auto !important;
+  padding: var(--ext-spacing-md) !important;
+  padding-bottom: 16px !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--bg-gradient) !important;
+}
+
+/* Push Continue button to bottom of send screen */
+.send-content > .btn-primary,
+.send-content > .btn.btn-primary {
+  margin-top: auto !important;
+  flex-shrink: 0 !important;
+}
+
+/* Fee notice stays with form, button goes to bottom */
+.send-content .fee-notice {
+  margin-bottom: auto !important;
+}
+
+/* ============================================
+   STAKE SCREEN - Fill 600px
+   ============================================ */
+
+.stake-screen {
+  height: 600px !important;
+  min-height: 600px !important;
+  max-height: 600px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  background: var(--bg-gradient) !important;
+}
+
+.stake-content {
+  flex: 1 1 auto !important;
+  padding: var(--ext-spacing-md) !important;
+  padding-bottom: 16px !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--bg-gradient) !important;
+}
+
+/* Push Stake SLTN button to bottom */
+.stake-form {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+}
+
+.stake-form > .btn-primary,
+.stake-form > .btn.btn-primary {
+  margin-top: auto !important;
+  flex-shrink: 0 !important;
+}
+
+.form-group {
+  margin-bottom: var(--ext-spacing-md) !important;
+}
+
+.form-group label {
+  font-size: 0.75rem !important;
+  margin-bottom: var(--ext-spacing-xs) !important;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  font-size: 0.875rem !important;
+}
+
+/* QR Code - smaller for extension */
+.qr-container {
+  padding: var(--ext-spacing-md) !important;
+}
+
+.qr-container canvas,
+.qr-container svg {
+  max-width: 180px !important;
+  max-height: 180px !important;
+}
+
+/* ============================================
+   SETTINGS - Compact List
+   ============================================ */
+
+.settings-screen {
+  padding: var(--ext-spacing-md) !important;
+}
+
+.settings-section {
+  margin-bottom: var(--ext-spacing-md) !important;
+}
+
+.settings-section-title {
+  font-size: 0.7rem !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+}
+
+.settings-item {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  min-height: 44px !important;
+}
+
+.settings-item-icon {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.settings-item-label {
+  font-size: 0.875rem !important;
+}
+
+.settings-item-value {
+  font-size: 0.75rem !important;
+}
+
+/* ============================================
+   STAKING - Compact Cards
+   ============================================ */
+
+.stake-content {
+  padding: var(--ext-spacing-md) !important;
+}
+
+.staking-card {
+  padding: var(--ext-spacing-md) !important;
+  margin-bottom: var(--ext-spacing-md) !important;
+}
+
+.staking-stat {
+  font-size: 0.75rem !important;
+}
+
+.staking-value {
+  font-size: 1.25rem !important;
+}
+
+/* ============================================
+   ACTIVITY - Compact Transaction List
+   ============================================ */
+
+.activity-screen {
+  padding: var(--ext-spacing-md) !important;
+}
+
+.activity-item {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+}
+
+.activity-icon {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.activity-type {
+  font-size: 0.875rem !important;
+}
+
+.activity-date {
+  font-size: 0.7rem !important;
+}
+
+.activity-amount {
+  font-size: 0.875rem !important;
+}
+
+/* ============================================
+   BOTTOM NAVIGATION - Compact
+   ============================================ */
+
+.bottom-nav {
+  padding: var(--ext-spacing-xs) 0 !important;
+  height: 56px !important;
+}
+
+.nav-item {
+  padding: var(--ext-spacing-xs) !important;
+}
+
+.nav-item svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.nav-item span {
+  font-size: 0.65rem !important;
+}
+
+/* ============================================
+   BUTTONS - Consistent Sizing
+   ============================================ */
+
+.btn-primary,
+.btn-secondary,
+.btn-outline {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  font-size: 0.875rem !important;
+  min-height: 40px !important;
+}
+
+.btn-sm {
+  padding: var(--ext-spacing-xs) var(--ext-spacing-sm) !important;
+  font-size: 0.75rem !important;
+  min-height: 32px !important;
+}
+
+/* ============================================
+   CARDS - Reduced Padding
+   ============================================ */
+
+.card {
+  padding: var(--ext-spacing-md) !important;
+  border-radius: 8px !important;
+}
+
+/* ============================================
+   APPROVAL SCREEN - Optimized for dApp Requests
+   ============================================ */
+
+.approval-screen {
+  padding: var(--ext-spacing-md) !important;
+}
+
+.approval-header {
+  padding: var(--ext-spacing-sm) 0 !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+}
+
+.origin-card {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+}
+
+.origin-favicon {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.origin-name {
+  font-size: 0.875rem !important;
+}
+
+.origin-url {
+  font-size: 0.65rem !important;
+}
+
+.request-card {
+  padding: var(--ext-spacing-md) !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+}
+
+.request-card .type-icon {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.request-title {
+  font-size: 1rem !important;
+}
+
+.request-description {
+  font-size: 0.8rem !important;
+}
+
+.details-card {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  max-height: 120px !important;
+  overflow-y: auto !important;
+}
+
+/* ============================================
+   GLOBAL TOGGLE/ICON BUTTONS - Compact
+   ============================================ */
+
+.theme-toggle,
+.btn-icon {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+}
+
+.theme-toggle svg,
+.btn-icon svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Dashboard header specifically */
+.dashboard-header .header-right {
+  gap: 4px !important;
+}
+
+.dashboard-header .theme-toggle,
+.dashboard-header .btn-icon {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+/* Settings screen toggles */
+.settings-screen .toggle-switch {
+  width: 40px !important;
+  height: 22px !important;
+}
+
+.settings-screen .toggle-switch::after {
+  width: 18px !important;
+  height: 18px !important;
+}
+.transaction-preview pre,
+.message-preview pre {
+  font-size: 0.7rem !important;
+  max-height: 80px !important;
+}
+
+.warning-banner {
+  padding: var(--ext-spacing-sm) !important;
+  font-size: 0.75rem !important;
+}
+
+.approval-actions {
+  gap: var(--ext-spacing-sm) !important;
+  padding: var(--ext-spacing-sm) 0 !important;
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+body::-webkit-scrollbar {
+  width: 6px;
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.5);
+}
+
+/* ============================================
+   ANIMATIONS - Faster for Extension UX
+   ============================================ */
+
+.fade-in {
+  animation-duration: 0.2s !important;
+}
+
+/* Reduce motion for performance */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   CREATE WALLET SCREEN - Centered & Proportional
+   ============================================ */
+
+.create-screen {
+  min-height: 600px !important;
+  height: 600px !important;
+  padding: var(--ext-spacing-lg) !important;
+  justify-content: center !important;
+  align-items: center !important;
+  display: flex !important;
+  background: transparent !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.create-content {
+  max-width: 340px !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.create-content h2 {
+  font-size: 1.5rem !important;
+  margin-bottom: var(--ext-spacing-md) !important;
+  color: #ffffff !important;
+}
+
+.create-content p {
+  font-size: 0.95rem !important;
+  margin-bottom: var(--ext-spacing-lg) !important;
+  color: #aaaaaa !important;
+}
+
+.warning-box {
+  padding: var(--ext-spacing-md) !important;
+  font-size: 0.85rem !important;
+  margin-bottom: var(--ext-spacing-lg) !important;
+  max-width: 300px !important;
+}
+
+.verify-inputs {
+  gap: var(--ext-spacing-md) !important;
+  width: 100% !important;
+  max-width: 300px !important;
+}
+
+.verify-input-group {
+  width: 100% !important;
+}
+
+.verify-input-group label {
+  font-size: 0.85rem !important;
+  color: #aaaaaa !important;
+}
+
+.verify-input-group input {
+  width: 100% !important;
+  padding: var(--ext-spacing-md) !important;
+  font-size: 1rem !important;
+  background: rgba(10, 14, 26, 0.6) !important;
+  border: 1px solid rgba(0, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+.create-content .btn-primary {
+  padding: var(--ext-spacing-md) var(--ext-spacing-lg) !important;
+  font-size: 1rem !important;
+  min-height: 48px !important;
+  width: 100% !important;
+  max-width: 280px !important;
+  margin-top: var(--ext-spacing-md) !important;
+}
+
+.create-content .btn-secondary {
+  padding: var(--ext-spacing-md) var(--ext-spacing-lg) !important;
+  font-size: 0.95rem !important;
+  min-height: 44px !important;
+  width: 100% !important;
+  max-width: 280px !important;
+}
+
+/* ============================================
+   IMPORT WALLET SCREEN - Always Dark
+   ============================================ */
+
+.import-screen {
+  min-height: 600px !important;
+  height: 600px !important;
+  padding: var(--ext-spacing-lg) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: transparent !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.import-content {
+  max-width: 360px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+
+.import-content h2 {
+  font-size: 1.25rem !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+  color: #ffffff !important;
+}
+
+.import-content p {
+  color: #aaaaaa !important;
+}
+
+.mnemonic-input-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 4px !important;
+  margin-top: var(--ext-spacing-sm) !important;
+}
+
+.mnemonic-input-item {
+  padding: 2px 4px !important;
+}
+
+.word-number {
+  font-size: 0.65rem !important;
+  width: 18px !important;
+  color: #aaaaaa !important;
+}
+
+.word-input {
+  padding: 4px !important;
+  font-size: 0.75rem !important;
+  background: rgba(10, 14, 26, 0.6) !important;
+  border: 1px solid rgba(0, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* ============================================
+   NFT SCREEN - Fill 600px, NO floating lines
+   ============================================ */
+
+.nft-screen {
+  height: 600px !important;
+  min-height: 600px !important;
+  max-height: 600px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  background: var(--bg-gradient) !important;
+}
+
+/* Hide any background animation in NFT screen */
+.nft-screen .background-animation,
+.nft-screen .floating-lines {
+  display: none !important;
+}
+
+.nft-content {
+  flex: 1 1 auto !important;
+  padding: var(--ext-spacing-md) !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--bg-gradient) !important;
+}
+
+/* NFT empty state - fill available space and center content */
+.nft-empty {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 450px !important;
+  height: 100% !important;
+  background: transparent !important;
+  text-align: center !important;
+  padding: 20px !important;
+}
+
+/* NFT loading state */
+.nft-loading {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 450px !important;
+  text-align: center !important;
+}
+
+.nft-empty .empty-icon {
+  width: 80px !important;
+  height: 80px !important;
+  margin-bottom: 24px !important;
+  opacity: 0.7 !important;
+}
+
+.nft-empty h3 {
+  font-size: 1.25rem !important;
+  margin-bottom: 12px !important;
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+}
+
+.nft-empty p {
+  font-size: 0.9rem !important;
+  color: var(--text-muted) !important;
+  max-width: 280px !important;
+  line-height: 1.5 !important;
+}
+
+.nft-stats {
+  gap: var(--ext-spacing-sm) !important;
+  margin-bottom: var(--ext-spacing-md) !important;
+}
+
+.nft-stat-card {
+  padding: var(--ext-spacing-sm) !important;
+}
+
+.nft-stat-value {
+  font-size: 1.25rem !important;
+}
+
+.nft-stat-label {
+  font-size: 0.7rem !important;
+}
+
+.nft-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: var(--ext-spacing-sm) !important;
+}
+
+.nft-card {
+  border-radius: 8px !important;
+}
+
+.nft-image {
+  height: 120px !important;
+}
+
+.nft-info {
+  padding: var(--ext-spacing-sm) !important;
+}
+
+.nft-name {
+  font-size: 0.8rem !important;
+}
+
+.nft-collection {
+  font-size: 0.65rem !important;
+}
+
+.nft-empty .empty-icon {
+  width: 48px !important;
+  height: 48px !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+}
+
+.nft-empty h3 {
+  font-size: 1rem !important;
+  margin-bottom: var(--ext-spacing-xs) !important;
+}
+
+.nft-empty p {
+  font-size: 0.8rem !important;
+}
+
+/* ============================================
+   GOVERNANCE SCREEN
+   ============================================ */
+
+.governance-screen {
+  padding: 0 !important;
+}
+
+.governance-content {
+  padding: var(--ext-spacing-md) !important;
+}
+
+.governance-stats {
+  gap: var(--ext-spacing-sm) !important;
+  margin-bottom: var(--ext-spacing-md) !important;
+}
+
+.governance-stat-card {
+  padding: var(--ext-spacing-sm) !important;
+}
+
+.governance-stat-value {
+  font-size: 1.25rem !important;
+}
+
+.governance-stat-label {
+  font-size: 0.7rem !important;
+}
+
+.proposal-card {
+  padding: var(--ext-spacing-md) !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+}
+
+.proposal-title {
+  font-size: 0.9rem !important;
+}
+
+.proposal-description {
+  font-size: 0.75rem !important;
+  max-height: 40px !important;
+}
+
+.proposal-meta {
+  font-size: 0.7rem !important;
+}
+
+.vote-progress {
+  height: 6px !important;
+}
+
+/* ============================================
+   BECOME VALIDATOR SCREEN
+   ============================================ */
+
+.become-validator-screen {
+  padding: 0 !important;
+}
+
+.validator-content {
+  padding: var(--ext-spacing-md) !important;
+}
+
+.validator-content h3 {
+  font-size: 1rem !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+}
+
+.requirement-card {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+}
+
+.requirement-icon {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.requirement-title {
+  font-size: 0.85rem !important;
+}
+
+.requirement-desc {
+  font-size: 0.7rem !important;
+}
+
+/* ============================================
+   CONNECTED APPS SCREEN
+   ============================================ */
+
+.connected-apps-screen {
+  padding: var(--ext-spacing-md) !important;
+}
+
+.connected-app-item {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+}
+
+.app-favicon {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.app-name {
+  font-size: 0.875rem !important;
+}
+
+.app-origin {
+  font-size: 0.7rem !important;
+}
+
+.app-connected-at {
+  font-size: 0.65rem !important;
+}
+
+/* ============================================
+   MODALS & DIALOGS - Compact
+   ============================================ */
+
+.modal-overlay {
+  padding: var(--ext-spacing-md) !important;
+}
+
+.modal-content {
+  max-width: 340px !important;
+  padding: var(--ext-spacing-md) !important;
+}
+
+.modal-header h3 {
+  font-size: 1rem !important;
+}
+
+.modal-body {
+  font-size: 0.85rem !important;
+}
+
+.modal-actions {
+  gap: var(--ext-spacing-sm) !important;
+  margin-top: var(--ext-spacing-md) !important;
+}
+
+/* ============================================
+   PIN INPUT MODAL
+   ============================================ */
+
+.pin-modal {
+  padding: var(--ext-spacing-md) !important;
+  max-width: 300px !important;
+}
+
+.pin-modal-header h3 {
+  font-size: 1rem !important;
+}
+
+.pin-modal-header p {
+  font-size: 0.8rem !important;
+}
+
+.pin-modal-header .lock-icon {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.pin-input {
+  padding: var(--ext-spacing-sm) !important;
+  font-size: 1.25rem !important;
+}
+
+/* ============================================
+   MNEMONIC DISPLAY - Compact Grid
+   ============================================ */
+
+.mnemonic-display {
+  width: 100% !important;
+}
+
+.mnemonic-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+.mnemonic-header .visibility-toggle,
+.mnemonic-header .copy-btn {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-size: 0.8rem !important;
+  cursor: pointer !important;
+  color: var(--text-primary) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 36px !important;
+  min-width: 80px !important;
+  box-sizing: border-box !important;
+}
+
+.mnemonic-header .visibility-toggle:hover,
+.mnemonic-header .copy-btn:hover {
+  border-color: var(--accent-primary) !important;
+}
+
+.mnemonic-grid {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 4px !important;
+}
+
+.mnemonic-word {
+  padding: 4px 6px !important;
+  font-size: 0.75rem !important;
+}
+
+.mnemonic-word .word-num,
+.mnemonic-word .word-index {
+  font-size: 0.6rem !important;
+}
+
+/* ============================================
+   LOADING STATES - Smaller
+   ============================================ */
+
+.spinner {
+  width: 32px !important;
+  height: 32px !important;
+  border-width: 2px !important;
+}
+
+.loading-text {
+  font-size: 0.8rem !important;
+}
+
+/* ============================================
+   EMPTY STATES - Compact
+   ============================================ */
+
+.empty-state {
+  padding: var(--ext-spacing-lg) !important;
+}
+
+.empty-state-icon {
+  width: 48px !important;
+  height: 48px !important;
+  margin-bottom: var(--ext-spacing-sm) !important;
+}
+
+.empty-state h3 {
+  font-size: 1rem !important;
+}
+
+.empty-state p {
+  font-size: 0.8rem !important;
+}
+
+/* ============================================
+   TABS - Compact
+   ============================================ */
+
+.tabs {
+  gap: 2px !important;
+  margin-bottom: var(--ext-spacing-md) !important;
+}
+
+.tab {
+  padding: var(--ext-spacing-xs) var(--ext-spacing-sm) !important;
+  font-size: 0.8rem !important;
+}
+
+/* ============================================
+   BADGES & PILLS
+   ============================================ */
+
+.badge {
+  padding: 2px 6px !important;
+  font-size: 0.65rem !important;
+}
+
+.status-badge {
+  padding: 2px 8px !important;
+  font-size: 0.7rem !important;
+}
+
+/* ============================================
+   TOAST NOTIFICATIONS
+   ============================================ */
+
+.toast {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  font-size: 0.8rem !important;
+  max-width: 340px !important;
+}
+
+/* ============================================
+   ACCOUNT SELECTOR DROPDOWN
+   ============================================ */
+
+.account-dropdown {
+  max-height: 200px !important;
+  overflow-y: auto !important;
+}
+
+.account-dropdown-item {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+}
+
+.account-avatar {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.account-name {
+  font-size: 0.85rem !important;
+}
+
+.account-address {
+  font-size: 0.7rem !important;
+}
+
+/* ============================================
+   INPUT FIELDS - Consistent Sizing
+   ============================================ */
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="email"],
+textarea,
+select {
+  padding: var(--ext-spacing-sm) var(--ext-spacing-md) !important;
+  font-size: 0.875rem !important;
+  min-height: 36px !important;
+}
+
+textarea {
+  min-height: 60px !important;
+}
+
+/* ============================================
+   RECEIVE SCREEN - QR Optimization
+   ============================================ */
+
+.receive-screen .qr-wrapper {
+  padding: var(--ext-spacing-md) !important;
+}
+
+.receive-screen .qr-code {
+  width: 160px !important;
+  height: 160px !important;
+}
+
+.receive-screen .address-display {
+  font-size: 0.7rem !important;
+  padding: var(--ext-spacing-sm) !important;
+  word-break: break-all !important;
+}
+
+.receive-screen .copy-btn {
+  padding: var(--ext-spacing-xs) var(--ext-spacing-sm) !important;
+  font-size: 0.75rem !important;
+}
+
+/* ============================================
+   SEND SCREEN - Amount Input
+   ============================================ */
+
+.amount-input-wrapper {
+  margin-bottom: var(--ext-spacing-md) !important;
+}
+
+.amount-input {
+  font-size: 1.5rem !important;
+  padding: var(--ext-spacing-sm) !important;
+}
+
+.amount-usd {
+  font-size: 0.8rem !important;
+}
+
+.max-btn {
+  padding: 2px 8px !important;
+  font-size: 0.7rem !important;
+}
+
+.recipient-input {
+  font-size: 0.8rem !important;
+}
+
+/* ============================================
+   BACKGROUND ANIMATION - Thinner Lines
+   ============================================ */
+
+.floating-line {
+  width: 1px !important;
+}
+
+.background-animation {
+  opacity: 0.7 !important;
+}
+
+/* ============================================
+   GLOBAL PIN INPUT - Fits 380px width
+   ============================================ */
+
+.pin-input {
+  display: flex !important;
+  gap: 6px !important;
+  justify-content: center !important;
+  max-width: 280px !important;
+  margin: 0 auto !important;
+}
+
+.pin-digit {
+  width: 38px !important;
+  height: 46px !important;
+  font-size: 1.1rem !important;
+  border-radius: 6px !important;
+  text-align: center !important;
+}

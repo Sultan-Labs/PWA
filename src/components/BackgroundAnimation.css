@@ -4,12 +4,12 @@
  */
 
 .background-animation {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
+  width: 380px;
+  height: 600px;
+  z-index: 1;
   overflow: hidden;
   background: var(--bg-gradient);
   pointer-events: none;
@@ -17,13 +17,13 @@
 
 /* Floating Vertical Lines Background */
 .floating-lines {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 380px;
+  height: 600px;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
   overflow: hidden;
 }
 

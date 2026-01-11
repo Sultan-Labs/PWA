@@ -1,10 +1,48 @@
 .receive-screen {
-  min-height: 100vh;
+  height: 600px;
+  min-height: 600px;
+  max-height: 600px;
   display: flex;
   flex-direction: column;
   background: var(--bg-gradient);
   position: relative;
   overflow: hidden;
+}
+
+.receive-screen .screen-header {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  padding-top: max(var(--spacing-md), env(safe-area-inset-top));
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: var(--glass-border);
+  gap: var(--spacing-sm);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: var(--glass-shadow);
+  flex-shrink: 0;
+}
+
+.receive-screen .header-left,
+.receive-screen .header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.receive-screen .screen-header h2 {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
 }
 
 .receive-content {
@@ -13,6 +51,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .receive-card {

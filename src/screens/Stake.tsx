@@ -369,11 +369,17 @@ export default function Stake() {
     return (
       <div className="stake-screen">
         <header className="screen-header">
-          <button className="btn-back" onClick={handleCancelPin}>
-            <BackIcon />
-          </button>
+          <div className="header-left">
+            <button className="btn-back" onClick={handleCancelPin}>
+              <BackIcon />
+            </button>
+          </div>
           <h2>Confirm PIN</h2>
-          <div style={{ width: '20px' }} />
+          <div className="header-right">
+            <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
+              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+            </button>
+          </div>
         </header>
 
         <div className="stake-content fade-in" style={{ textAlign: 'center', paddingTop: '60px' }}>
@@ -453,11 +459,13 @@ export default function Stake() {
   return (
     <div className="stake-screen">
       <header className="screen-header">
-        <button className="btn-back" onClick={() => navigate('/dashboard')}>
-          <BackIcon />
-        </button>
+        <div className="header-left">
+          <button className="btn-back" onClick={() => navigate('/dashboard')}>
+            <BackIcon />
+          </button>
+        </div>
         <h2>Staking</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="header-right">
           <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>

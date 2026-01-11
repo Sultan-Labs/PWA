@@ -4,7 +4,7 @@
  * Generates new mnemonic and secures with PIN.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import PinInput from '../components/PinInput';
@@ -23,6 +23,11 @@ export default function CreateWallet() {
   const [verifyWords, setVerifyWords] = useState<{ index: number; word: string }[]>([]);
   const [verifyInput, setVerifyInput] = useState<string[]>(['', '', '']);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Force dark mode for Create Wallet screen
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }, []);
 
   const handlePinComplete = (enteredPin: string) => {
     if (step === 'pin') {
@@ -86,27 +91,30 @@ export default function CreateWallet() {
 
   if (isLoading) {
     return (
-      <div className="create-screen">
-        <div className="create-content">
-          <div className="spinner" />
-          <p className="mt-md">Creating your wallet...</p>
+      <>
+        <div className="create-screen">
+          <div className="create-content">
+            <div className="spinner" />
+            <p className="mt-md">Creating your wallet...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="create-screen">
-      <div className="create-content fade-in">
-        {step === 'pin' && (
-          <>
-            <h2>Create a PIN</h2>
-            <p className="text-muted mb-lg">
-              This PIN will be used to unlock your wallet
-            </p>
-            <PinInput length={6} onComplete={handlePinComplete} />
-          </>
-        )}
+    <>
+      <div className="create-screen">
+        <div className="create-content fade-in">
+          {step === 'pin' && (
+            <>
+              <h2>Create a PIN</h2>
+              <p className="text-muted mb-lg">
+                This PIN will be used to unlock your wallet
+              </p>
+              <PinInput length={6} onComplete={handlePinComplete} />
+            </>
+          )}
 
         {step === 'confirm-pin' && (
           <>
@@ -183,5 +191,6 @@ export default function CreateWallet() {
         </button>
       </div>
     </div>
+    </>
   );
 }

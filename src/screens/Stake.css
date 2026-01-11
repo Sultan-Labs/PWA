@@ -1,5 +1,7 @@
 .stake-screen {
-  min-height: 100vh;
+  height: 600px;
+  min-height: 600px;
+  max-height: 600px;
   display: flex;
   flex-direction: column;
   background: var(--bg-gradient);
@@ -10,7 +12,6 @@
 .screen-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: var(--spacing-md) var(--spacing-lg);
   padding-top: max(var(--spacing-md), env(safe-area-inset-top));
   background: var(--glass-bg);
@@ -22,17 +23,25 @@
   top: 0;
   z-index: 10;
   box-shadow: var(--glass-shadow);
+  flex-shrink: 0;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
 .screen-header h2 {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
+  flex: 1;
   text-align: center;
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--text-primary);
 }
 
@@ -40,6 +49,7 @@
   flex: 1;
   padding: var(--spacing-lg);
   overflow-y: auto;
+  min-height: 0;
 }
 
 .staking-overview {

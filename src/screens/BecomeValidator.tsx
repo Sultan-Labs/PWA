@@ -12,7 +12,6 @@ import { useBalance } from '../hooks/useBalance';
 import { SultanWallet } from '../core/wallet';
 import { sultanAPI } from '../api/sultanAPI';
 import { validateAddress, validateAmount, verifySessionPin, validateMoniker } from '../core/security';
-import BackgroundAnimation from '../components/BackgroundAnimation';
 import './BecomeValidator.css';
 
 // --- Icons ---
@@ -260,13 +259,14 @@ export default function BecomeValidator() {
 
   return (
     <div className="validator-screen">
-      <BackgroundAnimation />
       <header className="screen-header">
-        <button className="btn-back" onClick={() => step === 'overview' ? navigate('/stake') : setStep('overview')}>
-          <BackIcon />
-        </button>
+        <div className="header-left">
+          <button className="btn-back" onClick={() => step === 'overview' ? navigate('/stake') : setStep('overview')}>
+            <BackIcon />
+          </button>
+        </div>
         <h2>Become Validator</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="header-right">
           <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme">
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
