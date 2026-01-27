@@ -215,16 +215,18 @@ export default function Dashboard() {
 
   // Parse formatted balance string to number (removes commas)
   const parseFormattedBalance = (formatted: string): number => {
-    return Number(formatted.replace(/,/g, '')) || 0;
+    const num = Number(formatted.replace(/,/g, ''));
+    return isNaN(num) ? 0 : num;
   };
 
-  const totalBalance = parseFormattedBalance(formatBalance(balanceData?.available)) + 
-                       parseFormattedBalance(formatBalance(stakingData?.staked));
+  const available = parseFormattedBalance(formatBalance(balanceData?.available));
+  const staked = parseFormattedBalance(formatBalance(stakingData?.staked));
+  const totalBalance = available + staked;
   
   // Animated balance display
-  const animatedBalance = useAnimatedNumber(totalBalance, 600);
-  const animatedAvailable = useAnimatedNumber(parseFormattedBalance(formatBalance(balanceData?.available)), 600);
-  const animatedStaked = useAnimatedNumber(parseFormattedBalance(formatBalance(stakingData?.staked)), 600);
+  const animatedBalance = useAnimatedNumber(isNaN(totalBalance) ? 0 : totalBalance, 600);
+  const animatedAvailable = useAnimatedNumber(isNaN(available) ? 0 : available, 600);
+  const animatedStaked = useAnimatedNumber(isNaN(staked) ? 0 : staked, 600);
   const isLoading = balanceLoading || stakingLoading;
 
   return (
