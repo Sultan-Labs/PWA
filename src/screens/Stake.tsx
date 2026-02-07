@@ -253,20 +253,25 @@ export default function Stake() {
     try {
       const atomicAmount = SultanWallet.parseSLTN(amount);
       
+      // Fetch nonce from blockchain BEFORE signing to ensure consistency
+      const currentNonce = await sultanAPI.getNonce(currentAccount.address);
+      const timestamp = Date.now();
+      
+      // Sign the EXACT transaction that will be sent to the API
+      // Must match the JSON format expected by the node's signature verification
       const txData = {
-        type: 'stake' as const,
         from: currentAccount.address,
-        validatorAddress: selectedValidator.address,
+        to: selectedValidator.address,
         amount: atomicAmount,
-        timestamp: Date.now(),
+        memo: '',
+        nonce: currentNonce,
+        timestamp,
       };
 
       const signature = await wallet.signTransaction(txData, currentAccount.index);
       
-      await sultanAPI.stake({
-        delegatorAddress: currentAccount.address,
-        validatorAddress: selectedValidator.address,
-        amount: atomicAmount,
+      await sultanAPI.stakeTokens({
+        transaction: txData,
         signature,
         publicKey: currentAccount.publicKey,
       });
@@ -292,18 +297,27 @@ export default function Stake() {
     try {
       const atomicAmount = SultanWallet.parseSLTN(amount);
       
+      // Fetch nonce from blockchain BEFORE signing
+      const currentNonce = await sultanAPI.getNonce(currentAccount.address);
+      const timestamp = Date.now();
+      
+      // Get validator address from current delegation
+      const validatorAddr = stakingData?.validator || '';
+      
+      // Sign the EXACT transaction that will be sent to the API
       const txData = {
-        type: 'unstake' as const,
         from: currentAccount.address,
+        to: validatorAddr,
         amount: atomicAmount,
-        timestamp: Date.now(),
+        memo: '',
+        nonce: currentNonce,
+        timestamp,
       };
 
       const signature = await wallet.signTransaction(txData, currentAccount.index);
       
-      await sultanAPI.unstake({
-        delegatorAddress: currentAccount.address,
-        amount: atomicAmount,
+      await sultanAPI.unstakeTokens({
+        transaction: txData,
         signature,
         publicKey: currentAccount.publicKey,
       });
@@ -327,16 +341,27 @@ export default function Stake() {
     if (!wallet || !currentAccount) return;
 
     try {
+      // Fetch nonce from blockchain BEFORE signing
+      const currentNonce = await sultanAPI.getNonce(currentAccount.address);
+      const timestamp = Date.now();
+      
+      // Get validator address from current delegation
+      const validatorAddr = stakingData?.validator || '';
+      
+      // Sign the EXACT transaction that will be sent to the API
       const txData = {
-        type: 'claim_rewards' as const,
         from: currentAccount.address,
-        timestamp: Date.now(),
+        to: validatorAddr,
+        amount: '0',
+        memo: 'claim_rewards',
+        nonce: currentNonce,
+        timestamp,
       };
 
       const signature = await wallet.signTransaction(txData, currentAccount.index);
       
       await sultanAPI.claimRewards({
-        delegatorAddress: currentAccount.address,
+        transaction: txData,
         signature,
         publicKey: currentAccount.publicKey,
       });

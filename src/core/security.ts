@@ -747,7 +747,8 @@ export function validateAmount(
   }
   
   const amountNum = parseFloat(amount);
-  const availableNum = parseFloat(available);
+  // Strip commas from formatted balance (e.g., "500,000,000" -> "500000000")
+  const availableNum = parseFloat(available.replace(/,/g, ''));
   
   if (isNaN(amountNum) || amountNum <= 0) {
     return { valid: false, error: 'Amount must be greater than 0' };

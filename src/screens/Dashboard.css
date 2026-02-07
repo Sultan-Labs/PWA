@@ -709,6 +709,11 @@
 .balance-value {
   position: relative;
   display: inline-block;
+  /* Inherit the gradient text from parent .balance-amount */
+  background: inherit;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .breakdown-value {

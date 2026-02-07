@@ -29,8 +29,11 @@ import {
   decodeSessionKey,
 } from './walletlink-crypto';
 
-// Relay server URL (can be self-hosted)
-const RELAY_URL = 'wss://relay.sltn.io';
+// Relay server URLs
+// Primary: Fly.io deployment (always works)
+// Fallback: Custom domain (relay.sltn.io)
+const RELAY_URL = 'wss://sultan-walletlink-relay.fly.dev';
+const RELAY_URL_CUSTOM = 'wss://relay.sltn.io';
 const RELAY_URL_DEV = 'wss://localhost:8765';
 
 // Session storage key for persistence

@@ -178,7 +178,7 @@ export class SultanWalletSDK {
    */
   private async connectViaWalletLink(): Promise<WalletAccount> {
     // Initialize WalletLink session generator
-    const relayUrl = this.options.relayUrl || 'wss://relay.sltn.io';
+    const relayUrl = this.options.relayUrl || 'wss://sultan-walletlink-relay.fly.dev';
     this.walletLink = new WalletLinkSessionGenerator(relayUrl);
     const isMobile = SultanWalletSDK.isMobile();
 

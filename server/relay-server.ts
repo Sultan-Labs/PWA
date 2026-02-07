@@ -65,35 +65,36 @@ wss.on('connection', (ws: WebSocket) => {
       // For routing, we need sessionId which is sent in plaintext
       const message = JSON.parse(data.toString());
       
-      if (!message.sessionId) {
+      if (!message.sessionId || typeof message.sessionId !== 'string') {
         ws.send(JSON.stringify({ type: 'error', payload: { message: 'Missing sessionId' } }));
         return;
       }
 
-      sessionId = message.sessionId;
+      const currentSessionId: string = message.sessionId;
+      sessionId = currentSessionId;
 
       switch (message.type) {
         case 'session_init':
-          handleSessionInit(ws, sessionId, message);
+          handleSessionInit(ws, currentSessionId, message);
           role = 'dapp';
           break;
 
         case 'session_join':
-          handleSessionJoin(ws, sessionId, message);
+          handleSessionJoin(ws, currentSessionId, message);
           role = 'wallet';
           break;
 
         case 'session_end':
-          handleSessionEnd(sessionId);
+          handleSessionEnd(currentSessionId);
           break;
 
         case 'heartbeat':
-          handleHeartbeat(sessionId);
+          handleHeartbeat(currentSessionId);
           break;
 
         default:
           // Relay all other messages to the peer
-          relayMessage(sessionId, role, data.toString());
+          relayMessage(currentSessionId, role, data.toString());
       }
     } catch (e) {
       console.error('[Relay] Message parse error:', e);

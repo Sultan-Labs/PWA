@@ -12,6 +12,6 @@
     "resolveJsonModule": true,
     "declaration": true
   },
-  "include": ["*.ts"],
+  "include": ["relay-server.ts"],
   "exclude": ["node_modules", "dist"]
 }

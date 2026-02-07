@@ -236,6 +236,11 @@ async function restApi<T>(
 
       const json = await response.json();
       
+      // Check if response contains an error (node returns 200 with error in body)
+      if (json && typeof json === 'object' && 'error' in json) {
+        throw new Error(json.error as string);
+      }
+      
       // Validate response with Zod schema if provided
       if (schema) {
         const result = schema.safeParse(json);
@@ -544,6 +549,7 @@ export async function unstakeTokens(
       from: string;
       to: string;
       amount: string;
+      memo?: string;
       nonce: number;
       timestamp: number;
     };
@@ -576,6 +582,7 @@ export async function claimRewards(
       from: string;
       to: string;
       amount: string;
+      memo?: string;
       nonce: number;
       timestamp: number;
     };
@@ -614,12 +621,6 @@ interface StakeRequest {
 interface UnstakeRequest {
   delegatorAddress: string;
   amount: string;
-  signature: string;
-  publicKey: string;
-}
-
-interface ClaimRewardsRequest {
-  delegatorAddress: string;
   signature: string;
   publicKey: string;
 }
@@ -692,8 +693,10 @@ export const sultanAPI = {
   getValidators,
   getTransactions,
   getNetworkStatus,
-  
-  /**
+  stakeTokens,
+  unstakeTokens,
+  claimRewards,
+    /**
    * Get the current nonce for an address
    * The nonce is fetched from the balance endpoint
    */
@@ -750,22 +753,6 @@ export const sultanAPI = {
         from: req.delegatorAddress,
         to: '', // Self-unbond
         amount: req.amount,
-        nonce: balance.nonce,
-        timestamp: Date.now(),
-      },
-      signature: req.signature,
-      publicKey: req.publicKey || '',
-    });
-  },
-
-  claimRewards: async (req: ClaimRewardsRequest): Promise<{ hash: string }> => {
-    // Fetch current nonce for proper transaction ordering
-    const balance = await getBalance(req.delegatorAddress);
-    return claimRewards({
-      transaction: {
-        from: req.delegatorAddress,
-        to: '',
-        amount: '0',
         nonce: balance.nonce,
         timestamp: Date.now(),
       },

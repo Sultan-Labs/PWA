@@ -1,13 +1,21 @@
 # Sultan Wallet
 
-A secure, zero-fee blockchain wallet built as a Progressive Web App (PWA).
+A secure, zero-fee blockchain wallet available as a Progressive Web App (PWA) and Chrome Browser Extension.
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue)
+![Version](https://img.shields.io/badge/version-1.6.6-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue)
 ![React](https://img.shields.io/badge/React-18.3-61DAFB)
-![Tests](https://img.shields.io/badge/tests-219%20passing-success)
+![Tests](https://img.shields.io/badge/tests-271%20passing-success)
 ![Security](https://img.shields.io/badge/security-10%2F10-brightgreen)
+
+## Distribution
+
+| Platform | URL | Status |
+|----------|-----|--------|
+| **PWA** | https://wallet.sltn.io | ✅ Live |
+| **Chrome Extension** | Chrome Web Store | ⏳ v1.6.6 Under Review |
+| **Firefox Add-on** | Coming Soon | 🔜 Planned |
 
 ## Features
 
@@ -18,7 +26,9 @@ A secure, zero-fee blockchain wallet built as a Progressive Web App (PWA).
 - ⚡ **Offline Capable** - Transaction signing works offline
 - 🗳️ **Governance** - Vote on proposals directly from wallet
 - 💎 **Staking** - Stake SLTN and become a validator
-- 🛡️ **Security Reviewed** - 10/10 on all security priorities (December 2025)
+- 🌐 **dApp Integration** - Connect to Sultan dApps via `window.sultan`
+- 📲 **WalletLink** - Connect mobile wallet to desktop dApps via QR code
+- 🛡️ **Security Reviewed** - 10/10 on all security priorities
 
 ## Quick Start
 
@@ -81,6 +91,44 @@ All crypto libraries are independently audited (Cure53):
 - [@noble/hashes](https://github.com/paulmillr/noble-hashes) - SHA-256, SHA-512, PBKDF2
 - [@scure/bip39](https://github.com/paulmillr/scure-bip39) - BIP39 mnemonic generation
 - [bech32](https://github.com/bitcoinjs/bech32) - Address encoding
+
+## WalletLink (Mobile-to-Desktop)
+
+WalletLink enables the mobile wallet to connect to desktop dApps via QR code scanning.
+
+### How It Works
+
+1. **Desktop dApp** displays a QR code with session info
+2. **Mobile wallet** scans QR code
+3. **WebSocket relay** connects both parties
+4. **End-to-end encryption** (AES-256-GCM) protects all messages
+5. **User approves** each transaction/signing request on mobile
+
+### Architecture
+
+```
+┌─────────────────┐          ┌─────────────────┐
+│  Desktop dApp   │          │  Mobile Wallet  │
+│                 │          │     (PWA)       │
+│  Displays QR ◄──┼──────────┼──► Scans QR     │
+└────────┬────────┘          └────────┬────────┘
+         │                            │
+         │  WSS (encrypted)           │  WSS (encrypted)
+         ▼                            ▼
+    ┌─────────────────────────────────────┐
+    │         WalletLink Relay            │
+    │   wss://sultan-walletlink-relay     │
+    │         .fly.dev                    │
+    │   (Routes encrypted messages only)  │
+    └─────────────────────────────────────┘
+```
+
+### Security
+
+- **E2E Encryption**: AES-256-GCM with HKDF key derivation
+- **Session Keys**: Random 256-bit keys, never sent over network
+- **No Key Access**: Relay server only routes encrypted blobs
+- **Session Timeout**: 10 minutes inactivity auto-disconnect
 
 ## Development
 

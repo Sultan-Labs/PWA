@@ -59,6 +59,13 @@
   border-color: var(--accent-primary);
 }
 
+/* Center PIN step vertically like CreateWallet */
+.import-screen.pin-step {
+  justify-content: center;
+  padding-top: var(--spacing-lg);
+  overflow-y: hidden;
+}
+
 @media (max-width: 400px) {
   .mnemonic-input-grid {
     grid-template-columns: repeat(2, 1fr);
