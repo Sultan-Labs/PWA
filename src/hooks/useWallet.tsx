@@ -218,10 +218,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       await saveWallet(mnemonic, pin);
       setSessionPin(pin);
 
+      // SECURITY: Store hashed PIN for transaction verification
+      const pinHash = hashPinForVerification(pin);
+      setSessionPinHash(pinHash);
+
       // Initialize security session
       startSession(() => {
         wallet.destroy();
         clearSession();
+        clearSessionPinHash();
       });
 
       const accounts = wallet.getAccounts();
@@ -258,10 +263,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       await saveWallet(mnemonic, pin);
       setSessionPin(pin);
 
+      // SECURITY: Store hashed PIN for transaction verification
+      const pinHash = hashPinForVerification(pin);
+      setSessionPinHash(pinHash);
+
       // Initialize security session
       startSession(() => {
         wallet.destroy();
         clearSession();
+        clearSessionPinHash();
       });
 
       const accounts = wallet.getAccounts();

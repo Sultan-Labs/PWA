@@ -490,8 +490,7 @@ export default function Send() {
         </div>
 
         <div className="fee-notice">
-          <span className="fee-badge">🎉 Zero Fee</span>
-          <span className="text-muted">Sultan Network has no transaction fees</span>
+          <span className="fee-badge">⚡ Instant & Free 🚀</span>
         </div>
 
         {error && <p className="text-error mt-md">{error}</p>}

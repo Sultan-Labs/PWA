@@ -90,17 +90,44 @@
 .claim-btn {
   width: 100%;
   margin-bottom: var(--spacing-lg);
-  background: rgba(0, 212, 170, 0.1);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.2), rgba(0, 180, 150, 0.15)) !important;
+  border: 2px solid var(--accent-primary) !important;
+  color: var(--accent-primary) !important;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 12px rgba(0, 212, 170, 0.25);
+  transition: all 0.2s ease;
+}
+
+.claim-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.35), rgba(0, 180, 150, 0.25)) !important;
+  box-shadow: 0 0 20px rgba(0, 212, 170, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Light mode specific styling */
+[data-theme="light"] .claim-btn {
+  background: linear-gradient(135deg, rgba(0, 153, 170, 0.15), rgba(0, 130, 140, 0.1)) !important;
+  border-color: #009999 !important;
+  color: #007777 !important;
+  box-shadow: 0 2px 8px rgba(0, 153, 170, 0.2);
+}
+
+[data-theme="light"] .claim-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 153, 170, 0.25), rgba(0, 130, 140, 0.2)) !important;
+  box-shadow: 0 4px 16px rgba(0, 153, 170, 0.3);
 }
 
 .claim-btn svg {
   stroke: currentColor;
+  width: 18px;
+  height: 18px;
 }
 
 .tab-bar {

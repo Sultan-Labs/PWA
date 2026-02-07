@@ -16,6 +16,22 @@
   text-align: center;
 }
 
+/* Fade-in transition for PIN step */
+.import-screen.pin-step .import-content {
+  animation: fadeInPIN 0.3s ease-out;
+}
+
+@keyframes fadeInPIN {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .import-content h2 {
   font-size: 1.75rem;
   margin-bottom: var(--spacing-sm);
@@ -53,17 +69,93 @@
   padding: var(--spacing-xs) !important;
   font-size: 0.875rem !important;
   min-width: 0;
+  text-align: center;
 }
 
 .word-input:focus {
   border-color: var(--accent-primary);
 }
 
-/* Center PIN step vertically like CreateWallet */
+/* Center PIN step vertically like CreateWallet with premium styling */
 .import-screen.pin-step {
   justify-content: center;
   padding-top: var(--spacing-lg);
   overflow-y: hidden;
+  /* Premium radial gradient - spotlight effect */
+  background: radial-gradient(circle at 50% 50%, #0d1424 0%, #000000 100%);
+}
+
+/* Glowing Logo Container (same as CreateWallet) */
+.import-screen .logo-glow-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Sultan logo with pulsing glow */
+.import-screen .sultan-logo-glow {
+  animation: logoGlowImport 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes logoGlowImport {
+  0% {
+    filter: drop-shadow(0 0 8px rgba(0, 212, 170, 0.6));
+  }
+  100% {
+    filter: drop-shadow(0 0 16px rgba(0, 212, 170, 0.9));
+  }
+}
+
+/* Premium header with neon glow effect for PIN steps */
+.import-screen .glow-header {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: #ffffff;
+  text-shadow: 
+    0 0 20px rgba(0, 255, 255, 0.4),
+    0 0 40px rgba(0, 229, 204, 0.2);
+}
+
+/* Subtle subtext for reduced eye strain */
+.import-screen .premium-subtext {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Button styling for import screen */
+.import-screen .btn-secondary {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+.import-screen .btn-secondary:hover {
+  border-color: #00ffff !important;
+  color: #00ffff !important;
+  background: rgba(0, 255, 255, 0.1) !important;
+}
+
+/* iPhone SE / Small device optimization for PIN step */
+@media (max-width: 375px) {
+  .import-screen.pin-step {
+    padding: var(--spacing-md);
+  }
+  
+  .import-screen .logo-glow-container {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .import-screen .sultan-logo-glow {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .import-screen .glow-header {
+    font-size: 1.5rem;
+  }
 }
 
 @media (max-width: 400px) {

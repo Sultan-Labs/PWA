@@ -70,6 +70,12 @@ type Tab = 'stake' | 'unstake' | 'validators';
 type Step = 'form' | 'pin';
 type PendingAction = 'stake' | 'unstake' | 'claim' | null;
 
+// Truncate long validator names/addresses for display
+const truncateName = (name: string, startChars: number = 10, endChars: number = 5): string => {
+  if (name.length <= startChars + endChars + 3) return name;
+  return `${name.slice(0, startChars)}...${name.slice(-endChars)}`;
+};
+
 export default function Stake() {
   const navigate = useNavigate();
   const { wallet, currentAccount, lock } = useWallet();
@@ -577,7 +583,7 @@ export default function Stake() {
             {tab === 'stake' && selectedValidator && (
               <div className="selected-validator">
                 <span className="text-muted">Staking with:</span>
-                <span className="validator-name">{selectedValidator.name}</span>
+                <span className="validator-name" title={selectedValidator.name}>{truncateName(selectedValidator.name)}</span>
               </div>
             )}
 
@@ -636,7 +642,7 @@ export default function Stake() {
                 }}
               >
                 <div className="validator-info">
-                  <span className="validator-name">{validator.name}</span>
+                  <span className="validator-name" title={validator.name}>{truncateName(validator.name)}</span>
                   <span className="validator-address">
                     {validator.address.slice(0, 16)}...
                   </span>

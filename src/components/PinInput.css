@@ -15,6 +15,8 @@
 .pin-digit-container {
   display: flex;
   align-items: center;
+  position: relative;
+  isolation: isolate; /* Prevent any visual bleed between boxes */
 }
 
 /* The Digit Input Box */

@@ -321,7 +321,7 @@ export default function Dashboard() {
         {stakingData && stakingData.staked !== '0' ? (
           <div className="staking-summary staking-active">
             <div className="staking-header">
-              <h3>💎 Your Staking</h3>
+              <h3>Your Staking</h3>
               <span className="staking-badge">Active</span>
             </div>
             <div className="staking-info">

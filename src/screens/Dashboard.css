@@ -322,24 +322,38 @@
 
 .staking-info {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: 0 var(--spacing-sm);
 }
 
 .staking-stat {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
 }
 
 .stat-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .stat-value {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
+  word-break: break-all;
+  text-align: center;
+}
+
+.stat-value.rewards {
+  font-size: 0.85rem;
+  word-break: break-all;
 }
 
 .stat-value.accent {
