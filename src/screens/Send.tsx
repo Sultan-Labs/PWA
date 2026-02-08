@@ -91,12 +91,14 @@ export default function Send() {
 
   // Formatted for display (with commas)
   const availableBalance = SultanWallet.formatSLTN(balanceData?.available || '0');
-  // Raw for form input (no commas)
-  const availableBalanceRaw = SultanWallet.formatSLTNRaw(balanceData?.available || '0');
+  // Raw for form input (no commas) - explicitly strip any comma separators
+  const availableBalanceRaw = SultanWallet.formatSLTNRaw(balanceData?.available || '0').replace(/,/g, '');
 
   const handleMaxClick = () => {
-    console.log('[Send] MAX clicked, setting amount to:', availableBalanceRaw, 'from balance:', balanceData?.available);
-    setAmount(availableBalanceRaw);
+    // Ensure no commas in the value we set
+    const rawValue = availableBalanceRaw.replace(/,/g, '');
+    console.log('[Send] MAX clicked, setting amount to:', rawValue, 'from balance:', balanceData?.available);
+    setAmount(rawValue);
   };
 
   const validateForm = (): boolean => {

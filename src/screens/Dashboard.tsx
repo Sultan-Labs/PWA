@@ -180,7 +180,12 @@ export default function Dashboard() {
   const { theme, setTheme } = useTheme();
   const { data: balanceData, isLoading: balanceLoading } = useBalance(currentAccount?.address);
   const { data: stakingData, isLoading: stakingLoading } = useStakingInfo(currentAccount?.address);
-  const { data: transactions, isLoading: txLoading } = useTransactions(currentAccount?.address, 3);
+  const { data: rawTransactions, isLoading: txLoading } = useTransactions(currentAccount?.address, 3);
+  
+  // Deduplicate transactions by hash to prevent display bugs
+  const transactions = rawTransactions ? 
+    [...new Map(rawTransactions.map(tx => [tx.hash, tx])).values()] : 
+    undefined;
   
   const [showCopied, setShowCopied] = useState(false);
 
