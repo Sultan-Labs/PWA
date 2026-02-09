@@ -214,15 +214,18 @@ export default function BecomeValidator() {
       
       // Fetch current nonce from blockchain BEFORE signing
       const currentNonce = await sultanAPI.getNonce(currentAccount.address);
+      const timestamp = Date.now();
+      const memo = `validator:${moniker.trim() || 'Sultan Validator'}`;
       
+      // IMPORTANT: Sign EXACTLY the fields the node expects for verification
+      // Node reconstructs: {"amount":"...","from":"...","memo":"...","nonce":...,"timestamp":...,"to":"..."}
       const txData = {
-        type: 'fund_validator' as const,
-        from: currentAccount.address,
-        to: validatorAddress,
         amount: atomicAmount,
-        moniker: moniker.trim() || 'Sultan Validator',
+        from: currentAccount.address,
+        memo,
         nonce: currentNonce,
-        timestamp: Date.now(),
+        timestamp,
+        to: validatorAddress,
       };
 
       const signature = await wallet.signTransaction(txData, currentAccount.index);
@@ -231,9 +234,9 @@ export default function BecomeValidator() {
         from: currentAccount.address,
         to: validatorAddress,
         amount: atomicAmount,
-        memo: `validator:${moniker.trim() || 'Sultan Validator'}`,
+        memo,
         nonce: currentNonce,
-        timestamp: Date.now(),
+        timestamp,
         signature,
         publicKey: currentAccount.publicKey,
       });
