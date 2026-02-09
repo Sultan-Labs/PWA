@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Sultan Wallet",
   "short_name": "Sultan",
-  "version": "1.6.0",
+  "version": "1.6.8",
   "description": "Zero-fee blockchain wallet for Sultan L1. Send, receive, stake SLTN and interact with dApps.",
   "author": "Sultan Foundation",
   "homepage_url": "https://sltn.io",

@@ -104,6 +104,16 @@ Sultan Wallet is open source software. You can review our code to verify our pri
 - **Repository**: https://github.com/Wollnbergen/0xv7
 - **License**: MIT
 
+## Chrome Web Store Compliance
+
+Sultan Wallet's use of information received from Google APIs adheres to the [Chrome Web Store User Data Policy](https://developer.chrome.com/docs/webstore/program-policies/user-data-faq), including the Limited Use requirements.
+
+Specifically:
+- We limit data use to providing wallet functionality only
+- We do not transfer user data to third parties except as necessary to provide the wallet service
+- We do not use data for advertising purposes
+- We do not sell user data
+
 ## Contact
 
 For privacy-related questions or concerns:

@@ -1,3 +1,4 @@
+/* Premium Create Wallet / PIN Screen */
 .create-screen {
   min-height: 100vh;
   display: flex;
@@ -5,13 +6,82 @@
   justify-content: center;
   align-items: center;
   padding: var(--spacing-lg);
-  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  /* Premium radial gradient - spotlight effect */
+  background: radial-gradient(circle at 50% 50%, #0d1424 0%, #000000 100%);
+}
+
+.create-screen .btn-secondary {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+.create-screen .btn-secondary:hover {
+  border-color: #00ffff !important;
+  color: #00ffff !important;
+  background: rgba(0, 255, 255, 0.1) !important;
 }
 
 .create-content {
   width: 100%;
   max-width: 400px;
   text-align: center;
+}
+
+/* Fade-in animation for content */
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Glowing Logo Container */
+.logo-glow-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Sultan logo with pulsing glow */
+.sultan-logo-glow {
+  animation: logoGlow 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes logoGlow {
+  0% {
+    filter: drop-shadow(0 0 8px rgba(0, 212, 170, 0.6));
+  }
+  100% {
+    filter: drop-shadow(0 0 16px rgba(0, 212, 170, 0.9));
+  }
+}
+
+/* Premium header with neon glow effect */
+.glow-header {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+  color: #ffffff;
+  text-shadow: 
+    0 0 20px rgba(0, 255, 255, 0.4),
+    0 0 40px rgba(0, 229, 204, 0.2);
+}
+
+/* Subtle subtext for reduced eye strain */
+.premium-subtext {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .create-content h2 {
@@ -65,5 +135,41 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* iPhone SE / Small device optimization */
+@media (max-width: 375px) {
+  .create-screen {
+    padding: var(--spacing-md);
+  }
+  
+  .logo-glow-container {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .sultan-logo-glow {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .glow-header {
+    font-size: 1.5rem;
+  }
+  
+  .premium-subtext {
+    font-size: 0.85rem;
+  }
+}
+
+/* Extension popup optimization (360x600) */
+@media (max-height: 600px) {
+  .create-screen {
+    padding-top: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+  }
+  
+  .logo-glow-container {
+    margin-bottom: var(--spacing-sm);
   }
 }

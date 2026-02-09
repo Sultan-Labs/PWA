@@ -145,7 +145,7 @@ blockchain, wallet, cryptocurrency, crypto, web3, defi, nft, staking, sultan, sl
 
 ## Version Information
 
-**Current Version**: 1.6.0
+**Current Version**: 1.6.8
 **Minimum Browser Version**: 
 - Chrome: 102+
 - Firefox: 109+

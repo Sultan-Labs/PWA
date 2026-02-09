@@ -1,342 +1,227 @@
 #!/bin/bash
-# ╔═══════════════════════════════════════════════════════════════════════════╗
-# ║  SULTAN NODE INSTALLER                                                    ║
-# ║                                                                           ║
-# ║  One-line install: curl -L https://wallet.sltn.io/install.sh | bash       ║
-# ║                                                                           ║
-# ║  This script:                                                             ║
-# ║  1. Checks system requirements (Ubuntu 22.04+, 1GB RAM, 20GB disk)        ║
-# ║  2. Downloads sultan-node binary from GitHub releases                     ║
-# ║  3. Creates config directory and genesis file                             ║
-# ║  4. Generates validator keypair                                           ║
-# ║  5. Optionally sets up systemd service                                    ║
-# ╚═══════════════════════════════════════════════════════════════════════════╝
+# Sultan Validator Node - One-Line Installer
+# Usage: curl -L https://wallet.sltn.io/install.sh | bash
+# Or: bash install-validator.sh
+#
+# This script:
+#   1. Downloads the Sultan Node binary
+#   2. Opens firewall ports (26656, 26657)
+#   3. Creates a systemd service
+#   4. Starts the validator
+#   5. Shows the validator address for funding
 
 set -e
 
-# Colors for output
+# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-CYAN='\033[0;36m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Configuration
-GITHUB_ORG="SultanL1"
-REPO_NAME="sultan-node"
-INSTALL_DIR="/usr/local/bin"
-DATA_DIR="$HOME/.sultan"
-CONFIG_DIR="$DATA_DIR/config"
-MIN_RAM_MB=1024
-MIN_DISK_GB=20
+BINARY_URL="https://github.com/Wollnbergen/DOCS/releases/latest/download/sultan-node"
+BOOTSTRAP_PEER="/ip4/206.189.224.142/tcp/26656"
+INSTALL_DIR="/opt/sultan"
+DATA_DIR="/opt/sultan/data"
+BINARY_PATH="${INSTALL_DIR}/sultan-node"
+SERVICE_NAME="sultan-node"
+RPC_PORT="8545"
+P2P_PORT="26656"
+VALIDATOR_STAKE="10000000000000"
+SHARD_COUNT="20"
+GENESIS_WALLET="sultan15g5nwnlemn7zt6rtl7ch46ssvx2ym2v2umm07g:500000000000000000"
+GENESIS_VALIDATORS="sultan1nyc00000000000000000000000000000,sultan1sfo00000000000000000000000000002,sultan1fra00000000000000000000000000003,sultan1ams00000000000000000000000000004,sultan1sgp00000000000000000000000000005,sultan1lon00000000000000000000000000006"
 
-# Sultan network configuration
-CHAIN_ID="sultan-mainnet-1"
-P2P_PORT=26656
-RPC_PORT=8545
-BOOTSTRAP_PEERS="/dns4/rpc.sltn.io/tcp/26656/p2p/12D3KooWBootstrap1,/dns4/seed.sltn.io/tcp/26656/p2p/12D3KooWSeed1"
-
-echo -e "${CYAN}"
-echo "╔═══════════════════════════════════════════════════════════════╗"
-echo "║                                                               ║"
-echo "║   ███████╗██╗   ██╗██╗  ████████╗ █████╗ ███╗   ██╗          ║"
-echo "║   ██╔════╝██║   ██║██║  ╚══██╔══╝██╔══██╗████╗  ██║          ║"
-echo "║   ███████╗██║   ██║██║     ██║   ███████║██╔██╗ ██║          ║"
-echo "║   ╚════██║██║   ██║██║     ██║   ██╔══██║██║╚██╗██║          ║"
-echo "║   ███████║╚██████╔╝███████╗██║   ██║  ██║██║ ╚████║          ║"
-echo "║   ╚══════╝ ╚═════╝ ╚══════╝╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝          ║"
-echo "║                                                               ║"
-echo "║              Sultan Node Installer v1.0.0                     ║"
-echo "║              Zero Gas • 13.33% APY • Native Rust              ║"
-echo "║                                                               ║"
-echo "╚═══════════════════════════════════════════════════════════════╝"
-echo -e "${NC}"
-
-# ============================================================================
-# System Checks
-# ============================================================================
-
-echo -e "${CYAN}[1/6]${NC} Checking system requirements..."
-
-# Check OS
-if [[ ! -f /etc/os-release ]]; then
-    echo -e "${RED}Error: Cannot detect OS. This installer requires Ubuntu 22.04+${NC}"
-    exit 1
-fi
-
-source /etc/os-release
-if [[ "$ID" != "ubuntu" && "$ID" != "debian" ]]; then
-    echo -e "${YELLOW}Warning: This installer is tested on Ubuntu. Your OS ($ID) may work but is not officially supported.${NC}"
-fi
-
-# Check RAM
-TOTAL_RAM_KB=$(grep MemTotal /proc/meminfo | awk '{print $2}')
-TOTAL_RAM_MB=$((TOTAL_RAM_KB / 1024))
-if [[ $TOTAL_RAM_MB -lt $MIN_RAM_MB ]]; then
-    echo -e "${RED}Error: Insufficient RAM. Required: ${MIN_RAM_MB}MB, Available: ${TOTAL_RAM_MB}MB${NC}"
-    exit 1
-fi
-echo -e "  ✓ RAM: ${TOTAL_RAM_MB}MB (minimum: ${MIN_RAM_MB}MB)"
-
-# Check disk space
-AVAILABLE_DISK_GB=$(df -BG "$HOME" | tail -1 | awk '{print $4}' | sed 's/G//')
-if [[ $AVAILABLE_DISK_GB -lt $MIN_DISK_GB ]]; then
-    echo -e "${RED}Error: Insufficient disk space. Required: ${MIN_DISK_GB}GB, Available: ${AVAILABLE_DISK_GB}GB${NC}"
-    exit 1
-fi
-echo -e "  ✓ Disk: ${AVAILABLE_DISK_GB}GB available (minimum: ${MIN_DISK_GB}GB)"
-
-# Check architecture
-ARCH=$(uname -m)
-case $ARCH in
-    x86_64)
-        BINARY_ARCH="amd64"
-        ;;
-    aarch64)
-        BINARY_ARCH="arm64"
-        ;;
-    *)
-        echo -e "${RED}Error: Unsupported architecture: $ARCH${NC}"
-        exit 1
-        ;;
-esac
-echo -e "  ✓ Architecture: $ARCH ($BINARY_ARCH)"
+echo ""
+echo -e "${CYAN}╔════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║            SULTAN VALIDATOR NODE INSTALLER                     ║${NC}"
+echo -e "${CYAN}║                     v0.2.5                                     ║${NC}"
+echo -e "${CYAN}╚════════════════════════════════════════════════════════════════╝${NC}"
+echo ""
 
 # Check if running as root
-if [[ $EUID -eq 0 ]]; then
-    echo -e "${YELLOW}Warning: Running as root. The node will run as root user.${NC}"
-fi
-
-echo -e "${GREEN}System requirements met!${NC}"
-echo ""
-
-# ============================================================================
-# Download Binary
-# ============================================================================
-
-echo -e "${CYAN}[2/6]${NC} Downloading Sultan node..."
-
-# Get latest release from GitHub
-RELEASE_URL="https://api.github.com/repos/${GITHUB_ORG}/${REPO_NAME}/releases/latest"
-echo -e "  Fetching latest release from GitHub..."
-
-DOWNLOAD_URL=$(curl -s "$RELEASE_URL" | grep "browser_download_url.*linux.*${BINARY_ARCH}" | head -1 | cut -d '"' -f 4)
-
-if [[ -z "$DOWNLOAD_URL" ]]; then
-    echo -e "${YELLOW}Could not fetch latest release. Using fallback URL...${NC}"
-    DOWNLOAD_URL="https://github.com/${GITHUB_ORG}/${REPO_NAME}/releases/latest/download/sultan-node-linux-${BINARY_ARCH}"
-fi
-
-echo -e "  Downloading from: $DOWNLOAD_URL"
-
-# Download binary
-TMP_BINARY="/tmp/sultan-node-$$"
-if ! curl -L -o "$TMP_BINARY" "$DOWNLOAD_URL" 2>/dev/null; then
-    echo -e "${RED}Error: Failed to download binary${NC}"
-    echo -e "${YELLOW}The binary may not be published yet. Check: https://github.com/${GITHUB_ORG}/${REPO_NAME}/releases${NC}"
+if [ "$EUID" -ne 0 ]; then 
+    echo -e "${RED}❌ Please run as root (use sudo)${NC}"
     exit 1
 fi
 
-# Make executable
-chmod +x "$TMP_BINARY"
-
-# Verify binary
-if ! "$TMP_BINARY" --version &>/dev/null; then
-    echo -e "${RED}Error: Downloaded binary is invalid or corrupted${NC}"
-    rm -f "$TMP_BINARY"
-    exit 1
-fi
-
-# Install to system path (may require sudo)
-echo -e "  Installing to ${INSTALL_DIR}/sultan-node..."
-if [[ -w "$INSTALL_DIR" ]]; then
-    mv "$TMP_BINARY" "${INSTALL_DIR}/sultan-node"
+# Detect OS
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OS=$ID
 else
-    sudo mv "$TMP_BINARY" "${INSTALL_DIR}/sultan-node"
+    echo -e "${RED}❌ Unable to detect OS${NC}"
+    exit 1
 fi
 
-echo -e "${GREEN}Binary installed successfully!${NC}"
+echo -e "${BLUE}📋 Detected OS: ${OS}${NC}"
+
+# Get validator name (from hostname or prompt)
+HOSTNAME=$(hostname)
 echo ""
+read -p "Enter validator name [$HOSTNAME]: " VALIDATOR_NAME
+VALIDATOR_NAME=${VALIDATOR_NAME:-$HOSTNAME}
+echo -e "${GREEN}✓ Validator name: ${VALIDATOR_NAME}${NC}"
 
-# ============================================================================
-# Create Data Directory
-# ============================================================================
-
-echo -e "${CYAN}[3/6]${NC} Setting up data directory..."
-
+# Step 1: Create directories
+echo ""
+echo -e "${YELLOW}📁 Step 1: Creating directories...${NC}"
+mkdir -p "$INSTALL_DIR"
 mkdir -p "$DATA_DIR"
-mkdir -p "$CONFIG_DIR"
-mkdir -p "$DATA_DIR/data"
+echo -e "${GREEN}✓ Created ${INSTALL_DIR}${NC}"
 
-echo -e "  ✓ Created $DATA_DIR"
-echo -e "  ✓ Created $CONFIG_DIR"
+# Step 2: Download binary
 echo ""
+echo -e "${YELLOW}📥 Step 2: Downloading Sultan Node binary...${NC}"
+if command -v curl &> /dev/null; then
+    curl -L --progress-bar "$BINARY_URL" -o "$BINARY_PATH"
+elif command -v wget &> /dev/null; then
+    wget -q --show-progress "$BINARY_URL" -O "$BINARY_PATH"
+else
+    echo -e "${RED}❌ Neither curl nor wget found. Installing curl...${NC}"
+    apt-get update && apt-get install -y curl
+    curl -L --progress-bar "$BINARY_URL" -o "$BINARY_PATH"
+fi
+chmod +x "$BINARY_PATH"
+echo -e "${GREEN}✓ Downloaded and made executable${NC}"
 
-# ============================================================================
-# Generate Validator Keys
-# ============================================================================
-
-echo -e "${CYAN}[4/6]${NC} Generating validator keys..."
-
-# Generate keys using the node binary
-if ! sultan-node keys generate --output "$CONFIG_DIR/validator_key.json" 2>/dev/null; then
-    # Fallback: generate using openssl if binary doesn't support key generation
-    echo -e "  Generating Ed25519 keypair..."
-    
-    # This is a placeholder - the actual sultan-node binary should handle this
-    VALIDATOR_ADDRESS="sltn1$(openssl rand -hex 20)"
-    
-    cat > "$CONFIG_DIR/validator_key.json" << EOF
-{
-  "address": "$VALIDATOR_ADDRESS",
-  "pub_key": "placeholder_pubkey",
-  "priv_key": "KEEP_THIS_SECRET",
-  "generated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-}
-EOF
-    chmod 600 "$CONFIG_DIR/validator_key.json"
+# Step 3: Open firewall ports
+echo ""
+echo -e "${YELLOW}🔥 Step 3: Opening firewall ports...${NC}"
+if command -v ufw &> /dev/null; then
+    ufw allow ${P2P_PORT}/tcp comment "Sultan P2P" 2>/dev/null || true
+    ufw allow ${RPC_PORT}/tcp comment "Sultan RPC" 2>/dev/null || true
+    ufw --force enable 2>/dev/null || true
+    echo -e "${GREEN}✓ UFW: Ports ${P2P_PORT} and ${RPC_PORT} opened${NC}"
+elif command -v firewall-cmd &> /dev/null; then
+    firewall-cmd --permanent --add-port=${P2P_PORT}/tcp 2>/dev/null || true
+    firewall-cmd --permanent --add-port=${RPC_PORT}/tcp 2>/dev/null || true
+    firewall-cmd --reload 2>/dev/null || true
+    echo -e "${GREEN}✓ firewalld: Ports ${P2P_PORT} and ${RPC_PORT} opened${NC}"
+else
+    echo -e "${YELLOW}⚠ No firewall found - make sure ports ${P2P_PORT} and ${RPC_PORT} are open${NC}"
 fi
 
-# Extract address from key file
-VALIDATOR_ADDRESS=$(grep -o '"address"[[:space:]]*:[[:space:]]*"[^"]*"' "$CONFIG_DIR/validator_key.json" | cut -d'"' -f4)
-
-if [[ -z "$VALIDATOR_ADDRESS" ]]; then
-    VALIDATOR_ADDRESS="sltn1$(openssl rand -hex 20)"
-fi
-
-echo -e "${GREEN}Validator keys generated!${NC}"
+# Step 4: Create systemd service
 echo ""
+echo -e "${YELLOW}⚙️  Step 4: Creating systemd service...${NC}"
 
-# ============================================================================
-# Create Config File
-# ============================================================================
+# Stop existing service if running
+systemctl stop "$SERVICE_NAME" 2>/dev/null || true
 
-echo -e "${CYAN}[5/6]${NC} Creating configuration..."
+# Generate a validator address based on the name
+VALIDATOR_ADDR="sultan1${VALIDATOR_NAME}$(printf '%0.s0' {1..20})" 
+VALIDATOR_ADDR=$(echo "$VALIDATOR_ADDR" | cut -c1-42)  # Truncate to proper length
 
-cat > "$CONFIG_DIR/config.toml" << EOF
-# Sultan Node Configuration
-# Generated by installer on $(date -u +%Y-%m-%dT%H:%M:%SZ)
-
-[node]
-chain_id = "$CHAIN_ID"
-moniker = "my-validator"  # Update this!
-data_dir = "$DATA_DIR/data"
-
-[p2p]
-listen_addr = "0.0.0.0:$P2P_PORT"
-bootstrap_peers = "$BOOTSTRAP_PEERS"
-max_peers = 50
-
-[rpc]
-listen_addr = "127.0.0.1:$RPC_PORT"
-enable = true
-
-[validator]
-enabled = true
-key_file = "$CONFIG_DIR/validator_key.json"
-
-[staking]
-min_stake = "10000000000000"  # 10,000 SLTN (9 decimals)
-commission_rate = "0.05"      # 5% commission
-
-[logging]
-level = "info"
-format = "json"
-EOF
-
-echo -e "  ✓ Created $CONFIG_DIR/config.toml"
-echo ""
-
-# ============================================================================
-# Setup Systemd Service (Optional)
-# ============================================================================
-
-echo -e "${CYAN}[6/6]${NC} Setting up systemd service..."
-
-SERVICE_FILE="/etc/systemd/system/sultan-node.service"
-
-cat > /tmp/sultan-node.service << EOF
+cat > /etc/systemd/system/${SERVICE_NAME}.service << EOF
 [Unit]
-Description=Sultan Blockchain Node
-After=network-online.target
-Wants=network-online.target
+Description=Sultan Validator Node
+After=network.target
+Documentation=https://sltn.io/docs
 
 [Service]
 Type=simple
-User=$USER
-ExecStart=${INSTALL_DIR}/sultan-node run --config ${CONFIG_DIR}/config.toml
+User=root
+WorkingDirectory=${INSTALL_DIR}
+ExecStart=${BINARY_PATH} \\
+  --name "${VALIDATOR_NAME}" \\
+  --data-dir ${DATA_DIR} \\
+  --validator \\
+  --validator-address "${VALIDATOR_ADDR}" \\
+  --validator-stake ${VALIDATOR_STAKE} \\
+  --enable-p2p \\
+  --rpc-addr 0.0.0.0:${RPC_PORT} \\
+  --p2p-addr /ip4/0.0.0.0/tcp/${P2P_PORT} \\
+  --bootstrap-peers "${BOOTSTRAP_PEER}" \\
+  --genesis "${GENESIS_WALLET}" \\
+  --genesis-validators "${GENESIS_VALIDATORS}" \\
+  --allowed-origins "*" \\
+  --enable-sharding \\
+  --shard-count ${SHARD_COUNT}
 Restart=always
-RestartSec=3
+RestartSec=5
 LimitNOFILE=65535
-
-# Hardening
-NoNewPrivileges=true
-PrivateTmp=true
-ProtectSystem=strict
-ProtectHome=read-only
-ReadWritePaths=$DATA_DIR
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-if [[ -w "/etc/systemd/system" ]]; then
-    mv /tmp/sultan-node.service "$SERVICE_FILE"
-    systemctl daemon-reload
-    echo -e "  ✓ Created systemd service"
+systemctl daemon-reload
+systemctl enable "$SERVICE_NAME"
+echo -e "${GREEN}✓ Systemd service created and enabled${NC}"
+
+# Step 5: Start the service
+echo ""
+echo -e "${YELLOW}🚀 Step 5: Starting validator...${NC}"
+systemctl start "$SERVICE_NAME"
+sleep 3
+
+# Check if running
+if systemctl is-active --quiet "$SERVICE_NAME"; then
+    echo -e "${GREEN}✓ Validator is running!${NC}"
 else
-    if sudo mv /tmp/sultan-node.service "$SERVICE_FILE" 2>/dev/null; then
-        sudo systemctl daemon-reload
-        echo -e "  ✓ Created systemd service"
-    else
-        echo -e "${YELLOW}  ⚠ Could not create systemd service (requires sudo)${NC}"
-        echo -e "  You can run the node manually: sultan-node run --config ${CONFIG_DIR}/config.toml"
-    fi
+    echo -e "${RED}❌ Failed to start. Check logs with: journalctl -u ${SERVICE_NAME} -f${NC}"
+    exit 1
 fi
 
+# Step 6: Get validator info
+echo ""
+echo -e "${YELLOW}📊 Step 6: Getting validator info...${NC}"
+sleep 2
+
+# Try to get status from local RPC
+STATUS=""
+for i in {1..5}; do
+    STATUS=$(curl -s http://localhost:${RPC_PORT}/status 2>/dev/null || true)
+    if [ -n "$STATUS" ]; then
+        break
+    fi
+    sleep 2
+done
+
+# Get public IP
+PUBLIC_IP=$(curl -s ifconfig.me 2>/dev/null || curl -s icanhazip.com 2>/dev/null || echo "unknown")
+
+echo ""
+echo -e "${CYAN}╔════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║              ✅ INSTALLATION COMPLETE!                         ║${NC}"
+echo -e "${CYAN}╠════════════════════════════════════════════════════════════════╣${NC}"
+echo -e "${CYAN}║                                                                ║${NC}"
+echo -e "${CYAN}║  Validator Name:    ${GREEN}${VALIDATOR_NAME}${CYAN}${NC}"
+echo -e "${CYAN}║  Validator Address: ${GREEN}${VALIDATOR_ADDR}${CYAN}${NC}"
+echo -e "${CYAN}║  Public IP:         ${GREEN}${PUBLIC_IP}${CYAN}${NC}"
+echo -e "${CYAN}║  P2P Port:          ${GREEN}${P2P_PORT}${CYAN}${NC}"
+echo -e "${CYAN}║  RPC Port:          ${GREEN}${RPC_PORT}${CYAN}${NC}"
+echo -e "${CYAN}║  Data Directory:    ${GREEN}${DATA_DIR}${CYAN}${NC}"
+echo -e "${CYAN}║                                                                ║${NC}"
+echo -e "${CYAN}╠════════════════════════════════════════════════════════════════╣${NC}"
+echo -e "${CYAN}║  ${YELLOW}NEXT STEPS:${CYAN}                                                  ║${NC}"
+echo -e "${CYAN}║                                                                ║${NC}"
+echo -e "${CYAN}║  1. Open Sultan Wallet:  ${GREEN}https://wallet.sltn.io${CYAN}              ║${NC}"
+echo -e "${CYAN}║  2. Go to Validators → Become a Validator                      ║${NC}"
+echo -e "${CYAN}║  3. Stake at least 10,000 SLTN                                 ║${NC}"
+echo -e "${CYAN}║                                                                ║${NC}"
+echo -e "${CYAN}╠════════════════════════════════════════════════════════════════╣${NC}"
+echo -e "${CYAN}║  ${YELLOW}USEFUL COMMANDS:${CYAN}                                              ║${NC}"
+echo -e "${CYAN}║                                                                ║${NC}"
+echo -e "${CYAN}║  View logs:     journalctl -u ${SERVICE_NAME} -f               ║${NC}"
+echo -e "${CYAN}║  Check status:  systemctl status ${SERVICE_NAME}               ║${NC}"
+echo -e "${CYAN}║  Restart:       systemctl restart ${SERVICE_NAME}              ║${NC}"
+echo -e "${CYAN}║  Stop:          systemctl stop ${SERVICE_NAME}                 ║${NC}"
+echo -e "${CYAN}║  Check RPC:     curl http://localhost:${RPC_PORT}/status       ║${NC}"
+echo -e "${CYAN}║                                                                ║${NC}"
+echo -e "${CYAN}╚════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
-# ============================================================================
-# Success!
-# ============================================================================
-
-echo -e "${GREEN}"
-echo "╔═══════════════════════════════════════════════════════════════╗"
-echo "║                                                               ║"
-echo "║              ✅ INSTALLATION COMPLETE!                        ║"
-echo "║                                                               ║"
-echo "╚═══════════════════════════════════════════════════════════════╝"
-echo -e "${NC}"
-
-echo -e "${CYAN}Your Validator Address:${NC}"
-echo ""
-echo -e "  ${GREEN}${VALIDATOR_ADDRESS}${NC}"
-echo ""
-echo -e "${YELLOW}╔═══════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${YELLOW}║  IMPORTANT: Copy this address to your Sultan Wallet!          ║${NC}"
-echo -e "${YELLOW}╚═══════════════════════════════════════════════════════════════╝${NC}"
+# Show initial logs
+echo -e "${YELLOW}📜 Recent logs:${NC}"
+journalctl -u "$SERVICE_NAME" -n 10 --no-pager 2>/dev/null || true
 echo ""
 
-echo -e "${CYAN}Next Steps:${NC}"
-echo -e "  1. Copy the validator address above"
-echo -e "  2. Open your Sultan Wallet (wallet.sltn.io)"
-echo -e "  3. Go to Stake → Become a Validator"
-echo -e "  4. Paste your validator address"
-echo -e "  5. Fund with 10,000 SLTN to activate"
-echo ""
-
-echo -e "${CYAN}Useful Commands:${NC}"
-echo -e "  Start node:    sudo systemctl start sultan-node"
-echo -e "  Stop node:     sudo systemctl stop sultan-node"
-echo -e "  View logs:     journalctl -u sultan-node -f"
-echo -e "  Check status:  sultan-node status"
-echo ""
-
-echo -e "${CYAN}Configuration:${NC}"
-echo -e "  Config file:   $CONFIG_DIR/config.toml"
-echo -e "  Data dir:      $DATA_DIR/data"
-echo -e "  Validator key: $CONFIG_DIR/validator_key.json"
-echo ""
-
-echo -e "${GREEN}Welcome to Sultan! 👑${NC}"
+echo -e "${GREEN}🎉 Your validator is now syncing with the Sultan Network!${NC}"
+echo -e "${YELLOW}   Once synced and staked, you'll start earning ~13.33% APY${NC}"
 echo ""

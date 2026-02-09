@@ -284,15 +284,16 @@
 }
 
 .btn-secondary:hover {
-  border-color: var(--accent-primary);
+  border-color: #00ffff !important;
   background: rgba(0, 255, 255, 0.1);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 255, 255, 0.2);
+  color: #00ffff !important;
 }
 
 .btn-secondary:hover svg {
   transform: translateY(-2px);
-  color: var(--accent-primary);
+  color: #00ffff !important;
 }
 
 /* Light mode primary button override */

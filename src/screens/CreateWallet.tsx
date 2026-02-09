@@ -2,6 +2,7 @@
  * Create Wallet Screen
  * 
  * Generates new mnemonic and secures with PIN.
+ * Premium design with radial gradient and glowing branding.
  */
 
 import { useState, useEffect } from 'react';
@@ -10,6 +11,17 @@ import { useWallet } from '../hooks/useWallet';
 import PinInput from '../components/PinInput';
 import MnemonicDisplay from '../components/MnemonicDisplay';
 import './CreateWallet.css';
+
+// Sultan Crown Logo with glow effect
+const SultanLogo = ({ size = 56 }: { size?: number }) => (
+  <img
+    src="/sultan-logo-dark.png"
+    alt="Sultan"
+    width={size}
+    height={size}
+    className="sultan-logo-glow"
+  />
+);
 
 type Step = 'pin' | 'confirm-pin' | 'mnemonic' | 'verify';
 
@@ -108,8 +120,11 @@ export default function CreateWallet() {
         <div className="create-content fade-in">
           {step === 'pin' && (
             <>
-              <h2>Create a PIN</h2>
-              <p className="text-muted mb-lg">
+              <div className="logo-glow-container">
+                <SultanLogo size={56} />
+              </div>
+              <h2 className="glow-header">Create a PIN</h2>
+              <p className="premium-subtext mb-lg">
                 This PIN will be used to unlock your wallet
               </p>
               <PinInput length={6} onComplete={handlePinComplete} />
@@ -118,8 +133,11 @@ export default function CreateWallet() {
 
         {step === 'confirm-pin' && (
           <>
-            <h2>Confirm PIN</h2>
-            <p className="text-muted mb-lg">
+            <div className="logo-glow-container">
+              <SultanLogo size={56} />
+            </div>
+            <h2 className="glow-header">Confirm PIN</h2>
+            <p className="premium-subtext mb-lg">
               Enter your PIN again to confirm
             </p>
             <PinInput length={6} onComplete={handlePinComplete} />

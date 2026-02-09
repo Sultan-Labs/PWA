@@ -2,7 +2,7 @@
 
 A secure, zero-fee blockchain wallet available as a Progressive Web App (PWA) and Chrome Browser Extension.
 
-![Version](https://img.shields.io/badge/version-1.6.6-blue)
+![Version](https://img.shields.io/badge/version-1.7.4-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue)
 ![React](https://img.shields.io/badge/React-18.3-61DAFB)

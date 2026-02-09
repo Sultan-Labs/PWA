@@ -119,7 +119,7 @@ export default function Governance() {
 
   const votingPower = SultanWallet.formatSLTN(stakingData?.staked || '0');
   const availableBalance = SultanWallet.formatSLTN(balanceData?.available || '0');
-  const availableBalanceRaw = SultanWallet.formatSLTNRaw(balanceData?.available || '0');
+  const availableBalanceRaw = SultanWallet.formatSLTNRaw(balanceData?.available || '0').replace(/,/g, '');
 
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');

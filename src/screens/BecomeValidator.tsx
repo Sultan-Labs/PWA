@@ -100,10 +100,10 @@ export default function BecomeValidator() {
   };
 
   const availableBalance = SultanWallet.formatSLTN(balanceData?.available || '0');
-  const availableBalanceRaw = SultanWallet.formatSLTNRaw(balanceData?.available || '0');
+  const availableBalanceRaw = SultanWallet.formatSLTNRaw(balanceData?.available || '0').replace(/,/g, '');
   // Use raw balance (no commas) for numeric comparison
   const parsedBalance = parseFloat(availableBalanceRaw) || 0;
-  const hasMinimumStake = parsedBalance >= 9999.999;
+  const hasMinimumStake = parsedBalance >= 10000;
 
   const handleCopyCommand = async (text: string) => {
     await navigator.clipboard.writeText(text);
@@ -345,7 +345,10 @@ export default function BecomeValidator() {
         {step === 'server' && (
           <div className="step-section">
             <h3>1. Server Setup</h3>
-            <p className="text-muted">Rent a VPS (Ubuntu 22.04) and run this command:</p>
+            <p className="text-muted">
+              Get a VPS from <strong>Hetzner</strong>, <strong>DigitalOcean</strong>, <strong>Vultr</strong>, 
+              or similar (~$5/mo, Ubuntu 22.04). Then SSH in and run:
+            </p>
             
             <div className="code-block">
               <pre>
@@ -357,7 +360,7 @@ curl -L https://wallet.sltn.io/install.sh | bash
             </div>
 
             <div className="info-box">
-              <p>This script will install the node, sync headers, and generate your validator keys.</p>
+              <p>This installs the Sultan node, syncs the blockchain, and generates your validator keys. Your address will be displayed when complete.</p>
             </div>
 
             <button className="btn btn-primary btn-full" onClick={() => setStep('address')}>

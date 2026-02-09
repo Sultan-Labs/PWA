@@ -257,7 +257,7 @@ export default function Settings() {
           <div className="setting-item">
             <div className="setting-info">
               <span className="setting-label">Version</span>
-              <span className="setting-value">1.6.0</span>
+              <span className="setting-value">1.6.8</span>
             </div>
           </div>
           

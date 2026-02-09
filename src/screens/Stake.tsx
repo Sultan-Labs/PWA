@@ -42,15 +42,7 @@ const MoonIcon = () => (
   </svg>
 );
 
-const GiftIcon = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 12 20 22 4 22 4 12" />
-    <rect x="2" y="7" width="20" height="5" />
-    <line x1="12" y1="22" x2="12" y2="7" />
-    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
-    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
-  </svg>
-);
+// GiftIcon removed - rewards are auto-credited, no claim button needed
 
 const SettingsIcon = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -106,9 +98,9 @@ export default function Stake() {
   const availableBalance = SultanWallet.formatSLTN(balanceData?.available || '0');
   const stakedBalance = SultanWallet.formatSLTN(stakingData?.staked || '0');
   const pendingRewards = SultanWallet.formatSLTN(stakingData?.pendingRewards || '0');
-  // Raw for form input (no commas)
-  const availableBalanceRaw = SultanWallet.formatSLTNRaw(balanceData?.available || '0');
-  const stakedBalanceRaw = SultanWallet.formatSLTNRaw(stakingData?.staked || '0');
+  // Raw for form input (no commas) - defensive strip
+  const availableBalanceRaw = SultanWallet.formatSLTNRaw(balanceData?.available || '0').replace(/,/g, '');
+  const stakedBalanceRaw = SultanWallet.formatSLTNRaw(stakingData?.staked || '0').replace(/,/g, '');
 
   useEffect(() => {
     if (validators && validators.length > 0 && !selectedValidator) {
@@ -204,18 +196,8 @@ export default function Stake() {
     setStep('pin');
   };
 
-  /**
-   * Request PIN verification before claiming rewards
-   * SECURITY: PIN must be verified before any signing operation
-   */
-  const handleClaimRewards = () => {
-    if (!wallet || !currentAccount) return;
-
-    setError('');
-    setPin(['', '', '', '', '', '']);
-    setPendingAction('claim');
-    setStep('pin');
-  };
+  // NOTE: Rewards are credited automatically to reward_wallet on each block
+  // No manual claiming needed - removed handleClaimRewards()
 
   /**
    * Verify PIN and execute pending action
@@ -246,8 +228,6 @@ export default function Stake() {
         await executeStake();
       } else if (pendingAction === 'unstake') {
         await executeUnstake();
-      } else if (pendingAction === 'claim') {
-        await executeClaim();
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Operation failed');
@@ -345,48 +325,7 @@ export default function Stake() {
     }
   };
 
-  /**
-   * Execute claim rewards after PIN verification
-   */
-  const executeClaim = async () => {
-    if (!wallet || !currentAccount) return;
-
-    try {
-      // Fetch nonce from blockchain BEFORE signing
-      const currentNonce = await sultanAPI.getNonce(currentAccount.address);
-      const timestamp = Date.now();
-      
-      // Get validator address from current delegation
-      const validatorAddr = stakingData?.validator || '';
-      
-      // Sign the EXACT transaction that will be sent to the API
-      const txData = {
-        from: currentAccount.address,
-        to: validatorAddr,
-        amount: '0',
-        memo: 'claim_rewards',
-        nonce: currentNonce,
-        timestamp,
-      };
-
-      const signature = await wallet.signTransaction(txData, currentAccount.index);
-      
-      await sultanAPI.claimRewards({
-        transaction: txData,
-        signature,
-        publicKey: currentAccount.publicKey,
-      });
-
-      setSuccess('Rewards claimed successfully!');
-      setStep('form');
-      setPendingAction(null);
-      refetchStaking();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Claiming failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // NOTE: Rewards are credited automatically - no manual executeClaim needed
 
   const handleLock = () => {
     lock();
@@ -424,7 +363,6 @@ export default function Stake() {
           <p className="text-muted" style={{ marginBottom: '16px' }}>
             {pendingAction === 'stake' && `Stake ${amount} SLTN with validator`}
             {pendingAction === 'unstake' && `Unstake ${amount} SLTN (21-day unbonding)`}
-            {pendingAction === 'claim' && 'Claim your pending rewards'}
           </p>
           {highValueWarning && (
             <div style={{ 
@@ -516,20 +454,12 @@ export default function Stake() {
             <span className="overview-value">{stakedBalance} SLTN</span>
           </div>
           <div className="overview-card">
-            <span className="overview-label">Rewards</span>
+            <span className="overview-label">Auto Rewards</span>
             <span className="overview-value">{pendingRewards} SLTN</span>
           </div>
         </div>
 
-        {Number(pendingRewards) > 0 && (
-          <button 
-            className="btn btn-secondary claim-btn"
-            onClick={handleClaimRewards}
-            disabled={isLoading}
-          >
-            <GiftIcon /> Claim {pendingRewards} SLTN Rewards
-          </button>
-        )}
+        {/* Rewards are auto-credited each block - no claim button needed */}
 
         <div className="tab-bar">
           <button 
