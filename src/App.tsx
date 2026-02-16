@@ -28,6 +28,14 @@ function App() {
   const location = useLocation();
   const [checkedApprovals, setCheckedApprovals] = useState(false);
 
+  // Store pending deep link for after unlock
+  useEffect(() => {
+    // If we're on /connect with session param and wallet needs unlock, save it
+    if (location.pathname === '/connect' && location.search) {
+      sessionStorage.setItem('sultan_pending_connect', location.pathname + location.search);
+    }
+  }, [location]);
+
   // Check for pending approvals when unlocked
   useEffect(() => {
     async function checkPendingApprovals() {

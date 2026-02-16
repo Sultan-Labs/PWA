@@ -58,9 +58,17 @@ export default function Unlock() {
 
   /**
    * Navigate to appropriate screen after successful unlock
-   * Checks for pending approvals first
+   * Checks for pending deep link connection first, then pending approvals
    */
   const navigateAfterUnlock = async () => {
+    // Check for pending deep link connection
+    const pendingConnect = sessionStorage.getItem('sultan_pending_connect');
+    if (pendingConnect) {
+      sessionStorage.removeItem('sultan_pending_connect');
+      navigate(pendingConnect);
+      return;
+    }
+    
     if (isExtensionContext()) {
       try {
         const pending = await getPendingApprovals();
