@@ -315,7 +315,9 @@ export default function Dashboard() {
 
         <div className="dex-banner" onClick={() => window.open('https://hodlholdings.com', '_blank')}>
           <div className="dex-banner-content">
-            <SwapIcon />
+            <div className="dex-icon-wrapper">
+              <img src="/icons/icon-128.png" alt="HODL" className="dex-icon-img" />
+            </div>
             <div className="dex-banner-text">
               <span className="dex-title">Trade on HODL Holdings</span>
             </div>
