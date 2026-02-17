@@ -61,7 +61,7 @@ Use your mobile Sultan Wallet to approve transactions on desktop:
 🔗 OPEN SOURCE
 
 Sultan Wallet is fully open source. Review our code, report issues, or contribute:
-https://github.com/Wollnbergen/0xv7
+https://github.com/Sultan-Labs/PWA
 
 ⚡ THE SULTAN DIFFERENCE
 

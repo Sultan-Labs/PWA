@@ -2,13 +2,7 @@
 
 ## Overview
 
-Sultan Wallet is a non-custodial cryptocurrency wallet for the Sultan L1 blockchain, built as both a Progressive Web App (PWA) and a Chrome/Firefox browser extension. It provides zero-fee transactions, staking, governance voting, NFT management, and dApp integration via `window.sultan`. The wallet handles all cryptographic operations client-side — private keys never leave the user's device.
-
-The project lives in a single codebase that produces two build targets:
-- **PWA** — deployed to `wallet.sltn.io`, full responsive layout
-- **Browser Extension** — Chrome MV3 and Firefox MV2, popup-sized (380×600px)
-
-Core crypto/security code (`src/core/`) is shared identically between both targets. Extension-specific files (background service worker, content script, inpage provider) live in `extension/`.
+Sultan Wallet is a non-custodial cryptocurrency wallet for the Sultan L1 blockchain, deployed as both a Progressive Web App (PWA) at `wallet.sltn.io` and a Chrome/Firefox browser extension. The wallet enables users to manage SLTN tokens with zero transaction fees, stake to validators, participate in governance, hold NFTs, and connect to dApps. All cryptographic operations happen client-side — the server never sees private keys. The core codebase is shared between the PWA and extension builds, with only UI chrome and platform-specific plumbing differing between them.
 
 ## User Preferences
 
@@ -16,125 +10,107 @@ Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-### Frontend (React 18 + TypeScript + Vite)
+### Frontend Architecture
 
 - **Framework**: React 18 with TypeScript 5.6, bundled by Vite 6
-- **Routing**: React Router (wouter also listed as a dependency but react-router-dom is primary)
-- **Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin, with CSS custom properties in `src/index.css` for the design system (dark theme, cyan brand colors, glassmorphism). Shadcn/ui components configured in `components.json` with New York style.
-- **State Management**: React hooks + `@tanstack/react-query` for server state. Wallet state managed via `useWallet` hook with context provider.
-- **PWA**: Configured via `vite-plugin-pwa` with service worker auto-update, offline capability, and web app manifest.
+- **Routing**: React Router (react-router-dom v7) with screen-based navigation
+- **State Management**: React hooks (`useWallet`, `useTheme`) plus `@tanstack/react-query` for data fetching
+- **Styling**: Tailwind CSS v4 (via `@tailwindcss/vite` plugin) with CSS custom properties in `src/index.css` for theming. Shadcn/ui components configured in `components.json` with the "new-york" style
+- **PWA**: `vite-plugin-pwa` handles service worker registration, offline caching, and manifest generation. The app is installable on mobile and desktop
 
-### Core Security Layer (`src/core/`)
+### Core Crypto Layer (`src/core/`)
 
-This is the most critical part of the codebase. All cryptographic and security operations are here:
+This is the security-critical code. All cryptographic operations live here and are shared between PWA and extension:
 
-| File | Purpose |
-|------|---------|
-| `wallet.ts` | BIP39 mnemonic generation (24 words), SLIP-0010 Ed25519 key derivation (`m/44'/1984'/0'/0'/{index}`), transaction signing, bech32 `sultan1` address encoding |
-| `security.ts` | SecureString (XOR-encrypted in-memory storage), memory wiping (`secureWipe`), PIN verification with SHA-256, rate limiting (5 failed attempts → 5 min lockout), session timeout (15 min inactivity) |
-| `storage.secure.ts` | AES-256-GCM encryption of wallet data, PBKDF2 key derivation (600K iterations), IndexedDB storage backend |
-| `csp.ts` | Content Security Policy enforcement |
-| `totp.ts` | Optional TOTP-based 2FA (RFC 6238) |
-| `clipboard.ts` | Secure clipboard with auto-clear |
-| `logger.ts` | Production logging guards, sensitive data filtering |
-| `extension-bridge.ts` | Chrome message passing for extension context |
-| `wallet-link.ts` | WalletConnect-style protocol for mobile-to-desktop dApp connections via QR code |
+- **`wallet.ts`** — Ed25519 key derivation (SLIP-0010 path `m/44'/1984'/0'/0'/{index}`), BIP39 24-word mnemonic generation, transaction signing, bech32 address encoding (`sultan1...`). Private keys are derived on-demand and wiped after use
+- **`security.ts`** — SecureString (XOR-encrypted in-memory mnemonic storage), secure memory wiping, PIN verification with SHA-256 hashing, rate limiting (5 failed attempts → 5-min lockout), 15-min session timeout, amount/address validation
+- **`storage.secure.ts`** — AES-256-GCM encryption with PBKDF2 key derivation (600K iterations), IndexedDB for encrypted wallet data, localStorage for preferences/lockout state
+- **`totp.ts`** — Optional TOTP-based 2FA (RFC 6238)
+- **`csp.ts`** — Content Security Policy enforcement
+- **`clipboard.ts`** — Secure clipboard with auto-clear
+- **`logger.ts`** — Production logging with sensitive data filtering
 
-### Cryptographic Libraries
-
-All crypto comes from Paul Miller's audited noble/scure family:
-- `@noble/ed25519` — Ed25519 signatures (RFC 8032)
-- `@noble/hashes` — SHA-256, SHA-512, PBKDF2
-- `@scure/bip39` — BIP39 mnemonic generation/validation
-- `bech32` — Address encoding (`sultan1` prefix)
+**Cryptographic libraries are all from the audited `@noble`/`@scure` family by Paul Miller (Cure53 audited):**
+- `@noble/ed25519` for signatures
+- `@noble/hashes` for SHA-256, SHA-512, PBKDF2
+- `@scure/bip39` for mnemonic generation
+- `bech32` for address encoding
 
 ### API Layer (`src/api/sultanAPI.ts`)
 
-REST/RPC client connecting to Sultan L1 blockchain nodes. The production RPC endpoint is at `https://rpc.sltn.io` (proxied to `206.189.224.142`). Handles balance queries, transaction broadcasting, staking info, validator lists, and governance proposals. Uses Zod for response validation and retry logic.
+- Connects to Sultan L1 blockchain RPC nodes at `https://rpc.sltn.io` (production) or `http://206.189.224.142:26657` (dev fallback)
+- Handles account balances, staking info, validator lists, transaction submission, governance proposals
+- Uses Zod validation on responses and retry logic
 
 ### Screen Components (`src/screens/`)
 
-- Welcome, CreateWallet, ImportWallet — Onboarding flow
-- Unlock — PIN entry with lockout protection
-- Dashboard — Main wallet view with balance, recent activity
-- Send, Receive — Transfer screens (sultan1 addresses only, 9 decimals)
-- Stake, BecomeValidator — Staking (13.33% APY, 10K SLTN min for validators)
-- Governance — Vote on proposals (1K SLTN deposit to create)
-- NFTs — NFT gallery
-- Activity — Transaction history
-- Settings — Wallet management
-- ApprovalScreen, ConnectedAppsScreen — Extension dApp management
-- WalletLinkScreen, DeepLinkConnect — QR-based mobile-desktop pairing
+Main screens: Welcome, CreateWallet, ImportWallet, Unlock, Dashboard, Send, Receive, Stake, BecomeValidator, Settings, Activity, Governance, NFTs, ApprovalScreen, ConnectedAppsScreen, WalletLinkScreen
 
 ### Browser Extension Architecture (`extension/`)
 
-Three plain JS files (not bundled through React):
-- `background.js` — MV3 service worker handling message routing, connection state, RPC proxying, cross-browser compatible (Chrome MV3 / Firefox MV2)
-- `content-script.js` — Bridge between web pages and background, with rate limiting (100 req/min) and method whitelisting
-- `inpage-provider.js` — Injects `window.sultan` API into web pages, frozen to prevent tampering
+Extension-only files that are NOT shared with the PWA:
+- **`background.js`** — Service worker handling message routing, connection state, RPC proxy, icon switching. Cross-browser compatible (Chrome MV3 + Firefox MV2)
+- **`content-script.js`** — Bridge between web pages and background, with message validation, rate limiting (100 req/min), method whitelist
+- **`inpage-provider.js`** — Injects `window.sultan` API into web pages. Frozen object to prevent tampering. EIP-1193 inspired interface
+
+Two build configs:
+- `vite.config.ts` — PWA build (outputs to `dist/`)
+- `vite.config.extension.ts` — Extension build (outputs to `dist-extension/` for Chrome and `dist-extension-firefox/` for Firefox)
+
+### Dual Build Strategy
+
+The PWA and extension share the same `src/` directory. Key shared files that MUST stay identical: `sultanAPI.ts`, `wallet.ts`, `security.ts`, `wallet-link.ts`. The `SYNC.md` document tracks parity requirements.
 
 ### WalletLink Relay Server (`server/`)
 
-A standalone lightweight WebSocket relay server (Node.js + `ws`) that routes end-to-end encrypted messages between mobile wallet and desktop dApps. No decryption — just message routing. Has its own `package.json`, separate from the main wallet. Runs on port 8765.
+A separate lightweight WebSocket relay server (`server/relay-server.ts`) that connects mobile wallets to desktop dApps via QR code scanning. It's a simple message router — all payloads are end-to-end encrypted with AES-256-GCM. Uses the `ws` library, runs on port 8765.
 
-### Database Schema (`shared/schema.ts`)
+### Database Schema
 
-Minimal PostgreSQL schema via Drizzle ORM with a single `users` table (id, username, password). This appears to be scaffolding from the Replit template and is NOT used by the wallet's core functionality. The wallet stores all data client-side in encrypted IndexedDB. The `drizzle.config.ts` requires `DATABASE_URL` environment variable pointing to PostgreSQL.
-
-### Build System
-
-- `npm run dev` — Vite dev server on port 5000
-- `npm run build` — PWA production build
-- `npm run build:extension` — Extension build via `vite.config.extension.ts` (outputs to `dist-extension/` and `dist-extension-firefox/`)
-- `npm run build:all` — Both builds
-- `npm run package:chrome` / `npm run package:firefox` — Zip for store submission
+There's a Drizzle ORM schema in `shared/schema.ts` with a basic `users` table (id, username, password) using PostgreSQL via `DATABASE_URL`. This appears to be scaffolding from the Replit template and is NOT used by the wallet's core functionality — the wallet is entirely client-side with IndexedDB storage. The `drizzle.config.ts` expects a PostgreSQL `DATABASE_URL` environment variable.
 
 ### Testing
 
-- Vitest with jsdom environment, React Testing Library
-- 271+ tests covering core crypto, security, and components
-- Coverage via `@vitest/coverage-v8` focused on `src/core/`
-- Setup in `src/test-setup.ts`
-- Run with `npm test`
+- **Framework**: Vitest with jsdom environment and React Testing Library
+- **Setup**: `src/test-setup.ts` configures jsdom mocks
+- **Coverage**: V8 provider targeting `src/core/**/*.ts`
+- **Test count**: 271+ tests covering crypto operations, security controls, and UI components
+- Run with `npm test` (single run) or `npm run test:watch`
 
-### Parity Between PWA and Extension
+### Key Domain Rules
 
-Files in `src/api/sultanAPI.ts`, `src/core/wallet.ts`, `src/core/security.ts`, and `src/core/wallet-link.ts` MUST be identical between PWA and extension builds. A verification script exists: `npm run verify:parity`. See `SYNC.md` for the sync workflow.
+- Sultan addresses use bech32 format starting with `sultan1`
+- Token decimals: 9 (1 SLTN = 1,000,000,000 base units)
+- Zero transaction fees on Sultan L1
+- Staking APY: 13.33%
+- Minimum validator stake: 10,000 SLTN
+- Governance proposal deposit: 1,000 SLTN
+- Sultan is a native Rust L1 blockchain — NOT Cosmos, Tendermint, or Substrate
 
 ## External Dependencies
 
-### Blockchain RPC
-
-- **Production**: `https://rpc.sltn.io` and `https://api.sltn.io/rpc` (HTTPS, proxied to Sultan L1 validator node at `206.189.224.142`)
-- **Development fallback**: `http://206.189.224.142:8545`
-- Sultan L1 is a native Rust blockchain (NOT Cosmos/Tendermint/Substrate)
-
-### DNS / Hosting
-
-- `sltn.io` — Main website (separate project)
-- `wallet.sltn.io` — This PWA (deployed via Replit static deployment)
-- DNS managed via Hostinger with A records pointing to Replit (`34.111.179.208`) and RPC nodes (`206.189.224.142`)
-
-### Key NPM Dependencies
-
-| Package | Purpose |
-|---------|---------|
-| `@noble/ed25519`, `@noble/hashes`, `@scure/bip39` | Cryptography (Cure53 audited) |
-| `bech32` | Address encoding |
-| `react`, `react-dom`, `react-router-dom` | UI framework |
-| `@tanstack/react-query` | Server state management |
-| `vite`, `vite-plugin-pwa` | Build and PWA support |
-| `qrcode`, `jsqr` | QR code generation and scanning |
-| `fast-json-stable-stringify` | Deterministic JSON for transaction signing |
-| `zod` | Runtime type validation (API responses) |
-| `ws` (server only) | WebSocket relay server |
-| `drizzle-orm`, `drizzle-kit` | Database ORM (scaffolding, not actively used by wallet) |
+### Blockchain Infrastructure
+- **Sultan L1 RPC**: `https://rpc.sltn.io` (production), `https://api.sltn.io/rpc` (backup), `http://206.189.224.142:26657` (dev fallback) — REST API for account data, transaction submission, staking, governance
+- **Domain**: `sltn.io` with subdomains `wallet.sltn.io` (PWA), `rpc.sltn.io`, `api.sltn.io`, `grpc.sltn.io`
 
 ### Database
+- **PostgreSQL** via Drizzle ORM — configured in `drizzle.config.ts`, schema in `shared/schema.ts`. Requires `DATABASE_URL` environment variable. Currently minimal (users table only); the wallet core does NOT depend on it
 
-PostgreSQL via Drizzle ORM is configured but minimally used. The wallet itself is entirely client-side with IndexedDB + AES-256-GCM encryption. If Postgres is needed for future server features, the schema is in `shared/schema.ts` and migrations go to `./migrations`.
+### Browser APIs
+- **IndexedDB** — Primary encrypted storage for wallet data
+- **Web Crypto API** (`crypto.subtle`) — AES-256-GCM encryption, PBKDF2 key derivation
+- **Service Worker** — PWA offline caching via vite-plugin-pwa
+- **localStorage** — Lockout state, preferences
 
-### Chrome Web Store / Firefox Add-ons
+### Chrome/Firefox Extension APIs
+- `chrome.storage` / `browser.storage` — Extension storage
+- `chrome.runtime` / `browser.runtime` — Message passing between content scripts and background
+- `chrome.action` / `browser.browserAction` — Extension popup management
 
-- Chrome extension manifest: `public/manifest.json` (MV3, version 1.7.4)
-- Firefox extension manifest: `public/manifest.firefox.json` (MV2, version 1.6.8)
+### Distribution
+- **PWA**: Deployed to `wallet.sltn.io` via Replit static deployment
+- **Chrome Extension**: Chrome Web Store (MV3 manifest, v1.7.4)
+- **Firefox Add-on**: Planned (MV2 manifest at `public/manifest.firefox.json`)
+
+### WalletLink Relay
+- **WebSocket server** using `ws` library — deployed separately, routes encrypted messages between mobile wallet and desktop dApps

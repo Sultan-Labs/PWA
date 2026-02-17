@@ -733,7 +733,7 @@ npm run build
 
 ### 9.2 Deployment Configuration
 
-**Platform**: Replit Static Deployment (via Wollnbergen/PWA repo)  
+**Platform**: Replit Static Deployment (via Sultan-Labs/PWA repo)  
 **URL**: `https://wallet.sltn.io`  
 **Backup**: `https://rpc.sltn.io/wallet/` (NYC validator)  
 **Build Command**: `npm run build`  

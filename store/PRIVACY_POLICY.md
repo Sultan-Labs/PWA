@@ -101,7 +101,7 @@ We may update this Privacy Policy from time to time. Changes will be reflected i
 
 Sultan Wallet is open source software. You can review our code to verify our privacy practices:
 
-- **Repository**: https://github.com/Wollnbergen/0xv7
+- **Repository**: https://github.com/Sultan-Labs/PWA
 - **License**: MIT
 
 ## Chrome Web Store Compliance
@@ -120,7 +120,7 @@ For privacy-related questions or concerns:
 
 - **Email**: privacy@sltn.io
 - **Website**: https://sltn.io
-- **GitHub Issues**: https://github.com/Wollnbergen/0xv7/issues
+- **GitHub Issues**: https://github.com/Sultan-Labs/PWA/issues
 
 ## Jurisdiction
 

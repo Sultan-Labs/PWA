@@ -15,8 +15,8 @@ This guide helps you efficiently audit the Sultan Wallet PWA.
 
 ```bash
 # Clone repository
-git clone https://github.com/Wollnbergen/0xv7.git
-cd 0xv7/wallet-extension
+git clone https://github.com/Sultan-Labs/PWA.git
+cd PWA
 
 # Install dependencies (uses locked versions)
 npm ci
@@ -339,7 +339,7 @@ done
 ## Contact Information
 
 **Security Issues**: security@sltn.io  
-**Repository**: https://github.com/Wollnbergen/0xv7  
+**Repository**: https://github.com/Sultan-Labs/PWA  
 **Audit Scope**: `wallet-extension/` directory  
 
 ---
