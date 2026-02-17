@@ -214,9 +214,14 @@ export default function BecomeValidator() {
    * In v0.2.7: validator address = user's own wallet address
    */
   const executeFundValidator = async () => {
-    if (!wallet || !currentAccount) return;
+    if (!wallet || !currentAccount) {
+      setError('Wallet not available. Please unlock your wallet and try again.');
+      setIsLoading(false);
+      return;
+    }
 
     try {
+      console.log('[BecomeValidator] Starting registration for:', currentAccount.address);
       // Fixed 10,000 SLTN stake for validator
       const stakeAmount = '10000';
       const atomicAmount = SultanWallet.parseSLTN(stakeAmount);
@@ -237,7 +242,10 @@ export default function BecomeValidator() {
         timestamp,
       };
 
+      console.log('[BecomeValidator] Signing transaction with index:', currentAccount.index);
       const signature = await wallet.signTransaction(txData, currentAccount.index);
+      console.log('[BecomeValidator] Signature obtained, calling createValidator API');
+      console.log('[BecomeValidator] PublicKey:', currentAccount.publicKey);
       
       // Call create_validator API endpoint
       await sultanAPI.createValidator({
@@ -256,6 +264,7 @@ export default function BecomeValidator() {
         navigate('/stake');
       }, 3000);
     } catch (err) {
+      console.error('[BecomeValidator] Registration failed:', err);
       setError(err instanceof Error ? err.message : 'Failed to register validator');
     } finally {
       setIsLoading(false);
