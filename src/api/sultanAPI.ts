@@ -797,6 +797,33 @@ export const sultanAPI = {
     });
   },
 
+  /**
+   * Exit as validator (unbond self-stake and deactivate)
+   * Starts 21-day unbonding period for self-stake
+   * Endpoint: POST /staking/exit_validator
+   */
+  exitValidator: async (req: {
+    validatorAddress: string;
+    signature: string;
+    publicKey: string;
+  }): Promise<{ 
+    validatorAddress: string;
+    unbondingAmount: string;
+    completionHeight: number;
+    status: string;
+  }> => {
+    return restApi<{ 
+      validatorAddress: string;
+      unbondingAmount: string;
+      completionHeight: number;
+      status: string;
+    }>('/staking/exit_validator', 'POST', {
+      validator_address: req.validatorAddress,
+      signature: req.signature,
+      public_key: req.publicKey,
+    });
+  },
+
   // =========================================================================
   // Governance API (uses REST endpoints from sultan-core)
   // =========================================================================

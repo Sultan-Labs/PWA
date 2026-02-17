@@ -60,7 +60,7 @@ const LockIcon = () => (
 
 type Tab = 'stake' | 'unstake' | 'validators';
 type Step = 'form' | 'pin';
-type PendingAction = 'stake' | 'unstake' | 'claim' | null;
+type PendingAction = 'stake' | 'unstake' | 'claim' | 'exit-validator' | null;
 
 // Truncate long validator names/addresses for display
 const truncateName = (name: string, startChars: number = 10, endChars: number = 5): string => {
@@ -228,6 +228,8 @@ export default function Stake() {
         await executeStake();
       } else if (pendingAction === 'unstake') {
         await executeUnstake();
+      } else if (pendingAction === 'exit-validator') {
+        await executeExitValidator();
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Operation failed');
@@ -327,6 +329,64 @@ export default function Stake() {
 
   // NOTE: Rewards are credited automatically - no manual executeClaim needed
 
+  /**
+   * Check if current user is a validator
+   */
+  const isValidator = validators?.some(v => v.address === currentAccount?.address) ?? false;
+  const myValidator = validators?.find(v => v.address === currentAccount?.address);
+  const myStake = myValidator ? SultanWallet.formatSLTN(myValidator.totalStaked) : '0';
+
+  /**
+   * Request PIN verification before exiting as validator
+   */
+  const handleExitValidator = () => {
+    if (!wallet || !currentAccount || !isValidator) return;
+
+    setError('');
+    setPin(['', '', '', '', '', '']);
+    setPendingAction('exit-validator');
+    setHighValueWarning(true); // Always warn for validator exit
+    setStep('pin');
+  };
+
+  /**
+   * Execute validator exit after PIN verification
+   */
+  const executeExitValidator = async () => {
+    if (!wallet || !currentAccount) return;
+
+    try {
+      // Fetch nonce from blockchain BEFORE signing
+      const currentNonce = await sultanAPI.getNonce(currentAccount.address);
+      const timestamp = Date.now();
+      
+      // Sign exit request
+      const txData = {
+        type: 'exit_validator',
+        validator_address: currentAccount.address,
+        nonce: currentNonce,
+        timestamp,
+      };
+
+      const signature = await wallet.signTransaction(txData, currentAccount.index);
+      
+      await sultanAPI.exitValidator({
+        validatorAddress: currentAccount.address,
+        signature,
+        publicKey: currentAccount.publicKey,
+      });
+
+      setSuccess('Validator exit initiated. 21-day unbonding period for stake.');
+      setStep('form');
+      setPendingAction(null);
+      refetchStaking();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Exit validator failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleLock = () => {
     lock();
     navigate('/unlock');
@@ -363,6 +423,7 @@ export default function Stake() {
           <p className="text-muted" style={{ marginBottom: '16px' }}>
             {pendingAction === 'stake' && `Stake ${amount} SLTN with validator`}
             {pendingAction === 'unstake' && `Unstake ${amount} SLTN (21-day unbonding)`}
+            {pendingAction === 'exit-validator' && `Exit as validator and unbond your stake`}
           </p>
           {highValueWarning && (
             <div style={{ 
@@ -600,7 +661,44 @@ export default function Stake() {
               <p className="text-muted text-center">No validators available</p>
             )}
 
-            {/* Become Validator CTA */}
+            {/* Show validator status if user is a validator */}
+            {isValidator && myValidator && (
+              <div className="validator-status-card" style={{
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05))',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                borderRadius: '12px',
+                padding: '16px',
+                marginBottom: '16px'
+              }}>
+                <h4 style={{ margin: '0 0 12px 0', color: 'var(--text-primary)' }}>
+                  ✅ You are a Validator
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
+                  <div>
+                    <span className="text-muted" style={{ fontSize: '12px' }}>Your Stake</span>
+                    <p style={{ margin: '4px 0 0', fontWeight: '500' }}>{myStake} SLTN</p>
+                  </div>
+                  <div>
+                    <span className="text-muted" style={{ fontSize: '12px' }}>Commission</span>
+                    <p style={{ margin: '4px 0 0', fontWeight: '500' }}>{myValidator.commission}%</p>
+                  </div>
+                </div>
+                <button 
+                  className="btn btn-secondary"
+                  style={{ width: '100%', background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)', color: '#ef4444' }}
+                  onClick={handleExitValidator}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Processing...' : 'Exit as Validator'}
+                </button>
+                <p className="text-muted" style={{ fontSize: '11px', marginTop: '8px', textAlign: 'center' }}>
+                  ⚠️ 21-day unbonding period. Stake returns after unbonding.
+                </p>
+              </div>
+            )}
+
+            {/* Become Validator CTA - only show if not already a validator */}
+            {!isValidator && (
             <div className="validator-cta-card">
               <div className="cta-content" style={{ textAlign: 'center', display: 'block' }}>
                 <div className="cta-text">
@@ -616,6 +714,7 @@ export default function Stake() {
                 Start Now <span style={{ fontSize: '1.2em', marginLeft: '4px' }}>→</span>
               </button>
             </div>
+            )}
           </div>
         )}
       </div>
