@@ -336,6 +336,14 @@ export default function Stake() {
   const myValidator = validators?.find(v => v.address === currentAccount?.address);
   const myStake = myValidator ? SultanWallet.formatSLTN(myValidator.totalStaked) : '0';
 
+  // Debug logging for validator matching
+  console.log('[Stake] Validators loaded:', validators?.length);
+  console.log('[Stake] Current account:', currentAccount?.address);
+  console.log('[Stake] isValidator:', isValidator);
+  if (validators && validators.length > 0) {
+    console.log('[Stake] First few validator addresses:', validators.slice(0, 3).map(v => v.address));
+  }
+
   /**
    * Request PIN verification before exiting as validator
    */
