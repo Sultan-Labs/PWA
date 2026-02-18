@@ -101,156 +101,35 @@
   --shadow-lg: 0 8px 32px rgba(0, 153, 170, 0.15);
 }
 
-@media (max-width: 768px) {
-  * {
-    cursor: auto !important;
-  }
-}
-
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html {
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-  background: var(--bg-gradient);
-  background-attachment: fixed;
-  overflow: hidden;
-}
-
-body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
+html, body {
+  height: 600px;
+  max-height: 600px;
+  width: 380px;
+  max-width: 380px;
   font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg-gradient);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: auto;
-  background: transparent;
-}
-
-/* Global Noise Texture for Premium Feel */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-}
-
-/* Global Active State for Tactile Feedback */
-button:active, 
-.btn:active, 
-.card:active, 
-.action-btn:active,
-.proposal-card:active,
-.validator-card:active {
-  transform: scale(0.98);
-  transition: transform 0.1s ease;
-}
-
-/* Sleek Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(128, 128, 128, 0.2);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 128, 128, 0.4);
+  overscroll-behavior-y: none; /* Prevent pull-to-refresh on mobile */
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+  overflow: hidden;
 }
 
 #root {
-  width: 100%;
-  min-height: 100vh;
-  margin: 0; 
+  height: 600px;
+  max-height: 600px;
+  width: 380px;
+  max-width: 380px;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg);
-  position: relative;
-  z-index: 10;
-}
-
-/* Background gradient for the whole screen on desktop */
-html {
-  background: var(--bg-gradient) !important;
-  background-attachment: fixed !important;
-  background-size: cover !important;
-  background-position: center !important;
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-  overflow: auto;
-}
-
-body {
-  background: transparent !important;
-  min-height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-  overflow: auto; /* Allow scrolling on body */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Base style for all screens */
-.screen-container {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  background: var(--color-bg);
-}
-
-/* Full screen overlay for specific screens (like Unlock, Welcome) */
-.full-screen-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 9999;
-  background: var(--bg-gradient) !important;
-  background-attachment: fixed !important;
-}
-
-@media (max-width: 400px) {
-  #root {
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-  }
-  html, body {
-    align-items: flex-start;
-  }
+  overflow: hidden;
 }
 
 /* Utility classes */

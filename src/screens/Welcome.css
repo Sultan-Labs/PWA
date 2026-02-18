@@ -4,16 +4,16 @@
  */
 
 .welcome-screen {
-  min-height: 100vh;
+  height: 600px;
+  max-height: 600px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--spacing-lg);
   position: relative;
-  width: 100%;
+  width: 380px;
   z-index: 10;
   overflow-y: auto;
-  overflow-x: hidden;
 }
 
 /* Ensure container allows scrolling on small screens */
@@ -27,7 +27,7 @@
 
 .welcome-content {
   width: 100%;
-  max-width: 480px; /* Increased from 400px to match others */
+  max-width: 400px;
   text-align: center;
   display: flex;
   flex-direction: column;

@@ -1,12 +1,12 @@
 .stake-screen {
-  min-height: 100vh;
+  height: 600px;
+  min-height: 600px;
+  max-height: 600px;
   display: flex;
   flex-direction: column;
   background: var(--bg-gradient);
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: env(safe-area-inset-bottom);
+  overflow: hidden;
 }
 
 .screen-header {
@@ -50,12 +50,6 @@
   padding: var(--spacing-lg);
   overflow-y: auto;
   min-height: 0;
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
 }
 
 .staking-overview {
@@ -253,7 +247,6 @@
 
 .text-success {
   color: var(--success);
-  text-align: center;
 }
 
 .text-center {

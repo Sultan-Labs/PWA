@@ -11,7 +11,6 @@ import { useTheme } from '../hooks/useTheme';
 import { useBalance, useStakingInfo, useTransactions } from '../hooks/useBalance';
 import { SultanWallet } from '../core/wallet';
 import { hapticFeedback } from '../utils/haptics';
-import hodlLogo from '@assets/Asset_7@4x-8_1771061774583.png';
 import './Dashboard.css';
 
 // Animated counter hook for smooth balance transitions
@@ -124,13 +123,27 @@ const NFTIcon = () => (
   </svg>
 );
 
-
-
+const SwapIcon = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="17 1 21 5 17 9" />
+    <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+    <polyline points="7 23 3 19 7 15" />
+    <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+  </svg>
+);
 
 
 const GovernanceIcon = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+  </svg>
+);
+
+// Trending up icon for staking opportunity
+const TrendingUpIcon = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+    <polyline points="17 6 23 6 23 12" />
   </svg>
 );
 
@@ -224,27 +237,25 @@ export default function Dashboard() {
   return (
     <div className="dashboard-screen">
       <header className="dashboard-header">
-        <div className="dashboard-header-inner">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
-            <div className="account-selector">
-              <span className="account-name">{currentAccount?.name || 'Account 1'}</span>
-              <span className="account-address" onClick={handleCopyAddress}>
-                {currentAccount?.address ? formatAddress(currentAccount.address) : '...'}
-                {showCopied && <span className="copied-badge">Copied!</span>}
-              </span>
-            </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+          <div className="account-selector">
+            <span className="account-name">{currentAccount?.name || 'Account 1'}</span>
+            <span className="account-address" onClick={handleCopyAddress}>
+              {currentAccount?.address ? formatAddress(currentAccount.address) : '...'}
+              {showCopied && <span className="copied-badge">Copied!</span>}
+            </span>
           </div>
-          <div className="header-right" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px' }}>
-            <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-            </button>
-            <button className="btn-icon" onClick={() => navigate('/settings')} title="Settings" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <SettingsIcon />
-            </button>
-            <button className="btn-icon" onClick={handleLock} title="Lock Wallet" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LockIcon />
-            </button>
-          </div>
+        </div>
+        <div className="header-right" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px' }}>
+          <button className="btn-icon theme-toggle" onClick={toggleTheme} title="Toggle theme" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          </button>
+          <button className="btn-icon" onClick={() => navigate('/settings')} title="Settings" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <SettingsIcon />
+          </button>
+          <button className="btn-icon" onClick={handleLock} title="Lock Wallet" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <LockIcon />
+          </button>
         </div>
       </header>
 
@@ -260,7 +271,7 @@ export default function Dashboard() {
               <span className="balance-value">
                 {animatedBalance.toLocaleString(undefined, { 
                   minimumFractionDigits: 2, 
-                  maximumFractionDigits: animatedBalance > 1000000 ? 2 : 4 
+                  maximumFractionDigits: 4 
                 })}
               </span>
               <span className="balance-currency"> SLTN</span>
@@ -269,11 +280,11 @@ export default function Dashboard() {
             <div className="balance-breakdown">
               <div className="breakdown-item">
                 <span>Available</span>
-                <span className="breakdown-value">{animatedAvailable.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: animatedAvailable > 1000000 ? 2 : 4 })} SLTN</span>
+                <span className="breakdown-value">{animatedAvailable.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} SLTN</span>
               </div>
               <div className="breakdown-item">
                 <span>Staked</span>
-                <span className="breakdown-value">{animatedStaked.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: animatedStaked > 1000000 ? 2 : 4 })} SLTN</span>
+                <span className="breakdown-value">{animatedStaked.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} SLTN</span>
               </div>
             </div>
           </div>
@@ -304,18 +315,15 @@ export default function Dashboard() {
 
         <div className="dex-banner" onClick={() => window.open('https://hodlholdings.com', '_blank')}>
           <div className="dex-banner-content">
-            <img src={hodlLogo} alt="HODL Holdings" className="dex-logo" />
+            <SwapIcon />
             <div className="dex-banner-text">
               <span className="dex-title">Trade on HODL Holdings</span>
             </div>
           </div>
+          <span className="dex-arrow">→</span>
         </div>
 
-        {stakingLoading ? (
-          <div className="staking-summary" style={{ height: '120px', opacity: 0.6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div className="loading-shimmer" style={{ width: '100%', height: '100%', borderRadius: '12px' }}></div>
-          </div>
-        ) : stakingData && stakingData.staked !== '0' ? (
+        {stakingData && stakingData.staked !== '0' ? (
           <div className="staking-summary staking-active">
             <div className="staking-header">
               <h3>Your Staking</h3>
@@ -336,7 +344,20 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        ) : null}
+        ) : (
+          <div className="staking-opportunity" onClick={() => { hapticFeedback.soft(); navigate('/stake'); }}>
+            <div className="opportunity-content">
+              <div className="opportunity-icon">
+                <TrendingUpIcon />
+              </div>
+              <div className="opportunity-text">
+                <span className="opportunity-title">Start Earning ~{stakingData?.stakingAPY || 13.33}% APY</span>
+                <span className="opportunity-subtitle">Stake your SLTN to earn rewards</span>
+              </div>
+            </div>
+            <span className="opportunity-arrow">→</span>
+          </div>
+        )}
 
         <div className="activity-section">
           <div className="section-header">

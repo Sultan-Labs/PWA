@@ -1,12 +1,12 @@
 .governance-screen {
-  min-height: 100vh;
+  height: 600px;
+  min-height: 600px;
+  max-height: 600px;
   display: flex;
   flex-direction: column;
   background: var(--bg-gradient);
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: env(safe-area-inset-bottom);
+  overflow: hidden;
 }
 
 .screen-header {
@@ -50,12 +50,6 @@
   padding: var(--spacing-lg);
   overflow-y: auto;
   min-height: 0;
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
 }
 
 /* Voting Power Card */
@@ -553,7 +547,6 @@
 /* Submit Proposal Form */
 .submit-proposal-form {
   max-width: 100%;
-  width: 100%;
 }
 
 .form-group {
