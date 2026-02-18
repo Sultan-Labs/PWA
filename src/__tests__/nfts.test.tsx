@@ -91,7 +91,7 @@ describe('NFT Gallery Screen', () => {
   });
 
   it('should show empty state when no NFTs', async () => {
-    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue({ collections: [] });
+    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue([]);
     renderNFTs();
     
     await waitFor(() => {
@@ -100,18 +100,52 @@ describe('NFT Gallery Screen', () => {
   });
 
   it('should display NFT collections when available', async () => {
-    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue(mockNFTResponse);
+    // Mock should return an array of NFTs, not { collections: [...] }
+    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue([
+      {
+        collection: 'sultan1nftcontract123',
+        tokenId: '1',
+        name: 'Sultan #1',
+        image: 'https://example.com/nft1.png',
+        owner: 'sultan1testaddress12345678901234567890',
+        description: 'The first Sultan NFT'
+      },
+      {
+        collection: 'sultan1nftcontract123',
+        tokenId: '42',
+        name: 'Sultan #42',
+        image: 'https://example.com/nft42.png',
+        owner: 'sultan1testaddress12345678901234567890',
+        description: 'A rare Sultan NFT'
+      }
+    ]);
     renderNFTs();
     
     await waitFor(() => {
-      expect(screen.getByText('Sultan Genesis')).toBeInTheDocument();
+      // Logic inside component defaults name to "Sultan Collection" if metadata missing
+      expect(screen.getByText('Sultan Collection')).toBeInTheDocument();
       expect(screen.getByText('Sultan #1')).toBeInTheDocument();
       expect(screen.getByText('Sultan #42')).toBeInTheDocument();
     });
   });
 
   it('should show stats with correct counts', async () => {
-    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue(mockNFTResponse);
+    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue([
+      {
+        collection: 'sultan1nftcontract123',
+        tokenId: '1',
+        name: 'Sultan #1',
+        image: 'https://example.com/nft1.png',
+        owner: 'sultan1testaddress12345678901234567890',
+      },
+      {
+        collection: 'sultan1nftcontract123',
+        tokenId: '42',
+        name: 'Sultan #42',
+        image: 'https://example.com/nft42.png',
+        owner: 'sultan1testaddress12345678901234567890',
+      }
+    ]);
     renderNFTs();
     
     await waitFor(() => {
@@ -132,7 +166,7 @@ describe('NFT Gallery Screen', () => {
   });
 
   it('should have NFT Gallery in header', async () => {
-    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue({ collections: [] });
+    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue([]);
     renderNFTs();
     
     expect(screen.getByText('NFT Gallery')).toBeInTheDocument();
@@ -141,7 +175,7 @@ describe('NFT Gallery Screen', () => {
 
 describe('NFT API Integration', () => {
   it('should call queryNFTs with correct address', async () => {
-    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue({ collections: [] });
+    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue([]);
     renderNFTs();
     
     await waitFor(() => {

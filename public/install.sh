@@ -1,6 +1,6 @@
 #!/bin/bash
 # Sultan Validator One-Line Installer
-# Usage: curl -L https://wallet.sltn.io/install.sh -o /tmp/install.sh && bash /tmp/install.sh
+# Usage: curl -L https://wallet.sltn.io/install.sh -o install.sh && bash install.sh
 
 set -e
 

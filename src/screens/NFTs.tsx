@@ -77,7 +77,16 @@ const LockIcon = () => (
   </svg>
 );
 
-// NFT Interface
+// NFT Interface matches sultanAPI
+interface API_NFT {
+  collection: string;
+  tokenId: string;
+  name: string;
+  image: string;
+  owner: string;
+  description?: string;
+}
+
 interface NFT {
   tokenId: string;
   contractAddress: string;
@@ -125,10 +134,37 @@ export default function NFTs() {
       
       try {
         // Query Sultan's native token factory for user's NFTs
-        const response = await sultanAPI.queryNFTs(currentAccount.address);
+        const nfts = await sultanAPI.queryNFTs(currentAccount.address);
         
-        if (response.collections) {
-          setCollections(response.collections);
+        if (nfts && nfts.length > 0) {
+          // Group NFTs by collection
+          const grouped: Record<string, NFT[]> = {};
+          
+          nfts.forEach((nft: API_NFT) => {
+            if (!grouped[nft.collection]) {
+              grouped[nft.collection] = [];
+            }
+            
+            grouped[nft.collection].push({
+              tokenId: nft.tokenId,
+              contractAddress: nft.collection, // Using collection as address for now
+              name: nft.name,
+              description: nft.description,
+              image: nft.image,
+              collection: 'Sultan Collection', // Default name if not provided
+              attributes: [] // API doesn't return attributes yet
+            });
+          });
+
+          // Convert to array of collections
+          const collectionsArray: NFTCollection[] = Object.keys(grouped).map(address => ({
+            address,
+            name: 'Sultan Collection', // This could be improved if API returned collection metadata
+            symbol: 'SLTN-NFT',
+            nfts: grouped[address]
+          }));
+
+          setCollections(collectionsArray);
         } else {
           // Mock data for development - remove in production
           setCollections([
