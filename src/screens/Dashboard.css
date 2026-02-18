@@ -16,7 +16,7 @@
   padding: var(--spacing-lg);
   padding-bottom: calc(var(--spacing-lg) + 70px);
   width: 100%;
-  max-width: 480px; /* Constrain content width */
+  max-width: 1000px; /* Constrain content width for desktop */
   margin: 0 auto; /* Center content */
 }
 
@@ -43,7 +43,7 @@
    Let's constrain the inner content of the header for consistency. */
 .dashboard-header-inner {
   width: 100%;
-  max-width: 480px;
+  max-width: 1000px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
