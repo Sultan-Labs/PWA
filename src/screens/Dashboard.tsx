@@ -374,10 +374,10 @@ export default function Dashboard() {
               })}
             </div>
           ) : (
-            <div className="empty-activity">
-              <div className="empty-icon">📭</div>
-              <p className="text-muted">No recent transactions</p>
-              <p className="empty-hint">Send or receive SLTN to see activity here</p>
+            <div className="empty-activity fade-in">
+              <div className="empty-icon" style={{ filter: 'none', opacity: 1 }}>📭</div>
+              <h3 className="empty-title" style={{ color: 'var(--color-text)', marginTop: '12px' }}>No recent transactions</h3>
+              <p className="empty-hint" style={{ color: 'var(--color-text-muted)', opacity: 0.8 }}>Send or receive SLTN to see activity here</p>
             </div>
           )}
         </div>
