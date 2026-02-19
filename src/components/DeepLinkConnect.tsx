@@ -109,7 +109,7 @@ export function DeepLinkConnect() {
   };
 
   // Error state
-  if (status === 'error' || searchParams.get('test') === 'error') {
+  if (status === 'error' && searchParams.get('test') !== 'approve') {
     return (
       <div className="approval-screen">
         <div className="request-card" style={{ marginTop: '40px' }}>
