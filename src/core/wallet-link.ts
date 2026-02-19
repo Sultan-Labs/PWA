@@ -151,47 +151,21 @@ export class WalletLinkClient {
   private parseQRData(data: string): { sessionId: string; key: string; bridgeUrl?: string } | null {
     try {
       // Format: sultan://wl?s=<sessionId>&k=<key>&b=<bridgeUrl>
-      // Also support: https://wallet.sltn.io/connect?session=<encoded-sultan-url>
-      
-      let sessionData = data;
-      
-      // If it's a deep link URL, extract the session parameter
-      if (data.startsWith('https://') && data.includes('/connect?session=')) {
-        const url = new URL(data);
-        const sessionParam = url.searchParams.get('session');
-        if (sessionParam) {
-          sessionData = decodeURIComponent(sessionParam);
-        }
-      }
-      
-      // Parse sultan:// URL manually since URL constructor may not handle custom protocols well
-      if (!sessionData.startsWith('sultan://wl?')) {
-        console.error('[WalletLink] Invalid protocol, expected sultan://wl?, got:', sessionData.substring(0, 30));
+      const url = new URL(data);
+      if (url.protocol !== 'sultan:' || url.hostname !== 'wl') {
         return null;
       }
-      
-      // Extract query string
-      const queryStart = sessionData.indexOf('?');
-      if (queryStart === -1) {
-        return null;
-      }
-      
-      const queryString = sessionData.substring(queryStart + 1);
-      const params = new URLSearchParams(queryString);
-      
-      const sessionId = params.get('s');
-      const key = params.get('k');
-      const bridgeUrl = params.get('b') || undefined;
+
+      const sessionId = url.searchParams.get('s');
+      const key = url.searchParams.get('k');
+      const bridgeUrl = url.searchParams.get('b') || undefined;
 
       if (!sessionId || !key) {
-        console.error('[WalletLink] Missing sessionId or key. sessionId:', !!sessionId, 'key:', !!key);
         return null;
       }
 
-      console.log('[WalletLink] Parsed session:', { sessionId: sessionId.substring(0, 8) + '...', hasKey: !!key, bridgeUrl });
       return { sessionId, key, bridgeUrl };
-    } catch (e) {
-      console.error('[WalletLink] Parse error:', e);
+    } catch {
       return null;
     }
   }
@@ -468,34 +442,6 @@ export class WalletLinkClient {
     this.pendingRequests.clear();
     this.reconnectAttempts = 0;
     this.emit({ type: 'disconnected' });
-  }
-
-  /**
-   * Send connection approval to dApp with wallet address and public key
-   * Called when user approves a deep link connection
-   */
-  async sendConnectionApproval(address: string, publicKey: string): Promise<void> {
-    if (!this.session || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      console.error('[WalletLink] Cannot send approval - not connected to relay');
-      throw new Error('Not connected to relay');
-    }
-
-    console.log('[WalletLink] Sending connection approval for:', address);
-
-    const message: RelayMessage = {
-      type: MessageType.CONNECT_RESPONSE,
-      sessionId: this.session.sessionId,
-      payload: {
-        approved: true,
-        address,
-        publicKey,
-      },
-      timestamp: Date.now(),
-    };
-
-    const encrypted = await this.encrypt(JSON.stringify(message));
-    this.ws.send(encrypted);
-    console.log('[WalletLink] Connection approval sent');
   }
 
   /**
