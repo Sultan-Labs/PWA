@@ -112,11 +112,6 @@ export function DeepLinkConnect() {
   if (status === 'error' || searchParams.get('test') === 'error') {
     return (
       <div className="approval-screen">
-        <header className="approval-header">
-          <Shield className="shield-icon" />
-          <span className="header-title">Sultan Wallet</span>
-        </header>
-        
         <div className="request-card" style={{ marginTop: '40px' }}>
           <div className="type-icon" style={{ background: 'rgba(255, 68, 68, 0.1)', color: 'var(--color-error)' }}>
             <AlertCircle size={32} />
