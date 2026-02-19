@@ -148,6 +148,15 @@ function App() {
         } 
       />
       
+      <Route 
+        path="/test-approval" 
+        element={<ApprovalScreen />} 
+      />
+      <Route 
+        path="/test-connect" 
+        element={<DeepLinkConnect />} 
+      />
+      
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

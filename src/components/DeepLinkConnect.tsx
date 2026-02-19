@@ -109,7 +109,7 @@ export function DeepLinkConnect() {
   };
 
   // Error state
-  if (status === 'error') {
+  if (status === 'error' || searchParams.get('test') === 'error') {
     return (
       <div className="approval-screen">
         <header className="approval-header">
@@ -139,86 +139,75 @@ export function DeepLinkConnect() {
     );
   }
 
-  // Connecting state
-  if (status === 'connecting' || status === 'parsing') {
+  // Connected - show approval screen
+  if (status === 'connected' || searchParams.get('test') === 'approve') {
     return (
-      <div className="approval-screen" style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <div className="spinner" style={{ marginBottom: '24px' }} />
-        <h2 className="request-title">Connecting...</h2>
-        <p className="request-description">
-          Establishing secure connection with {request?.dappName || 'dApp'}
-        </p>
+      <div className="approval-screen">
+        <header className="approval-header">
+          <Shield className="shield-icon" />
+          <span className="header-title">Sultan Wallet</span>
+        </header>
+
+        <div className="request-card">
+          <div className="type-icon connect">
+            <Link size={32} />
+          </div>
+          <h2 className="request-title">Connection Request</h2>
+          <p className="request-description">
+            A dApp wants to connect to your wallet
+          </p>
+        </div>
+
+        <div className="origin-card">
+          <div className="origin-favicon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
+            <Globe size={24} />
+          </div>
+          <div className="origin-info">
+            <span className="origin-name">{request?.dappName || 'HODL Holdings'}</span>
+            <span className="origin-url">{request?.dappOrigin || 'https://hodlholdings.com'}</span>
+          </div>
+        </div>
+
+        <div className="permissions-list">
+          <p style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '8px', color: 'var(--color-text)' }}>
+            This dApp will be able to:
+          </p>
+          <div className="permission-item">
+            <Check size={16} className="text-success" />
+            <span>View your wallet address</span>
+          </div>
+          <div className="permission-item">
+            <Check size={16} className="text-success" />
+            <span>Request transaction signatures</span>
+          </div>
+          <div className="permission-item">
+            <Check size={16} className="text-success" />
+            <span>Request message signatures</span>
+          </div>
+        </div>
+
+        <div className="warning-banner" style={{ marginTop: 'auto' }}>
+          <AlertCircle className="warning-icon" size={20} />
+          <span>Only connect to sites you trust. Never approve transactions you don't understand.</span>
+        </div>
+
+        <div className="approval-actions">
+          <button
+            className="btn btn-reject"
+            onClick={handleReject}
+          >
+            Reject
+          </button>
+          <button
+            className="btn btn-approve"
+            onClick={handleApprove}
+          >
+            Connect
+          </button>
+        </div>
       </div>
     );
   }
-
-  // Connected - show approval screen
-  return (
-    <div className="approval-screen">
-      <header className="approval-header">
-        <Shield className="shield-icon" />
-        <span className="header-title">Sultan Wallet</span>
-      </header>
-
-      <div className="request-card">
-        <div className="type-icon connect">
-          <Link size={32} />
-        </div>
-        <h2 className="request-title">Connection Request</h2>
-        <p className="request-description">
-          A dApp wants to connect to your wallet
-        </p>
-      </div>
-
-      <div className="origin-card">
-        <div className="origin-favicon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
-          <Globe size={24} />
-        </div>
-        <div className="origin-info">
-          <span className="origin-name">{request?.dappName || 'Unknown dApp'}</span>
-          <span className="origin-url">{request?.dappOrigin || 'Unknown origin'}</span>
-        </div>
-      </div>
-
-      <div className="permissions-list">
-        <p style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '8px', color: 'var(--color-text)' }}>
-          This dApp will be able to:
-        </p>
-        <div className="permission-item">
-          <Check size={16} className="text-success" />
-          <span>View your wallet address</span>
-        </div>
-        <div className="permission-item">
-          <Check size={16} className="text-success" />
-          <span>Request transaction signatures</span>
-        </div>
-        <div className="permission-item">
-          <Check size={16} className="text-success" />
-          <span>Request message signatures</span>
-        </div>
-      </div>
-
-      <div className="warning-banner" style={{ marginTop: 'auto' }}>
-        <AlertCircle className="warning-icon" size={20} />
-        <span>Only connect to sites you trust. Never approve transactions you don't understand.</span>
-      </div>
-
-      <div className="approval-actions">
-        <button
-          className="btn btn-reject"
-          onClick={handleReject}
-        >
-          Reject
-        </button>
-        <button
-          className="btn btn-approve"
-          onClick={handleApprove}
-        >
-          Connect
-        </button>
-      </div>
-    </div>
-  );
 }
 
 export default DeepLinkConnect;
