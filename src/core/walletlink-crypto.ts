@@ -95,8 +95,9 @@ export async function decryptMessage(
   encryptedBase64: string,
   key: CryptoKey
 ): Promise<string> {
-  // Decode from base64
-  const combined = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
+  // Decode from base64 (handle URL-safe base64)
+  const standardBase64 = encryptedBase64.replace(/-/g, '+').replace(/_/g, '/');
+  const combined = Uint8Array.from(atob(standardBase64), c => c.charCodeAt(0));
   
   // Validate minimum length (IV + at least 1 byte + tag)
   if (combined.length < IV_LENGTH + 1 + (TAG_LENGTH / 8)) {
