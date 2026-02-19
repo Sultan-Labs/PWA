@@ -146,10 +146,12 @@ export function encodeSessionKey(key: Uint8Array): string {
 }
 
 /**
- * Decode a session key from base64
+ * Decode a session key from base64 (supports URL-safe base64)
  */
 export function decodeSessionKey(base64: string): Uint8Array {
-  const binary = atob(base64);
+  // Convert URL-safe base64 back to standard base64
+  const standardBase64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+  const binary = atob(standardBase64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) {
     bytes[i] = binary.charCodeAt(i);
