@@ -231,8 +231,16 @@ export class WalletLinkClient {
    */
   private async handleMessage(data: string): Promise<void> {
     try {
-      const decrypted = await this.decrypt(data);
-      const message: RelayMessage = JSON.parse(decrypted);
+      let message: RelayMessage;
+      
+      // Try parsing as plain JSON first (relay control messages are unencrypted)
+      try {
+        message = JSON.parse(data);
+      } catch {
+        // If not valid JSON, try decrypting (peer messages are encrypted)
+        const decrypted = await this.decrypt(data);
+        message = JSON.parse(decrypted);
+      }
 
       this.updateActivity();
 
@@ -750,8 +758,16 @@ export class WalletLinkSessionGenerator {
    */
   private async handleMessage(data: string): Promise<void> {
     try {
-      const decrypted = await this.decrypt(data);
-      const message: RelayMessage = JSON.parse(decrypted);
+      let message: RelayMessage;
+      
+      // Try parsing as plain JSON first (relay control messages are unencrypted)
+      try {
+        message = JSON.parse(data);
+      } catch {
+        // If not valid JSON, try decrypting (peer messages are encrypted)
+        const decrypted = await this.decrypt(data);
+        message = JSON.parse(decrypted);
+      }
 
       switch (message.type) {
         case MessageType.SESSION_ACK:
