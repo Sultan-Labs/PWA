@@ -34,9 +34,9 @@
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   --glass-blur: blur(16px);
 
-  /* Background Gradient */
+  /* Background Gradient - Sharper and deeper */
   --bg-gradient: radial-gradient(circle at 50% 50%, #0d1424 0%, #000000 100%);
-  --line-color: rgba(0, 255, 255, 0.2);
+  --line-color: rgba(0, 255, 255, 0.08); /* Reduced opacity for clarity */
   
   /* Legacy variable aliases for backward compatibility */
   --bg-primary: var(--color-bg);
