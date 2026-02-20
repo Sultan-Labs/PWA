@@ -161,6 +161,7 @@ function App() {
           </div>
         } 
       />
+      <Route path="/connect/" element={<Navigate to="/connect" replace />} />
       
       <Route 
         path="/test-approval" 
