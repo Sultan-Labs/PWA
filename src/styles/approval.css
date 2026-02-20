@@ -61,7 +61,8 @@
   border: 2px solid #ef4444;
   border-radius: var(--radius-md);
   margin-bottom: var(--spacing-md);
-  animation: pulse-warning 2s infinite;
+  animation: pulse-warning 2s linear infinite;
+  visibility: visible;
 }
 
 @keyframes pulse-warning {
