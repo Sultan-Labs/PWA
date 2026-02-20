@@ -236,7 +236,7 @@ export class WalletLinkClient {
   }
 
   /**
-   * Send join session message to relay
+   * Send join session message to relay (plain JSON — relay needs to parse type/sessionId)
    */
   private async sendJoinSession(): Promise<void> {
     if (!this.session || !this.ws) return;
@@ -248,18 +248,45 @@ export class WalletLinkClient {
       timestamp: Date.now(),
     };
 
-    const encrypted = await this.encrypt(JSON.stringify(message));
-    this.ws.send(encrypted);
+    // Send as plain JSON so relay can read sessionId/type for routing
+    this.ws.send(JSON.stringify(message));
   }
 
   /**
    * Handle incoming relay messages
    */
   private async handleMessage(data: string): Promise<void> {
-    try {
-      const decrypted = await this.decrypt(data);
-      const message: RelayMessage = JSON.parse(decrypted);
+    let message: RelayMessage | null = null;
 
+    // 1. Try parsing as JSON (relay control messages & wrapped encrypted messages)
+    try {
+      const parsed = JSON.parse(data);
+      if (parsed.data && typeof parsed.data === 'string') {
+        // Wrapped encrypted message from peer — decrypt the data field
+        try {
+          const decrypted = await this.decrypt(parsed.data);
+          message = JSON.parse(decrypted);
+        } catch {
+          // Couldn't decrypt — silently ignore
+          return;
+        }
+      } else {
+        // Plain relay control message (session_ack, error, session_end, etc.)
+        message = parsed as RelayMessage;
+      }
+    } catch {
+      // Not valid JSON — try decrypting as raw (backward compat)
+      try {
+        const decrypted = await this.decrypt(data);
+        message = JSON.parse(decrypted);
+      } catch {
+        return;
+      }
+    }
+
+    if (!message) return;
+
+    try {
       this.updateActivity();
 
       switch (message.type) {
@@ -289,7 +316,7 @@ export class WalletLinkClient {
           break;
       }
     } catch (error) {
-      console.error('[WalletLink] Message handling error:', error);
+      console.error('[WalletLink] Error processing message:', error);
     }
   }
 
@@ -383,7 +410,13 @@ export class WalletLinkClient {
     };
 
     const encrypted = await this.encrypt(JSON.stringify(message));
-    this.ws.send(encrypted);
+    // Wrap in JSON envelope so relay can route by sessionId/type
+    this.ws.send(JSON.stringify({
+      sessionId: message.sessionId,
+      type: message.type,
+      data: encrypted,
+      timestamp: message.timestamp,
+    }));
 
     // Update session peer info
     this.session.peerAddress = address;
@@ -479,7 +512,13 @@ export class WalletLinkClient {
     };
 
     const encrypted = await this.encrypt(JSON.stringify(message));
-    this.ws.send(encrypted);
+    // Wrap in JSON envelope so relay can read sessionId/type for routing
+    this.ws.send(JSON.stringify({
+      sessionId: message.sessionId,
+      type: message.type,
+      data: encrypted,
+      timestamp: message.timestamp,
+    }));
   }
 
   /**
@@ -488,15 +527,14 @@ export class WalletLinkClient {
   async disconnect(): Promise<void> {
     if (this.ws) {
       if (this.session) {
-        const message: RelayMessage = {
-          type: MessageType.SESSION_END,
-          sessionId: this.session.sessionId,
-          payload: {},
-          timestamp: Date.now(),
-        };
+        // Send session_end as plain JSON (relay needs to parse type)
         try {
-          const encrypted = await this.encrypt(JSON.stringify(message));
-          this.ws.send(encrypted);
+          this.ws.send(JSON.stringify({
+            type: MessageType.SESSION_END,
+            sessionId: this.session.sessionId,
+            payload: {},
+            timestamp: Date.now(),
+          }));
         } catch {
           // Ignore send errors during disconnect
         }
@@ -520,18 +558,13 @@ export class WalletLinkClient {
   private startHeartbeat(): void {
     this.heartbeatInterval = setInterval(async () => {
       if (this.ws?.readyState === WebSocket.OPEN && this.session) {
-        const message: RelayMessage = {
+        // Heartbeat sent as plain JSON — relay just needs sessionId/type
+        this.ws.send(JSON.stringify({
           type: MessageType.HEARTBEAT,
           sessionId: this.session.sessionId,
           payload: {},
           timestamp: Date.now(),
-        };
-        try {
-          const encrypted = await this.encrypt(JSON.stringify(message));
-          this.ws.send(encrypted);
-        } catch (e) {
-          console.error('[WalletLink] Heartbeat encryption error:', e);
-        }
+        }));
       }
     }, 30000);
   }
@@ -799,7 +832,7 @@ export class WalletLinkSessionGenerator {
   }
 
   /**
-   * Send session init message to relay
+   * Send session init message to relay (plain JSON — relay needs to parse type/sessionId)
    */
   private async sendInitSession(): Promise<void> {
     if (!this.session || !this.ws) return;
@@ -811,18 +844,44 @@ export class WalletLinkSessionGenerator {
       timestamp: Date.now(),
     };
 
-    const encrypted = await this.encrypt(JSON.stringify(message));
-    this.ws.send(encrypted);
+    // Send as plain JSON so relay can read sessionId/type for routing
+    this.ws.send(JSON.stringify(message));
   }
 
   /**
    * Handle incoming relay messages
    */
   private async handleMessage(data: string): Promise<void> {
-    try {
-      const decrypted = await this.decrypt(data);
-      const message: RelayMessage = JSON.parse(decrypted);
+    let message: RelayMessage | null = null;
 
+    // 1. Try parsing as JSON (relay control messages & wrapped encrypted messages)
+    try {
+      const parsed = JSON.parse(data);
+      if (parsed.data && typeof parsed.data === 'string') {
+        // Wrapped encrypted message from peer — decrypt the data field
+        try {
+          const decrypted = await this.decrypt(parsed.data);
+          message = JSON.parse(decrypted);
+        } catch {
+          return;
+        }
+      } else {
+        // Plain relay control message (session_ack, error, session_end, etc.)
+        message = parsed as RelayMessage;
+      }
+    } catch {
+      // Not valid JSON — try decrypting as raw (backward compat)
+      try {
+        const decrypted = await this.decrypt(data);
+        message = JSON.parse(decrypted);
+      } catch {
+        return;
+      }
+    }
+
+    if (!message) return;
+
+    try {
       switch (message.type) {
         case MessageType.SESSION_ACK:
           if (message.payload?.walletConnected) {
@@ -850,7 +909,7 @@ export class WalletLinkSessionGenerator {
           break;
       }
     } catch (error) {
-      console.error('[WalletLink dApp] Message handling error:', error);
+      console.error('[WalletLink dApp] Error processing message:', error);
     }
   }
 
@@ -871,7 +930,12 @@ export class WalletLinkSessionGenerator {
     };
 
     const encrypted = await this.encrypt(JSON.stringify(message));
-    this.ws?.send(encrypted);
+    this.ws?.send(JSON.stringify({
+      sessionId: message.sessionId,
+      type: message.type,
+      data: encrypted,
+      timestamp: message.timestamp,
+    }));
   }
 
   /**
@@ -890,7 +954,12 @@ export class WalletLinkSessionGenerator {
     };
 
     const encrypted = await this.encrypt(JSON.stringify(relayMessage));
-    this.ws?.send(encrypted);
+    this.ws?.send(JSON.stringify({
+      sessionId: relayMessage.sessionId,
+      type: relayMessage.type,
+      data: encrypted,
+      timestamp: relayMessage.timestamp,
+    }));
   }
 
   /**
@@ -909,7 +978,12 @@ export class WalletLinkSessionGenerator {
     };
 
     const encrypted = await this.encrypt(JSON.stringify(relayMessage));
-    this.ws?.send(encrypted);
+    this.ws?.send(JSON.stringify({
+      sessionId: relayMessage.sessionId,
+      type: relayMessage.type,
+      data: encrypted,
+      timestamp: relayMessage.timestamp,
+    }));
   }
 
   /**
@@ -918,15 +992,14 @@ export class WalletLinkSessionGenerator {
   async disconnect(): Promise<void> {
     if (this.ws) {
       if (this.session) {
-        const message: RelayMessage = {
-          type: MessageType.SESSION_END,
-          sessionId: this.session.sessionId,
-          payload: {},
-          timestamp: Date.now(),
-        };
+        // Send session_end as plain JSON (relay needs to parse type)
         try {
-          const encrypted = await this.encrypt(JSON.stringify(message));
-          this.ws.send(encrypted);
+          this.ws.send(JSON.stringify({
+            type: MessageType.SESSION_END,
+            sessionId: this.session.sessionId,
+            payload: {},
+            timestamp: Date.now(),
+          }));
         } catch {
           // Ignore send errors during disconnect
         }
@@ -967,18 +1040,13 @@ export class WalletLinkSessionGenerator {
   private startHeartbeat(): void {
     this.heartbeatInterval = setInterval(async () => {
       if (this.ws?.readyState === WebSocket.OPEN && this.session) {
-        const message: RelayMessage = {
+        // Heartbeat sent as plain JSON — relay just needs sessionId/type
+        this.ws.send(JSON.stringify({
           type: MessageType.HEARTBEAT,
           sessionId: this.session.sessionId,
           payload: {},
           timestamp: Date.now(),
-        };
-        try {
-          const encrypted = await this.encrypt(JSON.stringify(message));
-          this.ws.send(encrypted);
-        } catch (e) {
-          console.error('[WalletLink dApp] Heartbeat encryption error:', e);
-        }
+        }));
       }
     }, 30000);
   }
