@@ -115,10 +115,8 @@ export class WalletLinkClient {
    * QR contains: sultan://wl?s=<sessionId>&k=<base64Key>&b=<bridgeUrl>
    */
   async connectFromQR(qrData: string): Promise<boolean> {
-    console.log('[WalletLink] Raw QR data:', qrData);
     try {
       const parsed = this.parseQRData(qrData);
-      console.log('[WalletLink] Parsed session:', parsed);
       if (!parsed) {
         throw new Error('Invalid QR code format');
       }
@@ -153,21 +151,47 @@ export class WalletLinkClient {
   private parseQRData(data: string): { sessionId: string; key: string; bridgeUrl?: string } | null {
     try {
       // Format: sultan://wl?s=<sessionId>&k=<key>&b=<bridgeUrl>
-      const url = new URL(data);
-      if (url.protocol !== 'sultan:' || url.hostname !== 'wl') {
+      // Also support: https://wallet.sltn.io/connect?session=<encoded-sultan-url>
+      
+      let sessionData = data;
+      
+      // If it's a deep link URL, extract the session parameter
+      if (data.startsWith('https://') && data.includes('/connect?session=')) {
+        const url = new URL(data);
+        const sessionParam = url.searchParams.get('session');
+        if (sessionParam) {
+          sessionData = decodeURIComponent(sessionParam);
+        }
+      }
+      
+      // Parse sultan:// URL manually since URL constructor may not handle custom protocols well
+      if (!sessionData.startsWith('sultan://wl?')) {
+        console.error('[WalletLink] Invalid protocol, expected sultan://wl?, got:', sessionData.substring(0, 30));
         return null;
       }
-
-      const sessionId = url.searchParams.get('s');
-      const key = url.searchParams.get('k');
-      const bridgeUrl = url.searchParams.get('b') || undefined;
+      
+      // Extract query string
+      const queryStart = sessionData.indexOf('?');
+      if (queryStart === -1) {
+        return null;
+      }
+      
+      const queryString = sessionData.substring(queryStart + 1);
+      const params = new URLSearchParams(queryString);
+      
+      const sessionId = params.get('s');
+      const key = params.get('k');
+      const bridgeUrl = params.get('b') || undefined;
 
       if (!sessionId || !key) {
+        console.error('[WalletLink] Missing sessionId or key. sessionId:', !!sessionId, 'key:', !!key);
         return null;
       }
 
+      console.log('[WalletLink] Parsed session:', { sessionId: sessionId.substring(0, 8) + '...', hasKey: !!key, bridgeUrl });
       return { sessionId, key, bridgeUrl };
-    } catch {
+    } catch (e) {
+      console.error('[WalletLink] Parse error:', e);
       return null;
     }
   }
@@ -213,7 +237,6 @@ export class WalletLinkClient {
 
   /**
    * Send join session message to relay
-   * NOTE: First message must be plaintext so relay can route by sessionId
    */
   private async sendJoinSession(): Promise<void> {
     if (!this.session || !this.ws) return;
@@ -225,9 +248,8 @@ export class WalletLinkClient {
       timestamp: Date.now(),
     };
 
-    // Send as plaintext JSON so relay can see sessionId for routing
-    console.log('[WalletLink] Sending join message:', message);
-    this.ws.send(JSON.stringify(message));
+    const encrypted = await this.encrypt(JSON.stringify(message));
+    this.ws.send(encrypted);
   }
 
   /**
@@ -235,16 +257,8 @@ export class WalletLinkClient {
    */
   private async handleMessage(data: string): Promise<void> {
     try {
-      let message: RelayMessage;
-      
-      // Try parsing as plain JSON first (relay control messages are unencrypted)
-      try {
-        message = JSON.parse(data);
-      } catch {
-        // If not valid JSON, try decrypting (peer messages are encrypted)
-        const decrypted = await this.decrypt(data);
-        message = JSON.parse(decrypted);
-      }
+      const decrypted = await this.decrypt(data);
+      const message: RelayMessage = JSON.parse(decrypted);
 
       this.updateActivity();
 
@@ -338,6 +352,50 @@ export class WalletLinkClient {
 
     this.pendingRequests.set(request.id, request);
     this.emit({ type: 'request', data: request });
+  }
+
+  /**
+   * Send connection approval to dApp (called after user approves connection)
+   * This is the wallet-side response to a CONNECT_REQUEST
+   */
+  async sendConnectionApproval(address: string, publicKey: string): Promise<void> {
+    if (!this.session || !this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      throw new Error('Not connected to relay');
+    }
+
+    // Find the pending connect request, if any
+    const connectRequest = Array.from(this.pendingRequests.values()).find(
+      r => r.data.action === 'connect'
+    );
+
+    const requestId = connectRequest?.id || crypto.randomUUID();
+
+    const message: RelayMessage = {
+      type: MessageType.CONNECT_RESPONSE,
+      sessionId: this.session.sessionId,
+      payload: {
+        requestId,
+        approved: true,
+        address,
+        publicKey,
+      },
+      timestamp: Date.now(),
+    };
+
+    const encrypted = await this.encrypt(JSON.stringify(message));
+    this.ws.send(encrypted);
+
+    // Update session peer info
+    this.session.peerAddress = address;
+    this.session.isConnected = true;
+    this.persistSession();
+
+    // Remove the connect request from pending
+    if (connectRequest) {
+      this.pendingRequests.delete(connectRequest.id);
+    }
+
+    this.emit({ type: 'connected', data: { address, publicKey } });
   }
 
   /**
@@ -742,7 +800,6 @@ export class WalletLinkSessionGenerator {
 
   /**
    * Send session init message to relay
-   * NOTE: First message must be plaintext so relay can route by sessionId
    */
   private async sendInitSession(): Promise<void> {
     if (!this.session || !this.ws) return;
@@ -754,8 +811,8 @@ export class WalletLinkSessionGenerator {
       timestamp: Date.now(),
     };
 
-    // Send as plaintext JSON so relay can see sessionId for routing
-    this.ws.send(JSON.stringify(message));
+    const encrypted = await this.encrypt(JSON.stringify(message));
+    this.ws.send(encrypted);
   }
 
   /**
@@ -763,16 +820,8 @@ export class WalletLinkSessionGenerator {
    */
   private async handleMessage(data: string): Promise<void> {
     try {
-      let message: RelayMessage;
-      
-      // Try parsing as plain JSON first (relay control messages are unencrypted)
-      try {
-        message = JSON.parse(data);
-      } catch {
-        // If not valid JSON, try decrypting (peer messages are encrypted)
-        const decrypted = await this.decrypt(data);
-        message = JSON.parse(decrypted);
-      }
+      const decrypted = await this.decrypt(data);
+      const message: RelayMessage = JSON.parse(decrypted);
 
       switch (message.type) {
         case MessageType.SESSION_ACK:

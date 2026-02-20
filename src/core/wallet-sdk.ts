@@ -24,6 +24,7 @@
  */
 
 import { WalletLinkSessionGenerator, WalletLinkEvent } from './wallet-link';
+import { SultanPWAProvider } from './pwa-provider';
 
 // Types
 export interface WalletAccount {
@@ -127,7 +128,7 @@ export class SultanWalletSDK {
 
   /**
    * Connect to wallet
-   * Automatically chooses extension or WalletLink based on availability
+   * Priority: Extension → PWA BroadcastChannel → WalletLink (QR/deep link)
    */
   async connect(): Promise<WalletAccount> {
     // Check for extension first (unless forced to use WalletLink)
@@ -135,8 +136,52 @@ export class SultanWalletSDK {
       return this.connectViaExtension();
     }
 
+    // Try PWA BroadcastChannel (wallet open in another tab)
+    if (!this.options.forceWalletLink && typeof BroadcastChannel !== 'undefined') {
+      try {
+        const pwaProvider = new SultanPWAProvider();
+        const detected = await pwaProvider.discover();
+        if (detected) {
+          return this.connectViaPWA(pwaProvider);
+        }
+        pwaProvider.destroy();
+      } catch {
+        // PWA not available, fall through to WalletLink
+      }
+    }
+
     // Fall back to WalletLink (for mobile browsers or no extension)
     return this.connectViaWalletLink();
+  }
+
+  /**
+   * Connect via PWA BroadcastChannel (wallet open in another tab)
+   */
+  private async connectViaPWA(pwaProvider: SultanPWAProvider): Promise<WalletAccount> {
+    try {
+      const result = await pwaProvider.connect();
+
+      this.connectionMethod = 'extension'; // Treat as direct connection
+      this.account = {
+        address: result.address,
+        publicKey: result.publicKey,
+      };
+
+      // Forward PWA provider events
+      pwaProvider.on('accountChange', (data: any) => {
+        this.account = { address: data.address, publicKey: data.publicKey };
+        this.emit('accountChange', data);
+      });
+
+      pwaProvider.on('disconnect', () => {
+        this.disconnect();
+      });
+
+      this.emit('connect', this.account);
+      return this.account;
+    } catch (error) {
+      throw new Error(`PWA connection failed: ${(error as Error).message}`);
+    }
   }
 
   /**
@@ -515,3 +560,6 @@ export const sultanWallet = new SultanWalletSDK();
 
 // Export types
 export type { WalletLinkEvent } from './wallet-link';
+
+// Export PWA provider utilities for advanced usage
+export { SultanPWAProvider, detectSultanWallet, installPWAProvider } from './pwa-provider';

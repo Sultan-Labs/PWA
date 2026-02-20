@@ -386,6 +386,30 @@ await wallet.send(tx);
 4. **Don't store sensitive data** - The wallet handles all key management
 5. **Use HTTPS** - Always serve your dApp over HTTPS in production
 
+## PWA / BroadcastChannel Support
+
+When the Sultan Wallet runs as a PWA (e.g. `wallet.sltn.io`) instead of a browser extension, the `window.sultan` provider is not injected. dApps can connect to the wallet PWA via the BroadcastChannel API when both are open in the same browser.
+
+**Channel names:**
+
+| Channel | Direction |
+|---------|-----------|
+| `sultan-wallet-dapp` | dApp → Wallet |
+| `sultan-wallet-response` | Wallet → dApp |
+
+**Detection (ping/pong):**
+
+```typescript
+const tx = new BroadcastChannel('sultan-wallet-dapp');
+const rx = new BroadcastChannel('sultan-wallet-response');
+tx.postMessage({ type: 'PING', id: crypto.randomUUID() });
+// Wallet responds with { type: 'PONG' } if open
+```
+
+**Message types:** `PING`, `CONNECT`, `SIGN_MESSAGE`, `SIGN_TRANSACTION`, `SEND_TRANSACTION`, `GET_BALANCE`, `GET_NETWORK`, `DISCONNECT`
+
+For full details, see the [Wallet Integration Guide](https://github.com/Sultan-Labs/DOCS/blob/main/guides/WALLET_INTEGRATION.md).
+
 ## Support
 
 - Discord: [discord.gg/sultan](https://discord.gg/sultan)

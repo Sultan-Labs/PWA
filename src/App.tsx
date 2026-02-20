@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-
 import { useEffect, useState } from 'react';
 import { useWallet } from './hooks/useWallet';
 import { getPendingApprovals, isExtensionContext } from './core/extension-bridge';
+import { useBroadcastService } from './hooks/useBroadcastService';
 
 // Screens
 import Welcome from './screens/Welcome';
@@ -19,15 +20,18 @@ import Governance from './screens/Governance';
 import NFTs from './screens/NFTs';
 import { ApprovalScreen } from './screens/ApprovalScreen';
 import { ConnectedAppsScreen } from './screens/ConnectedAppsScreen';
+import { PWAApprovalScreen } from './screens/PWAApprovalScreen';
 import { WalletLinkScreen } from './components/WalletLinkScreen';
 import { DeepLinkConnect } from './components/DeepLinkConnect';
-import BackgroundAnimation from './components/BackgroundAnimation';
 
 function App() {
   const { isInitialized, isLocked, isLoading } = useWallet();
   const navigate = useNavigate();
   const location = useLocation();
   const [checkedApprovals, setCheckedApprovals] = useState(false);
+
+  // Start broadcast service for PWA mode (enables dApp connections via BroadcastChannel)
+  const { pendingApprovals: pwaPendingApprovals } = useBroadcastService();
 
   // Store pending deep link for after unlock
   useEffect(() => {
@@ -36,6 +40,20 @@ function App() {
       sessionStorage.setItem('sultan_pending_connect', location.pathname + location.search);
     }
   }, [location]);
+
+  // Navigate to PWA approval screen when dApp requests come in via BroadcastChannel
+  useEffect(() => {
+    if (
+      !isExtensionContext() &&
+      pwaPendingApprovals.length > 0 &&
+      isInitialized &&
+      !isLocked &&
+      location.pathname !== '/pwa-approve' &&
+      location.pathname !== '/connect'
+    ) {
+      navigate('/pwa-approve');
+    }
+  }, [pwaPendingApprovals.length, isInitialized, isLocked, location.pathname, navigate]);
 
   // Check for pending approvals when unlocked
   useEffect(() => {
@@ -129,54 +147,31 @@ function App() {
         element={
           !isInitialized ? <Navigate to="/" replace /> :
           isLocked ? <Navigate to="/unlock" replace /> :
-          <div className="app-container">
-            <ApprovalScreen />
-          </div>
+          <ApprovalScreen />
         } 
       />
       <Route 
         path="/connected-apps" 
-        element={isInitialized && !isLocked ? (
-          <div className="app-container">
-            <ConnectedAppsScreen />
-          </div>
-        ) : <Navigate to="/" replace />} 
+        element={isInitialized && !isLocked ? <ConnectedAppsScreen /> : <Navigate to="/" replace />} 
       />
       <Route 
         path="/walletlink" 
-        element={isInitialized && !isLocked ? (
-          <div className="app-container">
-            <BackgroundAnimation />
-            <WalletLinkScreen />
-          </div>
-        ) : <Navigate to="/" replace />} 
+        element={isInitialized && !isLocked ? <WalletLinkScreen /> : <Navigate to="/" replace />} 
+      />
+      <Route 
+        path="/pwa-approve" 
+        element={
+          !isInitialized ? <Navigate to="/" replace /> :
+          isLocked ? <Navigate to="/unlock" replace /> :
+          <PWAApprovalScreen />
+        } 
       />
       <Route 
         path="/connect" 
         element={
           !isInitialized ? <Navigate to="/" replace /> :
           isLocked ? <Navigate to="/unlock" replace /> :
-          <div className="app-container">
-            <DeepLinkConnect />
-          </div>
-        } 
-      />
-      <Route path="/connect/" element={<Navigate to="/connect" replace />} />
-      
-      <Route 
-        path="/test-approval" 
-        element={
-          <div className="app-container">
-            <ApprovalScreen />
-          </div>
-        } 
-      />
-      <Route 
-        path="/test-connect" 
-        element={
-          <div className="app-container">
-            <DeepLinkConnect />
-          </div>
+          <DeepLinkConnect />
         } 
       />
       

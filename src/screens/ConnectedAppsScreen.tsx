@@ -2,11 +2,12 @@
  * Sultan Wallet - Connected Apps Screen
  * 
  * Shows all dApps connected to the wallet with ability to disconnect.
+ * Works in both extension mode (chrome.runtime) and PWA mode (BroadcastChannel).
  */
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Globe, Trash2, AlertCircle, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Globe, Trash2, ExternalLink, Radio } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import {
   ConnectedApp,
@@ -17,6 +18,7 @@ import {
   getFaviconUrl,
   isExtensionContext
 } from '../core/extension-bridge';
+import { useBroadcastService } from '../hooks/useBroadcastService';
 
 export function ConnectedAppsScreen() {
   const navigate = useNavigate();
@@ -24,31 +26,58 @@ export function ConnectedAppsScreen() {
   const [apps, setApps] = useState<ConnectedApp[]>([]);
   const [loading, setLoading] = useState(true);
   const [disconnecting, setDisconnecting] = useState<string | null>(null);
+  const isExtension = isExtensionContext();
+  
+  // PWA mode: use broadcast service for connected apps
+  const broadcastService = useBroadcastService();
 
   useEffect(() => {
     loadApps();
   }, []);
 
-  async function loadApps() {
-    if (!isExtensionContext()) {
+  // Keep PWA apps in sync
+  useEffect(() => {
+    if (!isExtension && broadcastService.connectedApps.length > 0) {
+      const pwaApps: ConnectedApp[] = broadcastService.connectedApps.map(app => ({
+        origin: app.origin,
+        address: '',  // PWA connected apps don't track address per-origin
+        publicKey: '',
+        connectedAt: app.connectedAt,
+      }));
+      setApps(pwaApps);
       setLoading(false);
-      return;
     }
+  }, [isExtension, broadcastService.connectedApps]);
 
-    try {
-      const connectedApps = await getConnectedApps();
-      setApps(connectedApps);
-    } catch (e) {
-      console.error('Failed to load connected apps:', e);
-    } finally {
-      setLoading(false);
+  async function loadApps() {
+    if (isExtension) {
+      try {
+        const connectedApps = await getConnectedApps();
+        setApps(connectedApps);
+      } catch (e) {
+        console.error('Failed to load connected apps:', e);
+      }
+    } else {
+      // PWA mode: apps loaded via broadcastService hook above
+      const pwaApps: ConnectedApp[] = broadcastService.connectedApps.map(app => ({
+        origin: app.origin,
+        address: '',
+        publicKey: '',
+        connectedAt: app.connectedAt,
+      }));
+      setApps(pwaApps);
     }
+    setLoading(false);
   }
 
   const handleDisconnect = async (origin: string) => {
     setDisconnecting(origin);
     try {
-      await disconnectApp(origin);
+      if (isExtension) {
+        await disconnectApp(origin);
+      } else {
+        broadcastService.disconnectApp(origin);
+      }
       setApps(apps.filter(app => app.origin !== origin));
     } catch (e) {
       console.error('Failed to disconnect:', e);
@@ -62,7 +91,11 @@ export function ConnectedAppsScreen() {
     
     setDisconnecting('all');
     try {
-      await disconnectAllApps();
+      if (isExtension) {
+        await disconnectAllApps();
+      } else {
+        broadcastService.disconnectAll();
+      }
       setApps([]);
     } catch (e) {
       console.error('Failed to disconnect all:', e);
@@ -80,7 +113,7 @@ export function ConnectedAppsScreen() {
     });
   };
 
-  if (!isExtensionContext()) {
+  if (!isExtension && !broadcastService.isActive && apps.length === 0) {
     return (
       <div className="screen connected-apps-screen">
         <header className="screen-header">
@@ -90,8 +123,31 @@ export function ConnectedAppsScreen() {
           <h2>Connected Apps</h2>
         </header>
         <div className="empty-state">
-          <AlertCircle className="empty-icon" />
-          <p>This feature is only available in the browser extension.</p>
+          <Globe className="empty-icon" />
+          <h3>No Connected Apps</h3>
+          <p>
+            dApps can connect to your wallet via QR code scanning or by opening in a browser tab alongside this wallet.
+          </p>
+          <button
+            className="btn-walletlink"
+            onClick={() => navigate('/walletlink')}
+            style={{
+              marginTop: 16,
+              padding: '12px 24px',
+              background: 'var(--accent-primary, #d4af37)',
+              color: '#000',
+              border: 'none',
+              borderRadius: 12,
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            <Radio size={16} />
+            Scan QR to Connect
+          </button>
         </div>
       </div>
     );
