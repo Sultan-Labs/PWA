@@ -36,4 +36,3 @@ coverage/
 # PWA generated
 dev-dist/
 *.zip
-src/styles/replit-overrides.css

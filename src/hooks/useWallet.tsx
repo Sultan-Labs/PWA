@@ -59,7 +59,6 @@ interface WalletContextValue extends WalletState {
   setActiveAccount: (index: number) => void;
   switchAccount: (index: number) => void; // Alias for setActiveAccount
   deriveNewAccount: (name?: string) => Promise<SultanAccount>;
-  updateAccountName: (index: number, name: string) => void;
   clearError: () => void;
 }
 
@@ -429,16 +428,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const currentAccount = state.accounts[state.activeAccountIndex] || null;
   const lockedOut = isLockedOut();
 
-  const updateAccountName = useCallback((index: number, name: string) => {
-    setState(prev => {
-      const newAccounts = [...prev.accounts];
-      if (newAccounts[index]) {
-        newAccounts[index] = { ...newAccounts[index], name };
-      }
-      return { ...prev, accounts: newAccounts };
-    });
-  }, []);
-
   const value: WalletContextValue = {
     ...state,
     currentAccount,
@@ -451,7 +440,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setActiveAccount,
     switchAccount,
     deriveNewAccount,
-    updateAccountName,
     clearError,
   };
 

@@ -4,11 +4,11 @@
  */
 
 .background-animation {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 380px;
+  height: 600px;
   z-index: 1;
   overflow: hidden;
   background: var(--bg-gradient);
@@ -20,8 +20,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 380px;
+  height: 600px;
   pointer-events: none;
   z-index: 1;
   overflow: hidden;

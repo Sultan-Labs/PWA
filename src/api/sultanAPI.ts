@@ -139,7 +139,6 @@ const ValidatorSchema = z.object({
   jailed: z.boolean(),
   blocks_signed: z.number().optional().default(0),
   blocks_missed: z.number().optional().default(0),
-  moniker: z.string().optional().default(''),
 });
 
 const TransactionResponseSchema = z.object({
@@ -369,15 +368,25 @@ export async function getValidators(): Promise<Validator[]> {
       return [];
     }
     
+    // Map real validator data to Validator interface
+    // Use friendly names based on validator address
+    const validatorNames: Record<string, string> = {
+      'sultanval1london': 'London Validator',
+      'sultanval2singapore': 'Singapore Validator', 
+      'sultanval3amsterdam': 'Amsterdam Validator',
+      'sultanval6newyork': 'New York Validator',
+    };
+    
     return result.map(v => {
+      const name = validatorNames[v.validator_address] || v.validator_address;
       // Calculate uptime from blocks signed/missed
       const totalBlocks = v.blocks_signed + v.blocks_missed;
       const uptime = totalBlocks > 0 ? (v.blocks_signed / totalBlocks) * 100 : 99.9;
       
       return {
         address: v.validator_address,
-        name: v.moniker || v.validator_address,
-        moniker: v.moniker || v.validator_address,
+        name: name,
+        moniker: name,
         totalStaked: v.total_stake.toString(),
         commission: v.commission_rate,
         uptime: Math.round(uptime * 10) / 10,
@@ -467,18 +476,6 @@ export async function getNetworkStatus(): Promise<NetworkStatus> {
       totalStaked: '0',
       stakingAPY: 13.33,
     };
-  }
-}
-
-/**
- * Get current nonce for an address
- */
-export async function getNonce(address: string): Promise<number> {
-  try {
-    const balance = await getBalance(address);
-    return balance.nonce;
-  } catch {
-    return 0;
   }
 }
 
@@ -638,8 +635,9 @@ interface UnstakeRequest {
   publicKey: string;
 }
 
-export interface CreateValidatorRequest {
+interface CreateValidatorRequest {
   validatorAddress: string;
+  delegatorAddress: string;
   moniker: string;
   initialStake: string;
   commissionRate: number;
@@ -651,7 +649,7 @@ export interface CreateValidatorRequest {
 // Governance Type Mappers (snake_case from blockchain -> camelCase for UI)
 // ============================================================================
 
-export function mapProposalType(type: string): ProposalType {
+function mapProposalType(type: string): ProposalType {
   const map: Record<string, ProposalType> = {
     'ParameterChange': 'ParameterChange',
     'parameter_change': 'ParameterChange',
@@ -665,7 +663,7 @@ export function mapProposalType(type: string): ProposalType {
   return map[type] || 'TextProposal';
 }
 
-export function mapProposalStatus(status: string): ProposalStatus {
+function mapProposalStatus(status: string): ProposalStatus {
   const map: Record<string, ProposalStatus> = {
     'DepositPeriod': 'DepositPeriod',
     'deposit_period': 'DepositPeriod',
@@ -683,7 +681,7 @@ export function mapProposalStatus(status: string): ProposalStatus {
   return map[status] || 'VotingPeriod';
 }
 
-export function mapVoteOption(option: string): VoteOption {
+function mapVoteOption(option: string): VoteOption {
   const map: Record<string, VoteOption> = {
     'Yes': 'Yes',
     'yes': 'Yes',
@@ -695,265 +693,6 @@ export function mapVoteOption(option: string): VoteOption {
     'no_with_veto': 'NoWithVeto',
   };
   return map[option] || 'Abstain';
-}
-
-
-// ============================================================================
-// NFT Types
-// ============================================================================
-
-export interface NFT {
-  collection: string;
-  tokenId: string;
-  name: string;
-  image: string;
-  owner: string;
-  description?: string;
-}
-
-const NFTResponseSchema = z.object({
-  nfts: z.array(z.object({
-    collection: z.string(),
-    token_id: z.string(),
-    name: z.string(),
-    image_uri: z.string(),
-    owner: z.string(),
-    description: z.string().optional(),
-  })),
-});
-
-const ProposalResponseSchema = z.object({
-  proposals: z.array(z.object({
-    id: z.number(),
-    proposer: z.string(),
-    title: z.string(),
-    description: z.string(),
-    proposal_type: z.string(),
-    status: z.string(),
-    submit_height: z.number(),
-    submit_time: z.number(),
-    voting_end_height: z.number(),
-    total_deposit: z.string(),
-    final_tally: z.object({
-      yes: z.string(),
-      no: z.string(),
-      abstain: z.string(),
-      no_with_veto: z.string(),
-      total_voting_power: z.string(),
-      quorum_reached: z.boolean(),
-      passed: z.boolean(),
-      vetoed: z.boolean(),
-    }).optional(),
-  })),
-});
-
-/**
- * Get NFTs owned by an address
- */
-export async function queryNFTs(address: string): Promise<NFT[]> {
-  try {
-    const result = await restApi(
-      `/nfts/${address}`,
-      'GET',
-      undefined,
-      API_TIMEOUT_MS,
-      NFTResponseSchema
-    );
-
-    return result.nfts.map(nft => ({
-      collection: nft.collection,
-      tokenId: nft.token_id,
-      name: nft.name,
-      image: nft.image_uri, // Map snake_case to camelCase
-      owner: nft.owner,
-      description: nft.description,
-    }));
-  } catch (error) {
-    console.warn('Failed to fetch NFTs:', error);
-    return [];
-  }
-}
-
-/**
- * Get governance proposals
- */
-export async function getProposals(): Promise<Proposal[]> {
-  try {
-    const result = await restApi(
-      '/governance/proposals',
-      'GET',
-      undefined,
-      API_TIMEOUT_MS,
-      ProposalResponseSchema
-    );
-
-    return result.proposals.map(p => ({
-      id: p.id,
-      proposer: p.proposer,
-      title: p.title,
-      description: p.description,
-      proposalType: mapProposalType(p.proposal_type),
-      status: mapProposalStatus(p.status),
-      submitHeight: p.submit_height,
-      submitTime: p.submit_time * 1000, // Convert to ms
-      votingEndHeight: p.voting_end_height,
-      totalDeposit: p.total_deposit,
-      finalTally: p.final_tally ? {
-        yes: p.final_tally.yes,
-        no: p.final_tally.no,
-        abstain: p.final_tally.abstain,
-        noWithVeto: p.final_tally.no_with_veto,
-        totalVotingPower: p.final_tally.total_voting_power,
-        quorumReached: p.final_tally.quorum_reached,
-        passed: p.final_tally.passed,
-        vetoed: p.final_tally.vetoed,
-      } : undefined,
-    }));
-  } catch (error) {
-    console.warn('Failed to fetch proposals:', error);
-    return [];
-  }
-}
-
-/**
- * Submit a governance proposal
- */
-export async function submitProposal(params: {
-  title: string;
-  description: string;
-  type: ProposalType;
-  deposit: string;
-  signature: string;
-  publicKey: string;
-  address: string;
-}): Promise<{ hash: string }> {
-  // Map UI type to snake_case for API
-  const typeMap: Record<string, string> = {
-    'ParameterChange': 'parameter_change',
-    'SoftwareUpgrade': 'software_upgrade',
-    'CommunityPool': 'community_pool',
-    'TextProposal': 'text',
-  };
-  
-  const proposalType = typeMap[params.type] || 'text';
-  const nonce = await getNonce(params.address);
-
-  return restApi<{ hash: string }>(
-    '/governance/proposals',
-    'POST',
-    {
-      type: 'submit_proposal',
-      proposal_type: proposalType,
-      title: params.title,
-      description: params.description,
-      initial_deposit: params.deposit,
-      proposer: params.address,
-      nonce,
-      timestamp: Date.now(),
-      signature: params.signature,
-      public_key: params.publicKey,
-    },
-    API_TIMEOUT_MS,
-    TxHashResponseSchema
-  );
-}
-
-/**
- * Vote on a proposal
- */
-export async function vote(params: {
-  proposalId: number;
-  option: VoteOption;
-  signature: string;
-  publicKey: string;
-  address: string;
-}): Promise<{ hash: string }> {
-  // Map UI option to snake_case for API
-  const optionMap: Record<string, string> = {
-    'Yes': 'yes',
-    'No': 'no',
-    'Abstain': 'abstain',
-    'NoWithVeto': 'no_with_veto',
-  };
-  
-  const voteOption = optionMap[params.option] || 'abstain';
-  const nonce = await getNonce(params.address);
-
-  return restApi<{ hash: string }>(
-    '/governance/vote',
-    'POST',
-    {
-      type: 'vote',
-      proposal_id: params.proposalId,
-      option: voteOption,
-      voter: params.address,
-      nonce,
-      timestamp: Date.now(),
-      signature: params.signature,
-      public_key: params.publicKey,
-    },
-    API_TIMEOUT_MS,
-    TxHashResponseSchema
-  );
-}
-
-/**
- * Create a new validator
- * In v0.2.7: Registering current user as a validator
- */
-export async function createValidator(params: {
-  validatorAddress: string;
-  moniker: string;
-  initialStake: string;
-  commissionRate: number;
-  signature: string;
-  publicKey: string;
-}): Promise<{ hash: string }> {
-  const txData = {
-    type: 'create_validator',
-    validator_address: params.validatorAddress,
-    moniker: params.moniker,
-    initial_stake: params.initialStake,
-    commission_rate: params.commissionRate,
-    signature: params.signature,
-    public_key: params.publicKey,
-    nonce: await getNonce(params.validatorAddress),
-    timestamp: Date.now(),
-  };
-
-  return restApi<{ hash: string }>(
-    '/staking/create_validator',
-    'POST',
-    txData,
-    API_TIMEOUT_MS,
-    TxHashResponseSchema
-  );
-}
-
-/**
- * Exit as a validator and unbond stake
- */
-export async function exitValidator(params: {
-  validatorAddress: string;
-  signature: string;
-  publicKey: string;
-}): Promise<{ hash: string }> {
-  const txData = {
-    type: 'exit_validator',
-    validator_address: params.validatorAddress,
-    signature: params.signature,
-    public_key: params.publicKey,
-    nonce: await getNonce(params.validatorAddress),
-    timestamp: Date.now(),
-  };
-
-  return restApi<{ hash: string }>(
-    '/staking/exit_validator',
-    'POST',
-    txData,
-    API_TIMEOUT_MS,
-    TxHashResponseSchema
-  );
 }
 
 /**
@@ -968,12 +707,39 @@ export const sultanAPI = {
   stakeTokens,
   unstakeTokens,
   claimRewards,
-  queryNFTs,
-  getProposals,
-  submitProposal,
-  vote,
-  getNonce,
-  broadcastTransaction,
+    /**
+   * Get the current nonce for an address
+   * The nonce is fetched from the balance endpoint
+   */
+  getNonce: async (address: string): Promise<number> => {
+    const balance = await getBalance(address);
+    return balance.nonce;
+  },
+  
+  broadcastTransaction: async (tx: {
+    from: string;
+    to: string;
+    amount: string;
+    memo?: string;
+    nonce: number;
+    timestamp: number;
+    signature: string;
+    publicKey: string;
+  }): Promise<{ hash: string }> => {
+    return broadcastTransaction({
+      transaction: {
+        from: tx.from,
+        to: tx.to,
+        amount: tx.amount,
+        memo: tx.memo,
+        nonce: tx.nonce,
+        timestamp: tx.timestamp,
+      },
+      signature: tx.signature,
+      publicKey: tx.publicKey,
+    });
+  },
+
   stake: async (req: StakeRequest): Promise<{ hash: string }> => {
     // Fetch current nonce for proper transaction ordering
     const balance = await getBalance(req.delegatorAddress);
@@ -1005,6 +771,351 @@ export const sultanAPI = {
       publicKey: req.publicKey || '',
     });
   },
-  createValidator,
-  exitValidator,
+
+  /**
+   * Create a new validator (become a validator)
+   * Requires minimum 10,000 SLTN stake
+   * Endpoint: POST /staking/create_validator
+   */
+  createValidator: async (req: CreateValidatorRequest): Promise<{ 
+    validatorAddress: string; 
+    stake: string; 
+    commission: number;
+    status: string;
+  }> => {
+    return restApi<{ 
+      validatorAddress: string; 
+      stake: string; 
+      commission: number;
+      status: string;
+    }>('/staking/create_validator', 'POST', {
+      validator_address: req.validatorAddress,
+      delegator_address: req.delegatorAddress,
+      moniker: req.moniker,
+      initial_stake: parseInt(req.initialStake, 10),
+      commission_rate: req.commissionRate,
+      signature: req.signature,
+      public_key: req.publicKey,
+    });
+  },
+
+  /**
+   * Exit as validator (unbond self-stake and deactivate)
+   * Starts 21-day unbonding period for self-stake
+   * Endpoint: POST /staking/exit_validator
+   */
+  exitValidator: async (req: {
+    validatorAddress: string;
+    signature: string;
+    publicKey: string;
+  }): Promise<{ 
+    validatorAddress: string;
+    unbondingAmount: string;
+    completionHeight: number;
+    status: string;
+  }> => {
+    return restApi<{ 
+      validatorAddress: string;
+      unbondingAmount: string;
+      completionHeight: number;
+      status: string;
+    }>('/staking/exit_validator', 'POST', {
+      validator_address: req.validatorAddress,
+      signature: req.signature,
+      public_key: req.publicKey,
+    });
+  },
+
+  // =========================================================================
+  // Governance API (uses REST endpoints from sultan-core)
+  // =========================================================================
+
+  /**
+   * Get all governance proposals
+   * Endpoint: GET /governance/proposals
+   */
+  getProposals: async (): Promise<Proposal[]> => {
+    try {
+      // The blockchain returns snake_case, we need to map to camelCase
+      const result = await restApi<Array<{
+        id: number;
+        proposer: string;
+        title: string;
+        description: string;
+        proposal_type: string;
+        status: string;
+        submit_height: number;
+        submit_time: number;
+        voting_end_height: number;
+        total_deposit: number;
+        final_tally?: {
+          yes: number;
+          no: number;
+          abstain: number;
+          no_with_veto: number;
+          total_voting_power: number;
+          quorum_reached: boolean;
+          passed: boolean;
+          vetoed: boolean;
+        };
+      }>>('/governance/proposals');
+      
+      return result.map(p => ({
+        id: p.id,
+        proposer: p.proposer,
+        title: p.title,
+        description: p.description,
+        proposalType: mapProposalType(p.proposal_type),
+        status: mapProposalStatus(p.status),
+        submitHeight: p.submit_height,
+        submitTime: p.submit_time,
+        votingEndHeight: p.voting_end_height,
+        totalDeposit: String(p.total_deposit),
+        finalTally: p.final_tally ? {
+          yes: String(p.final_tally.yes),
+          no: String(p.final_tally.no),
+          abstain: String(p.final_tally.abstain),
+          noWithVeto: String(p.final_tally.no_with_veto),
+          totalVotingPower: String(p.final_tally.total_voting_power),
+          quorumReached: p.final_tally.quorum_reached,
+          passed: p.final_tally.passed,
+          vetoed: p.final_tally.vetoed,
+        } : undefined,
+      }));
+    } catch {
+      // Return empty array if governance not available
+      return [];
+    }
+  },
+
+  /**
+   * Get a specific proposal by ID
+   * Endpoint: GET /governance/proposal/:id
+   */
+  getProposal: async (proposalId: number): Promise<Proposal | null> => {
+    try {
+      const p = await restApi<{
+        id: number;
+        proposer: string;
+        title: string;
+        description: string;
+        proposal_type: string;
+        status: string;
+        submit_height: number;
+        submit_time: number;
+        voting_end_height: number;
+        total_deposit: number;
+        final_tally?: {
+          yes: number;
+          no: number;
+          abstain: number;
+          no_with_veto: number;
+          total_voting_power: number;
+          quorum_reached: boolean;
+          passed: boolean;
+          vetoed: boolean;
+        };
+      }>(`/governance/proposal/${proposalId}`);
+      
+      return {
+        id: p.id,
+        proposer: p.proposer,
+        title: p.title,
+        description: p.description,
+        proposalType: mapProposalType(p.proposal_type),
+        status: mapProposalStatus(p.status),
+        submitHeight: p.submit_height,
+        submitTime: p.submit_time,
+        votingEndHeight: p.voting_end_height,
+        totalDeposit: String(p.total_deposit),
+        finalTally: p.final_tally ? {
+          yes: String(p.final_tally.yes),
+          no: String(p.final_tally.no),
+          abstain: String(p.final_tally.abstain),
+          noWithVeto: String(p.final_tally.no_with_veto),
+          totalVotingPower: String(p.final_tally.total_voting_power),
+          quorumReached: p.final_tally.quorum_reached,
+          passed: p.final_tally.passed,
+          vetoed: p.final_tally.vetoed,
+        } : undefined,
+      };
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Get user's vote on a proposal
+   * Note: The blockchain tracks votes internally - this queries for a specific voter
+   */
+  getUserVote: async (proposalId: number, voterAddress: string): Promise<UserVote | null> => {
+    try {
+      // Try to get vote from proposal's vote list
+      const result = await restApi<{
+        voter: string;
+        option: string;
+        voting_power: number;
+      } | null>(`/governance/proposal/${proposalId}/vote/${voterAddress}`);
+      
+      if (!result) return null;
+      
+      return {
+        proposalId,
+        voter: result.voter,
+        option: mapVoteOption(result.option),
+        votingPower: String(result.voting_power),
+      };
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Vote on a proposal
+   * Endpoint: POST /governance/vote
+   */
+  vote: async (req: {
+    proposalId: number;
+    voter: string;
+    option: VoteOption;
+    votingPower: string;
+    signature: string;
+    publicKey: string;
+  }): Promise<{ success: boolean }> => {
+    const result = await restApi<{ proposal_id: number; voter: string; status: string }>(
+      '/governance/vote',
+      'POST',
+      {
+        proposal_id: req.proposalId,
+        voter: req.voter,
+        option: req.option.toLowerCase().replace('withveto', '_with_veto'),
+        voting_power: parseInt(req.votingPower, 10),
+        // The blockchain verifies voting power from staking state
+        // signature/publicKey would be used for tx signing in production
+      }
+    );
+    return { success: result.status === 'voted' };
+  },
+
+  /**
+   * Submit a new proposal
+   * Endpoint: POST /governance/propose
+   */
+  submitProposal: async (req: {
+    proposer: string;
+    title: string;
+    description: string;
+    proposalType: ProposalType;
+    deposit: string;
+    signature: string;
+    publicKey: string;
+    telegramDiscussionUrl?: string;
+    discordDiscussionUrl?: string;
+  }): Promise<{ proposalId: number }> => {
+    const typeMap: Record<ProposalType, string> = {
+      'ParameterChange': 'parameter_change',
+      'SoftwareUpgrade': 'software_upgrade',
+      'CommunityPool': 'community_pool',
+      'TextProposal': 'text',
+    };
+    
+    const result = await restApi<{ proposal_id: number; status: string }>(
+      '/governance/propose',
+      'POST',
+      {
+        proposer: req.proposer,
+        title: req.title,
+        description: req.description,
+        proposal_type: typeMap[req.proposalType],
+        initial_deposit: parseInt(req.deposit, 10),
+        telegram_discussion_url: req.telegramDiscussionUrl,
+        discord_discussion_url: req.discordDiscussionUrl,
+      }
+    );
+    return { proposalId: result.proposal_id };
+  },
+
+  /**
+   * Query native NFTs owned by an address (Sultan Token Factory)
+   * Endpoint: GET /nft/tokens?owner={address}
+   */
+  queryNFTs: async (ownerAddress: string): Promise<{
+    collections: Array<{
+      address: string;
+      name: string;
+      symbol: string;
+      nfts: Array<{
+        tokenId: string;
+        contractAddress: string;
+        name: string;
+        description?: string;
+        image?: string;
+        attributes?: Array<{ trait_type: string; value: string }>;
+        collection?: string;
+      }>;
+    }>;
+  }> => {
+    try {
+      const result = await restApi<{
+        collections: Array<{
+          address: string;
+          name: string;
+          symbol: string;
+          tokens: Array<{
+            token_id: string;
+            token_uri?: string;
+            extension?: {
+              name?: string;
+              description?: string;
+              image?: string;
+              attributes?: Array<{ trait_type: string; value: string }>;
+            };
+          }>;
+        }>;
+      }>(`/nft/tokens?owner=${ownerAddress}`, 'GET');
+      
+      // Transform response to frontend format
+      return {
+        collections: result.collections.map(col => ({
+          address: col.address,
+          name: col.name,
+          symbol: col.symbol,
+          nfts: col.tokens.map(token => ({
+            tokenId: token.token_id,
+            contractAddress: col.address,
+            name: token.extension?.name || `${col.name} #${token.token_id}`,
+            description: token.extension?.description,
+            image: token.extension?.image,
+            attributes: token.extension?.attributes,
+            collection: col.name,
+          })),
+        })),
+      };
+    } catch {
+      // Return empty collections if NFT endpoint not available
+      return { collections: [] };
+    }
+  },
+
+  /**
+   * Transfer a native NFT (Sultan Token Factory)
+   * Endpoint: POST /nft/transfer
+   */
+  transferNFT: async (req: {
+    contractAddress: string;
+    tokenId: string;
+    from: string;
+    to: string;
+    signature: string;
+    publicKey: string;
+  }): Promise<{ hash: string }> => {
+    return restApi<{ hash: string }>('/nft/transfer', 'POST', {
+      contract_address: req.contractAddress,
+      token_id: req.tokenId,
+      from: req.from,
+      to: req.to,
+      signature: req.signature,
+      public_key: req.publicKey,
+    });
+  },
 };

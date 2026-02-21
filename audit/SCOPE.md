@@ -2,7 +2,7 @@
 
 **Document Version**: 1.0  
 **Date**: December 2025  
-**Repository**: https://github.com/Sultan-Labs/PWA  
+**Repository**: https://github.com/Wollnbergen/0xv7  
 **Audit Target**: `wallet-extension/` directory  
 
 ---
@@ -181,7 +181,7 @@ git rev-parse HEAD
 ## Contact
 
 **Security Contact**: security@sltn.io  
-**Repository Owner**: Sultan Labs  
+**Repository Owner**: Wollnbergen  
 
 ---
 

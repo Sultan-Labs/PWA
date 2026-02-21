@@ -17,8 +17,8 @@ This directory contains all documentation required for a security audit.
 ### 1. Clone and Setup
 
 ```bash
-git clone https://github.com/Sultan-Labs/PWA.git
-cd PWA
+git clone https://github.com/Wollnbergen/0xv7.git
+cd 0xv7/wallet-extension
 npm ci
 ```
 
@@ -59,5 +59,5 @@ Priority order for review:
 ## Contact
 
 **Security Issues**: security@sltn.io  
-**Repository**: https://github.com/Sultan-Labs/PWA  
+**Repository**: https://github.com/Wollnbergen/0xv7  
 **Audit Target**: `wallet-extension/` directory  

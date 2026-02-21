@@ -11,8 +11,8 @@ Email security@sltn.io instead. See [SECURITY.md](./SECURITY.md) for details.
 
 ```bash
 # Clone the repository
-git clone https://github.com/Sultan-Labs/PWA.git
-cd PWA
+git clone https://github.com/Wollnbergen/sultan-wallet.git
+cd sultan-wallet
 
 # Install dependencies
 npm install

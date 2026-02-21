@@ -1,11 +1,12 @@
 .governance-screen {
-  min-height: 100vh;
+  height: 600px;
+  min-height: 600px;
+  max-height: 600px;
   display: flex;
   flex-direction: column;
   background: var(--bg-gradient);
   position: relative;
-  /* Removed overflow-y: auto to allow body-level scrolling */
-  padding-bottom: env(safe-area-inset-bottom);
+  overflow: hidden;
 }
 
 .screen-header {
@@ -18,8 +19,8 @@
   -webkit-backdrop-filter: var(--glass-blur);
   border-bottom: var(--glass-border);
   gap: var(--spacing-sm);
-  /* Changed from sticky to relative to ensure it scrolls with the body */
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 10;
   box-shadow: var(--glass-shadow);
   flex-shrink: 0;
@@ -47,12 +48,8 @@
 .governance-content {
   flex: 1;
   padding: var(--spacing-lg);
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
+  overflow-y: auto;
+  min-height: 0;
 }
 
 /* Voting Power Card */
@@ -461,42 +458,50 @@
   justify-content: center;
   gap: var(--spacing-xs);
   padding: var(--spacing-md);
-  border: 1.5px solid rgba(0, 255, 255, 0.3);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  background: rgba(0, 255, 255, 0.05);
+  background: var(--bg-secondary);
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.2s ease;
+}
+
+.vote-btn svg {
+  stroke: currentColor;
 }
 
 .vote-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  background: rgba(0, 255, 255, 0.1);
-  border-color: var(--accent-primary);
-  box-shadow: 0 8px 20px rgba(0, 255, 255, 0.2);
-  color: var(--accent-primary);
+  background: var(--bg-primary);
+}
+
+.vote-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .vote-btn.yes:hover:not(:disabled) {
   border-color: var(--success);
   background: rgba(0, 255, 159, 0.1);
   color: var(--success);
-  box-shadow: 0 8px 20px rgba(0, 255, 159, 0.2);
 }
 
 .vote-btn.no:hover:not(:disabled) {
   border-color: var(--error);
   background: rgba(255, 68, 68, 0.1);
   color: var(--error);
-  box-shadow: 0 8px 20px rgba(255, 68, 68, 0.2);
+}
+
+.vote-btn.abstain:hover:not(:disabled) {
+  border-color: var(--text-muted);
+  background: rgba(128, 128, 128, 0.1);
 }
 
 .vote-btn.veto:hover:not(:disabled) {
   border-color: #ff6b00;
   background: rgba(255, 107, 0, 0.1);
   color: #ff6b00;
-  box-shadow: 0 8px 20px rgba(255, 107, 0, 0.2);
 }
 
 /* Governance Info */
@@ -542,7 +547,6 @@
 /* Submit Proposal Form */
 .submit-proposal-form {
   max-width: 100%;
-  width: 100%;
 }
 
 .form-group {
@@ -666,34 +670,17 @@
 }
 
 .btn-submit-proposal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
   width: 100%;
-  padding: var(--spacing-md);
-  border: none;
-  border-radius: var(--border-radius);
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  color: #000000;
-  box-shadow: var(--glow-primary);
+  padding: 14px;
+  font-size: 1rem;
   margin-top: var(--spacing-md);
-}
-
-.btn-submit-proposal:hover:not(:disabled) {
-  opacity: 0.95;
-  transform: translateY(-1px);
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+  border-radius: 50px; /* Match rounded pill shape */
+  font-weight: 600;
 }
 
 .btn-submit-proposal:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
 }
 
 /* Margin utilities */

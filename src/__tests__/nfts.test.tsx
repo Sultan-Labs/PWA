@@ -36,8 +36,39 @@ vi.mock('../api/sultanAPI', () => ({
   },
 }));
 
-// Unused variable removed
-// const mockNFTResponse = ...
+const mockNFTResponse = {
+  collections: [
+    {
+      address: 'sultan1nftcontract123',
+      name: 'Sultan Genesis',
+      symbol: 'SGEN',
+      nfts: [
+        {
+          tokenId: '1',
+          contractAddress: 'sultan1nftcontract123',
+          name: 'Sultan #1',
+          description: 'The first Sultan NFT',
+          image: 'https://example.com/nft1.png',
+          collection: 'Sultan Genesis',
+          attributes: [
+            { trait_type: 'Rarity', value: 'Legendary' },
+          ],
+        },
+        {
+          tokenId: '42',
+          contractAddress: 'sultan1nftcontract123',
+          name: 'Sultan #42',
+          description: 'A rare Sultan NFT',
+          image: 'https://example.com/nft42.png',
+          collection: 'Sultan Genesis',
+          attributes: [
+            { trait_type: 'Rarity', value: 'Epic' },
+          ],
+        },
+      ],
+    },
+  ],
+};
 
 const renderNFTs = () => {
   return render(
@@ -60,7 +91,7 @@ describe('NFT Gallery Screen', () => {
   });
 
   it('should show empty state when no NFTs', async () => {
-    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue([]);
+    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue({ collections: [] });
     renderNFTs();
     
     await waitFor(() => {
@@ -69,52 +100,18 @@ describe('NFT Gallery Screen', () => {
   });
 
   it('should display NFT collections when available', async () => {
-    // Mock should return an array of NFTs, not { collections: [...] }
-    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue([
-      {
-        collection: 'sultan1nftcontract123',
-        tokenId: '1',
-        name: 'Sultan #1',
-        image: 'https://example.com/nft1.png',
-        owner: 'sultan1testaddress12345678901234567890',
-        description: 'The first Sultan NFT'
-      },
-      {
-        collection: 'sultan1nftcontract123',
-        tokenId: '42',
-        name: 'Sultan #42',
-        image: 'https://example.com/nft42.png',
-        owner: 'sultan1testaddress12345678901234567890',
-        description: 'A rare Sultan NFT'
-      }
-    ]);
+    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue(mockNFTResponse);
     renderNFTs();
     
     await waitFor(() => {
-      // Logic inside component defaults name to "Sultan Collection" if metadata missing
-      expect(screen.getByText('Sultan Collection')).toBeInTheDocument();
+      expect(screen.getByText('Sultan Genesis')).toBeInTheDocument();
       expect(screen.getByText('Sultan #1')).toBeInTheDocument();
       expect(screen.getByText('Sultan #42')).toBeInTheDocument();
     });
   });
 
   it('should show stats with correct counts', async () => {
-    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue([
-      {
-        collection: 'sultan1nftcontract123',
-        tokenId: '1',
-        name: 'Sultan #1',
-        image: 'https://example.com/nft1.png',
-        owner: 'sultan1testaddress12345678901234567890',
-      },
-      {
-        collection: 'sultan1nftcontract123',
-        tokenId: '42',
-        name: 'Sultan #42',
-        image: 'https://example.com/nft42.png',
-        owner: 'sultan1testaddress12345678901234567890',
-      }
-    ]);
+    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue(mockNFTResponse);
     renderNFTs();
     
     await waitFor(() => {
@@ -135,7 +132,7 @@ describe('NFT Gallery Screen', () => {
   });
 
   it('should have NFT Gallery in header', async () => {
-    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue([]);
+    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue({ collections: [] });
     renderNFTs();
     
     expect(screen.getByText('NFT Gallery')).toBeInTheDocument();
@@ -144,7 +141,7 @@ describe('NFT Gallery Screen', () => {
 
 describe('NFT API Integration', () => {
   it('should call queryNFTs with correct address', async () => {
-    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue([]);
+    vi.mocked(sultanAPI.queryNFTs).mockResolvedValue({ collections: [] });
     renderNFTs();
     
     await waitFor(() => {
