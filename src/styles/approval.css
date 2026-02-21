@@ -4,10 +4,29 @@
 
 .approval-screen {
   min-height: 100vh;
+  background: var(--bg-gradient) !important;
+  background-attachment: fixed !important;
+  color: var(--color-text);
+  padding: 0;
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-md);
-  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  margin: 0;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.approval-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
 }
 
 .approval-loading {
