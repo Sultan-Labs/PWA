@@ -20,22 +20,39 @@
   --glass-blur: blur(16px);
 }
 
-#root {
-  width: 100% !important;
-  max-width: 480px !important;
-  height: 100% !important;
-  max-height: none !important;
-  margin: 0 auto !important;
-  box-shadow: none !important;
-  border: none !important;
-}
-
+/* Full-viewport PWA layout — no extension popup constraints */
 html, body {
   width: 100% !important;
   max-width: none !important;
   height: 100% !important;
   max-height: none !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: flex-start !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+}
+
+#root {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 100vh !important;
+  margin: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Widen per-screen content containers on desktop */
+@media (min-width: 600px) {
+  .activity-content,
+  .become-validator-content,
+  .governance-content,
+  .import-content,
+  .nft-content,
+  .receive-content,
+  .send-content,
+  .settings-content,
+  .stake-content,
+  .welcome-content {
+    max-width: 600px !important;
+  }
 }
