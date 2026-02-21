@@ -1,0 +1,10 @@
+modules = ["nodejs-20"]
+run = "npx serve dist"
+
+[deployment]
+deploymentTarget = "static"
+publicDir = "dist"
+build = ["sh", "-c", "npm run build"]
+
+[agent]
+expertMode = true
