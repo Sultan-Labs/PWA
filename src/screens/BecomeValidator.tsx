@@ -70,7 +70,7 @@ const CheckIcon = () => (
   </svg>
 );
 
-type Step = 'overview' | 'server' | 'address' | 'fund' | 'pin';
+type Step = 'overview' | 'server' | 'address' | 'fund' | 'pin' | 'success';
 
 export default function BecomeValidator() {
   const navigate = useNavigate();
@@ -285,11 +285,8 @@ export default function BecomeValidator() {
       });
 
       setSuccess(`🎉 Congratulations! You are now a Sultan validator!`);
+      setStep('success');
       refetchBalance();
-      
-      setTimeout(() => {
-        navigate('/stake');
-      }, 3000);
     } catch (err) {
       console.error('[BecomeValidator] Registration failed:', err);
       setError(err instanceof Error ? err.message : 'Failed to register validator');
@@ -571,6 +568,43 @@ export default function BecomeValidator() {
                 {isLoading ? <><span className="btn-spinner" />Registering...</> : 'Confirm Registration'}
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Success Step */}
+        {step === 'success' && (
+          <div className="step-section success-section">
+            <div className="success-icon-large">🎉</div>
+            <h3>You're a Sultan Validator!</h3>
+            <p className="text-muted">Your validator node has been registered on-chain. You're now earning staking rewards.</p>
+
+            <div className="summary-card">
+              <div className="summary-row">
+                <span>Validator</span>
+                <span className="mono">{validatorAddress.slice(0, 12)}...{validatorAddress.slice(-6)}</span>
+              </div>
+              <div className="summary-row">
+                <span>Name</span>
+                <span>{moniker || 'Sultan Validator'}</span>
+              </div>
+              <div className="summary-row highlight">
+                <span>Staked</span>
+                <span>10,000 SLTN</span>
+              </div>
+              <div className="summary-row">
+                <span>Commission</span>
+                <span>10%</span>
+              </div>
+            </div>
+
+            <p className="text-muted" style={{ fontSize: '0.85rem' }}>Now run <code>sultan-enable-validator</code> on your VPS to start producing blocks.</p>
+
+            <button 
+              className="btn btn-primary btn-full"
+              onClick={() => navigate('/stake')}
+            >
+              Go to Staking
+            </button>
           </div>
         )}
 
