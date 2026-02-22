@@ -176,7 +176,7 @@ echo -e "${YELLOW}⚙️  Creating systemd service...${NC}"
 systemctl stop "$SERVICE_NAME" 2>/dev/null || true
 
 # Build validator flags
-VALIDATOR_FLAGS="--validator --validator-address ${VALIDATOR_ADDR}"
+VALIDATOR_FLAGS="--validator --validator-address ${VALIDATOR_ADDR} --validator-stake 10000"
 if [ -n "$VALIDATOR_SECRET" ]; then
     VALIDATOR_FLAGS="${VALIDATOR_FLAGS} --validator-secret ${VALIDATOR_SECRET}"
 fi
