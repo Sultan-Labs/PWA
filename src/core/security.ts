@@ -601,8 +601,8 @@ function validateSultanAddressInternal(address: string): { valid: boolean; error
     return { valid: false, error: 'Invalid Sultan address length' };
   }
   
-  // Check for valid bech32 characters
-  const validChars = /^sultan1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]+$/;
+  // Accept both bech32 and hex characters after sultan1 prefix
+  const validChars = /^sultan1[0-9a-f]+$/;
   if (!validChars.test(address)) {
     return { valid: false, error: 'Sultan address contains invalid characters' };
   }
