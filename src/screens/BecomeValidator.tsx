@@ -599,6 +599,16 @@ export default function BecomeValidator() {
 
             <p className="text-muted" style={{ fontSize: '0.85rem' }}>Your node is already running in validator mode. It will begin producing blocks automatically.</p>
 
+            <a 
+              href="https://t.me/+cOuW7xJbifs2M2Y0" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn btn-secondary btn-full"
+              style={{ marginBottom: '8px', textDecoration: 'none', display: 'block', textAlign: 'center' }}
+            >
+              Join Validator Telegram Group
+            </a>
+
             <button 
               className="btn btn-primary btn-full"
               onClick={() => navigate('/stake')}

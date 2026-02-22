@@ -274,6 +274,7 @@ if [ -n "$VALIDATOR_PUBKEY" ]; then
 echo -e "${CYAN}║  ${YELLOW}3. Paste Public Key: ${GREEN}${VALIDATOR_PUBKEY}${NC}"
 fi
 echo -e "${CYAN}║  ${YELLOW}4. Stake 10,000 SLTN and submit — done!${NC}"
+echo -e "${CYAN}║  ${YELLOW}5. Join Validator Telegram: ${GREEN}https://t.me/+cOuW7xJbifs2M2Y0${NC}"
 echo -e "${CYAN}╠═══════════════════════════════════════════════════════════════════╣${NC}"
 echo -e "${CYAN}║  ${RED}⚠  BACK UP: ${INSTALL_DIR}/validator_key.json${NC}"
 echo -e "${CYAN}╠═══════════════════════════════════════════════════════════════════╣${NC}"
