@@ -1,11 +1,12 @@
 #!/bin/bash
-# Sultan Validator Node - One-Line Installer v0.3.0
+# Sultan Validator Node - One-Line Installer v0.3.1
 # Usage: curl -L https://wallet.sltn.io/install.sh -o install.sh && bash install.sh
 #
 # STEP 1: Create wallet at https://wallet.sltn.io
 # STEP 2: Get a VPS (2 vCPU, 4GB RAM, Ubuntu 22.04+)
 # STEP 3: SSH in and run this script
 # STEP 4: Register via wallet with the address this script outputs
+# STEP 5: Node auto-detects registration and begins validating
 
 set -euo pipefail
 
@@ -16,7 +17,7 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-VERSION="0.3.0"
+VERSION="0.3.1"
 BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.6/sultan-node"
 BOOTSTRAP_IP="206.189.224.142"
 BOOTSTRAP_PEER="/ip4/${BOOTSTRAP_IP}/tcp/26656"
@@ -169,19 +170,16 @@ else
     echo -e "${YELLOW}⚠ No firewall manager. Ensure ports ${P2P_PORT} and ${RPC_PORT} are open.${NC}"
 fi
 
-# Step 5: Systemd service
+# Step 5: Systemd service — start as FULL NODE first (validator mode enabled after registration)
 echo ""
 echo -e "${YELLOW}⚙️  Creating systemd service...${NC}"
 systemctl stop "$SERVICE_NAME" 2>/dev/null || true
 
-VALIDATOR_FLAGS="--validator"
-if [ -n "$VALIDATOR_SECRET" ]; then
-    VALIDATOR_FLAGS="--validator --validator-secret ${VALIDATOR_SECRET}"
-fi
-
+# Phase 1: Start as full node to sync the chain
+# Phase 2: After on-chain registration, run 'sultan-enable-validator' to activate validator mode
 cat > "/etc/systemd/system/${SERVICE_NAME}.service" << SVCEOF
 [Unit]
-Description=Sultan Validator Node (${VALIDATOR_NAME})
+Description=Sultan Network Node (${VALIDATOR_NAME})
 After=network-online.target
 Wants=network-online.target
 Documentation=https://sltn.io/docs
@@ -193,7 +191,6 @@ WorkingDirectory=${INSTALL_DIR}
 ExecStart=${BINARY_PATH} \
   --name "${VALIDATOR_NAME}" \
   --data-dir ${DATA_DIR} \
-  ${VALIDATOR_FLAGS} \
   --enable-p2p \
   --p2p-addr /ip4/0.0.0.0/tcp/${P2P_PORT} \
   --rpc-addr 0.0.0.0:${RPC_PORT} \
@@ -217,13 +214,53 @@ PrivateTmp=true
 WantedBy=multi-user.target
 SVCEOF
 
+# Create helper script to enable validator mode after on-chain registration
+VALIDATOR_FLAGS_LINE="--validator --validator-address ${VALIDATOR_ADDR}"
+if [ -n "$VALIDATOR_SECRET" ]; then
+    VALIDATOR_FLAGS_LINE="--validator --validator-address ${VALIDATOR_ADDR} --validator-secret ${VALIDATOR_SECRET}"
+fi
+if [ -n "$VALIDATOR_PUBKEY" ]; then
+    VALIDATOR_FLAGS_LINE="${VALIDATOR_FLAGS_LINE} --validator-pubkey ${VALIDATOR_PUBKEY}"
+fi
+
+cat > "${INSTALL_DIR}/enable-validator.sh" << 'EVEOF'
+#!/bin/bash
+# Enable validator mode after on-chain registration
+set -euo pipefail
+SERVICE_FILE="/etc/systemd/system/sultan-node.service"
+
+if grep -q "\-\-validator " "$SERVICE_FILE"; then
+    echo "✅ Validator mode is already enabled"
+    exit 0
+fi
+
+EVEOF
+
+# Append the dynamic parts (not inside single-quoted heredoc)
+cat >> "${INSTALL_DIR}/enable-validator.sh" << EVEOF2
+VALIDATOR_FLAGS="${VALIDATOR_FLAGS_LINE}"
+
+# Insert validator flags after --data-dir line
+sed -i "/--data-dir/a\\  \${VALIDATOR_FLAGS} \\\\\\" "\$SERVICE_FILE"
+
+systemctl daemon-reload
+systemctl restart sultan-node
+
+echo "✅ Validator mode enabled!"
+echo "   Address: ${VALIDATOR_ADDR}"
+echo "   Check: journalctl -u sultan-node -f"
+EVEOF2
+
+chmod +x "${INSTALL_DIR}/enable-validator.sh"
+ln -sf "${INSTALL_DIR}/enable-validator.sh" /usr/local/bin/sultan-enable-validator 2>/dev/null || true
+
 systemctl daemon-reload
 systemctl enable "$SERVICE_NAME"
-echo -e "${GREEN}✓ Service created${NC}"
+echo -e "${GREEN}✓ Service created (full-node mode — syncing first)${NC}"
 
 # Step 6: Start and verify
 echo ""
-echo -e "${YELLOW}🚀 Starting validator...${NC}"
+echo -e "${YELLOW}🚀 Starting node (syncing blockchain)...${NC}"
 systemctl start "$SERVICE_NAME"
 
 echo -n "Waiting for node"
@@ -250,26 +287,35 @@ PUBLIC_IP=$(curl -s --max-time 5 ifconfig.me 2>/dev/null || curl -s --max-time 5
 
 echo ""
 echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║               ✅ VALIDATOR INSTALLATION COMPLETE                  ║${NC}"
+echo -e "${CYAN}║               ✅ NODE INSTALLATION COMPLETE                       ║${NC}"
 echo -e "${CYAN}╠═══════════════════════════════════════════════════════════════════╣${NC}"
 echo -e "${CYAN}║  Validator Name:    ${GREEN}${VALIDATOR_NAME}${NC}"
 echo -e "${CYAN}║  Validator Address: ${GREEN}${VALIDATOR_ADDR}${NC}"
+if [ -n "$VALIDATOR_PUBKEY" ]; then
+echo -e "${CYAN}║  Public Key:        ${GREEN}${VALIDATOR_PUBKEY}${NC}"
+fi
 echo -e "${CYAN}║  Public IP:         ${GREEN}${PUBLIC_IP}${NC}"
 echo -e "${CYAN}║  RPC:               ${GREEN}http://localhost:${RPC_PORT}${NC}"
 echo -e "${CYAN}║  Height:            ${GREEN}${HEIGHT}${NC}"
 echo -e "${CYAN}║  Peers:             ${GREEN}${PEER_COUNT}${NC}"
 echo -e "${CYAN}╠═══════════════════════════════════════════════════════════════════╣${NC}"
-echo -e "${CYAN}║  ${YELLOW}NEXT: Open wallet.sltn.io → Become Validator${NC}"
-echo -e "${CYAN}║  ${YELLOW}Paste: ${GREEN}${VALIDATOR_ADDR}${NC}"
-echo -e "${CYAN}║  ${YELLOW}Stake: 10,000 SLTN${NC}"
+echo -e "${CYAN}║  ${YELLOW}NEXT STEPS:${NC}"
+echo -e "${CYAN}║  ${YELLOW}1. Open wallet.sltn.io → Stake → Become Validator${NC}"
+echo -e "${CYAN}║  ${YELLOW}2. Paste Address:   ${GREEN}${VALIDATOR_ADDR}${NC}"
+if [ -n "$VALIDATOR_PUBKEY" ]; then
+echo -e "${CYAN}║  ${YELLOW}3. Paste Public Key: ${GREEN}${VALIDATOR_PUBKEY}${NC}"
+fi
+echo -e "${CYAN}║  ${YELLOW}4. Stake 10,000 SLTN and submit${NC}"
+echo -e "${CYAN}║  ${YELLOW}5. Run: ${GREEN}sultan-enable-validator${NC}"
 echo -e "${CYAN}╠═══════════════════════════════════════════════════════════════════╣${NC}"
 echo -e "${CYAN}║  ${RED}⚠  BACK UP: ${INSTALL_DIR}/validator_key.json${NC}"
 echo -e "${CYAN}╠═══════════════════════════════════════════════════════════════════╣${NC}"
-echo -e "${CYAN}║  Logs:    ${GREEN}journalctl -u ${SERVICE_NAME} -f${NC}"
-echo -e "${CYAN}║  Status:  ${GREEN}curl http://localhost:${RPC_PORT}/status${NC}"
-echo -e "${CYAN}║  Restart: ${GREEN}systemctl restart ${SERVICE_NAME}${NC}"
+echo -e "${CYAN}║  Logs:              ${GREEN}journalctl -u ${SERVICE_NAME} -f${NC}"
+echo -e "${CYAN}║  Status:            ${GREEN}curl http://localhost:${RPC_PORT}/status${NC}"
+echo -e "${CYAN}║  Restart:           ${GREEN}systemctl restart ${SERVICE_NAME}${NC}"
+echo -e "${CYAN}║  Enable validator:  ${GREEN}sultan-enable-validator${NC}"
 echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 journalctl -u "$SERVICE_NAME" -n 5 --no-pager 2>/dev/null || true
 echo ""
-echo -e "${GREEN}🎉 Validator syncing! Register via wallet to earn ~13.33% APY${NC}"
+echo -e "${GREEN}🎉 Node syncing! Register via wallet.sltn.io, then run sultan-enable-validator${NC}"
