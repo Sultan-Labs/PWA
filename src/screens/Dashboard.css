@@ -363,13 +363,13 @@
 .stat-value {
   font-size: 1rem;
   font-weight: 600;
-  word-break: break-all;
+  overflow-wrap: break-word;
   text-align: center;
 }
 
 .stat-value.rewards {
   font-size: 0.85rem;
-  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .stat-value.accent {

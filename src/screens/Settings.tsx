@@ -369,7 +369,7 @@ export default function Settings() {
                 onClick={handleDeleteWallet}
                 disabled={deleteConfirm !== 'DELETE' || isDeleting}
               >
-                {isDeleting ? 'Deleting...' : 'Delete Wallet'}
+                {isDeleting ? <><span className="btn-spinner" />Deleting...</> : 'Delete Wallet'}
               </button>
             </div>
           </div>

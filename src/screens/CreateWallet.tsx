@@ -117,7 +117,7 @@ export default function CreateWallet() {
   return (
     <>
       <div className="create-screen">
-        <div className="create-content fade-in">
+        <div className="create-content fade-in" key={step}>
           {step === 'pin' && (
             <>
               <div className="logo-glow-container">

@@ -49,6 +49,10 @@
   --success: var(--color-success);
   --warning: var(--color-warning);
   --error: var(--color-error);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --surface-hover: rgba(0, 255, 255, 0.08);
+  --primary: var(--color-primary);
+  --bg-tertiary: #111827;
   --radius-sm: 8px;
   --radius-md: var(--border-radius);
   --radius-lg: 16px;
@@ -98,6 +102,10 @@
   --success: var(--color-success);
   --warning: var(--color-warning);
   --error: var(--color-error);
+  --text-secondary: rgba(26, 26, 46, 0.7);
+  --surface-hover: rgba(0, 153, 170, 0.08);
+  --primary: var(--color-primary);
+  --bg-tertiary: #e2e8f0;
   --shadow-lg: 0 8px 32px rgba(0, 153, 170, 0.15);
 }
 
@@ -399,6 +407,19 @@ body {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Inline spinner for loading buttons */
+.btn-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
 /* Title gradient glow animation */

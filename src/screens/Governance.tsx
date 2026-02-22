@@ -457,7 +457,7 @@ export default function Governance() {
               onClick={handleSubmitProposal}
               disabled={isSubmitting || !proposalTitle || !proposalDescription}
             >
-              {isSubmitting ? 'Submitting...' : `Submit Proposal (${depositAmount} SLTN)`}
+              {isSubmitting ? <><span className="btn-spinner" />Submitting...</> : `Submit Proposal (${depositAmount} SLTN)`}
             </button>
           </div>
         </div>

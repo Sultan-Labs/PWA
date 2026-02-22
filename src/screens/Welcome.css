@@ -86,14 +86,14 @@
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 20px;
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
+  color: var(--text-primary);
+  -webkit-text-fill-color: var(--text-primary);
   letter-spacing: 0.5px;
   text-shadow: 0 0 20px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 229, 204, 0.2);
 }
 
 .tagline {
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.87rem;
   margin-top: var(--spacing-sm);
   font-weight: 400;
@@ -288,16 +288,16 @@
 }
 
 .btn-secondary:hover {
-  border-color: #00ffff !important;
+  border-color: var(--accent-primary) !important;
   background: rgba(0, 255, 255, 0.1);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 255, 255, 0.2);
-  color: #00ffff !important;
+  color: var(--accent-primary) !important;
 }
 
 .btn-secondary:hover svg {
   transform: translateY(-2px);
-  color: #00ffff !important;
+  color: var(--accent-primary) !important;
 }
 
 /* Light mode primary button override */

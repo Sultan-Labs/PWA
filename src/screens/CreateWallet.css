@@ -13,12 +13,12 @@
 .create-screen .btn-secondary {
   background: transparent !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: #ffffff !important;
+  color: var(--text-primary) !important;
 }
 
 .create-screen .btn-secondary:hover {
-  border-color: #00ffff !important;
-  color: #00ffff !important;
+  border-color: var(--accent-primary) !important;
+  color: var(--accent-primary) !important;
   background: rgba(0, 255, 255, 0.1) !important;
 }
 
@@ -71,7 +71,7 @@
   font-size: 1.75rem;
   font-weight: 600;
   margin-bottom: var(--spacing-sm);
-  color: #ffffff;
+  color: var(--text-primary);
   text-shadow: 
     0 0 20px rgba(0, 255, 255, 0.4),
     0 0 40px rgba(0, 229, 204, 0.2);
@@ -87,7 +87,7 @@
 .create-content h2 {
   font-size: 1.75rem;
   margin-bottom: var(--spacing-sm);
-  color: #ffffff;
+  color: var(--text-primary);
   text-shadow: 0 0 20px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 229, 204, 0.2);
 }
 

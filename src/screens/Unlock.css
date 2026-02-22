@@ -14,7 +14,7 @@
   /* Force dark background for Unlock screen */
   background: var(--bg-gradient) !important;
   background-attachment: fixed !important;
-  color: #ffffff; /* Force white text */
+  color: var(--text-primary); /* Force white text */
   z-index: 9999;
 }
 
@@ -27,7 +27,7 @@
 .unlock-content h2 {
   font-size: 1.75rem;
   margin-bottom: var(--spacing-sm);
-  color: #ffffff;
+  color: var(--text-primary);
   text-align: center;
   width: 100%;
   text-shadow: 0 0 20px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 229, 204, 0.2);

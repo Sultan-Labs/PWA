@@ -122,7 +122,7 @@ export default function ImportWallet() {
   return (
     <>
       <div className={`import-screen ${step === 'pin' || step === 'confirm-pin' ? 'pin-step' : ''}`}>
-        <div className="import-content fade-in">
+        <div className="import-content fade-in" key={step}>
           {step === 'mnemonic' && (
             <>
               <h2>Import Wallet</h2>

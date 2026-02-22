@@ -416,7 +416,7 @@ export default function Send() {
               onClick={handlePinSubmit}
               disabled={isLoading || pin.some(d => !d)}
             >
-              {isLoading ? 'Sending...' : 'Confirm & Send'}
+              {isLoading ? <><span className="btn-spinner" />Sending...</> : 'Confirm & Send'}
             </button>
           </div>
         </div>

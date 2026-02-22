@@ -97,7 +97,7 @@
 
 .tx-icon.sent {
   background: rgba(255, 68, 68, 0.15);
-  color: #ff4444;
+  color: var(--error);
 }
 
 .tx-icon.received {
@@ -128,7 +128,7 @@
 }
 
 .tx-amount.sent {
-  color: #ff4444;
+  color: var(--error);
 }
 
 .tx-amount.received {

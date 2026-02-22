@@ -478,7 +478,7 @@ export default function Stake() {
               disabled={isLoading || pin.join('').length !== 6}
               style={{ flex: 1 }}
             >
-              {isLoading ? 'Processing...' : 'Confirm'}
+              {isLoading ? <><span className="btn-spinner" />Processing...</> : 'Confirm'}
             </button>
           </div>
         </div>
@@ -594,7 +594,7 @@ export default function Stake() {
               onClick={tab === 'stake' ? handleStake : handleUnstake}
               disabled={isLoading || !amount || Number(amount) <= 0}
             >
-              {isLoading ? 'Processing...' : tab === 'stake' ? 'Stake SLTN' : 'Unstake SLTN'}
+              {isLoading ? <><span className="btn-spinner" />Processing...</> : tab === 'stake' ? 'Stake SLTN' : 'Unstake SLTN'}
             </button>
           </div>
         )}
