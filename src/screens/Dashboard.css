@@ -764,70 +764,72 @@
 .staking-opportunity {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, rgba(0, 212, 170, 0.15) 0%, rgba(0, 255, 255, 0.05) 100%);
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(0, 255, 255, 0.05) 100%);
   border: 1px solid rgba(0, 212, 170, 0.3);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
   margin-bottom: var(--spacing-lg);
   cursor: pointer;
-  transition: all 0.3s ease;
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 10px rgba(0, 212, 170, 0.1); }
-  50% { box-shadow: 0 0 20px rgba(0, 212, 170, 0.2); }
+  transition: all 0.2s ease;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .staking-opportunity:hover {
   border-color: var(--accent-primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 24px rgba(0, 212, 170, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 212, 170, 0.2);
 }
 
 .opportunity-content {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
 .opportunity-icon {
-  width: 44px;
-  height: 44px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: rgba(0, 212, 170, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent-primary);
+  flex-shrink: 0;
 }
 
 .opportunity-icon svg {
   stroke: currentColor;
+  width: 16px;
+  height: 16px;
 }
 
 .opportunity-text {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 6px;
 }
 
 .opportunity-title {
   font-weight: 600;
-  font-size: 1rem;
-  color: var(--accent-primary);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .opportunity-subtitle {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
+  display: none;
 }
 
 .opportunity-arrow {
-  font-size: 1.5rem;
+  font-size: 1rem;
   color: var(--accent-primary);
   transition: transform 0.2s ease;
+  margin-left: var(--spacing-xs);
 }
 
 .staking-opportunity:hover .opportunity-arrow {
