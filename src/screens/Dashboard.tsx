@@ -11,6 +11,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useBalance, useStakingInfo, useTransactions } from '../hooks/useBalance';
 import { SultanWallet } from '../core/wallet';
 import { hapticFeedback } from '../utils/haptics';
+import hodlLogo from '@assets/Asset_7@4x-8_1771061774583.png';
 import './Dashboard.css';
 
 // Animated counter hook for smooth balance transitions
@@ -313,14 +314,30 @@ export default function Dashboard() {
           </button>
         </div>
 
-        <div className="dex-banner" onClick={() => window.open('https://hodlholdings.com', '_blank')}>
+        <div className="dex-banner fade-in stagger-4" onClick={() => window.open('https://hodlholdings.com', '_blank')}>
           <div className="dex-banner-content">
-            <SwapIcon />
+            <div className="dex-logo-container">
+              <img 
+                src={hodlLogo} 
+                alt="HODL Holdings" 
+                className="dex-logo" 
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent && !parent.querySelector('.dex-logo-fallback')) {
+                    const fallback = document.createElement('div');
+                    fallback.className = 'dex-logo-fallback';
+                    fallback.innerText = 'H';
+                    parent.appendChild(fallback);
+                  }
+                }} 
+              />
+            </div>
             <div className="dex-banner-text">
               <span className="dex-title">Trade on HODL Holdings</span>
             </div>
           </div>
-          <span className="dex-arrow">→</span>
         </div>
 
         {stakingData && stakingData.staked !== '0' ? (
