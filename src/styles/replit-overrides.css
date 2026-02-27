@@ -285,3 +285,93 @@ html, body {
   width: 100% !important;
 }
 
+/* ============================================
+   UNLOCK SCREEN — Desktop scaling for 16:9
+   Larger logo, title, PIN boxes on wide screens.
+   ============================================ */
+@media (min-width: 600px) {
+  .unlock-screen {
+    padding: var(--spacing-xl) !important;
+  }
+
+  .unlock-content {
+    max-width: 480px !important;
+  }
+
+  .unlock-screen .sultan-logo-img {
+    width: 96px !important;
+    height: 96px !important;
+  }
+
+  .unlock-screen .sultan-icon img,
+  .unlock-screen .sultan-icon svg {
+    width: 96px !important;
+    height: 96px !important;
+  }
+
+  .unlock-content h2 {
+    font-size: 2.5rem !important;
+    margin-bottom: var(--spacing-md) !important;
+  }
+
+  .unlock-content p {
+    font-size: 1.1rem !important;
+    margin-bottom: var(--spacing-xl) !important;
+  }
+
+  /* Larger PIN digit boxes on desktop */
+  .unlock-screen .pin-digit {
+    width: 52px !important;
+    height: 60px !important;
+    font-size: 1.5rem !important;
+    border-radius: 14px !important;
+  }
+
+  .unlock-screen .pin-input {
+    gap: 16px !important;
+  }
+
+  /* Lock icon scaling */
+  .unlock-screen .lock-icon svg {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .unlock-screen .btn-link {
+    font-size: 1rem !important;
+    padding: var(--spacing-md) !important;
+  }
+}
+
+/* Extra-wide: even bigger for cinematic feel */
+@media (min-width: 1024px) {
+  .unlock-content {
+    max-width: 520px !important;
+  }
+
+  .unlock-screen .sultan-logo-img {
+    width: 112px !important;
+    height: 112px !important;
+  }
+
+  .unlock-screen .sultan-icon img,
+  .unlock-screen .sultan-icon svg {
+    width: 112px !important;
+    height: 112px !important;
+  }
+
+  .unlock-content h2 {
+    font-size: 2.75rem !important;
+  }
+
+  .unlock-screen .pin-digit {
+    width: 56px !important;
+    height: 64px !important;
+    font-size: 1.625rem !important;
+  }
+
+  .unlock-screen .pin-input {
+    gap: 18px !important;
+  }
+}
+
