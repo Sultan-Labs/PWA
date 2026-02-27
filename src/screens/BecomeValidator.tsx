@@ -4,8 +4,8 @@
  * Premium flow for setting up a validator node.
  */
 
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useWallet } from '../hooks/useWallet';
 import { useTheme } from '../hooks/useTheme';
 import { useBalance } from '../hooks/useBalance';
@@ -74,6 +74,7 @@ type Step = 'overview' | 'server' | 'address' | 'fund' | 'pin' | 'success';
 
 export default function BecomeValidator() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { wallet, currentAccount, lock } = useWallet();
   const { theme, setTheme } = useTheme();
   const { data: balanceData, isLoading: isBalanceLoading, refetch: refetchBalance } = useBalance(currentAccount?.address);
@@ -93,6 +94,24 @@ export default function BecomeValidator() {
   // PIN verification state
   const [pin, setPin] = useState(['', '', '', '', '', '']);
   const pinInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Deep link: pre-fill from URL params (e.g. ?addr=sultan1...&pubkey=fe3c...&name=tokyo)
+  // These are all public values — no secrets in the URL.
+  const deepLinkApplied = useRef(false);
+  useEffect(() => {
+    if (deepLinkApplied.current) return;
+    const addr = searchParams.get('addr');
+    const pubkey = searchParams.get('pubkey');
+    const name = searchParams.get('name');
+    if (addr && addr.startsWith('sultan1')) {
+      deepLinkApplied.current = true;
+      setValidatorAddress(addr);
+      if (pubkey) setServerPublicKey(pubkey);
+      if (name) setMoniker(name);
+      // Skip straight to the configure/confirm step — server is already set up
+      setStep('address');
+    }
+  }, [searchParams]);
 
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
@@ -212,6 +231,9 @@ export default function BecomeValidator() {
     }
   };
 
+  /**
+   * Execute create validator after PIN verification
+   * In v0.2.7: validator address = user's own wallet address
   /**
    * Execute create validator after PIN verification
    * Two-step: 1) Transfer stake to validator address, 2) Register validator
@@ -356,7 +378,7 @@ export default function BecomeValidator() {
               </div>
               <div className="req-card">
                 <span className="req-label">Server Cost</span>
-                <span className="req-val">~$5/month</span>
+                <span className="req-val">~$6/month</span>
               </div>
               <div className="req-card">
                 <span className="req-label">Difficulty</span>
@@ -406,7 +428,7 @@ export default function BecomeValidator() {
             </div>
 
             <div className="info-box">
-              <p>This installs the Sultan node, syncs the blockchain, and generates your validator keys. Your address will be displayed when complete.</p>
+              <p>The installer downloads the node, generates your validator keys, and starts syncing. When complete, it displays a <strong>registration link</strong> that brings you back here with everything pre-filled.</p>
             </div>
 
             <button className="btn btn-primary btn-full" onClick={() => setStep('address')}>
@@ -417,19 +439,21 @@ export default function BecomeValidator() {
 
         {step === 'address' && (
           <div className="step-section">
-            <h3>2. Configure Validator</h3>
-            <p className="text-muted">Set up your validator details:</p>
+            <h3>2. Enter Server Details</h3>
+            <p className="text-muted">{validatorAddress ? 'Pre-filled from your installer link. Verify the details below:' : 'Paste the Validator Address and Public Key shown by install.sh:'}</p>
             
             <div className="input-group">
               <label>Server Validator Address</label>
               <input 
                 type="text" 
                 className="input" 
-                placeholder="sultan1... (from installer output)"
+                placeholder="sultan1ad260f08d244e7ea859f664c04d58aee3"
                 value={validatorAddress}
                 onChange={(e) => setValidatorAddress(e.target.value)}
               />
-              <small className="input-hint">Paste the address shown by install.sh on your server</small>
+              <p className="input-hint" style={{ color: 'var(--text-muted)', marginTop: '4px' }}>
+                Copy from server terminal: "Validator Address: sultan1..."
+              </p>
             </div>
 
             <div className="input-group">
@@ -437,19 +461,21 @@ export default function BecomeValidator() {
               <input 
                 type="text" 
                 className="input" 
-                placeholder="64 hex characters from installer"
+                placeholder="fe3c685fca3f0d6e81af0fa380ed2bf17f92e2a6edd97c776f330477b40da26b"
                 value={serverPublicKey}
                 onChange={(e) => setServerPublicKey(e.target.value)}
               />
-              <small className="input-hint">Copy from server terminal: "Public Key: ..."</small>
+              <p className="input-hint" style={{ color: 'var(--text-muted)', marginTop: '4px' }}>
+                Copy from server terminal: "Public Key: ..."
+              </p>
             </div>
 
             <div className="input-group">
-              <label>Moniker (Name)</label>
+              <label>Validator Name (Moniker)</label>
               <input 
                 type="text" 
                 className="input" 
-                placeholder="My Node"
+                placeholder="My Validator"
                 value={moniker}
                 onChange={(e) => setMoniker(e.target.value)}
               />
@@ -467,16 +493,20 @@ export default function BecomeValidator() {
 
         {step === 'fund' && (
           <div className="step-section">
-            <h3>3. Register Validator</h3>
-            <p className="text-muted">Register your node and stake 10,000 SLTN.</p>
+            <h3>3. Confirm Registration</h3>
+            <p className="text-muted">Stake 10,000 SLTN to become a validator.</p>
 
             <div className="summary-card">
               <div className="summary-row">
-                <span>Validator Address</span>
-                <span className="mono">{validatorAddress.slice(0, 10)}...</span>
+                <span>Your Validator Address</span>
+                <span className="mono">{validatorAddress.slice(0, 12)}...{validatorAddress.slice(-6)}</span>
+              </div>
+              <div className="summary-row">
+                <span>Validator Name</span>
+                <span>{moniker || 'Sultan Validator'}</span>
               </div>
               <div className="summary-row highlight">
-                <span>Initial Stake</span>
+                <span>Stake Amount</span>
                 <span>10,000 SLTN</span>
               </div>
               <div className="summary-row">
@@ -499,58 +529,57 @@ export default function BecomeValidator() {
               disabled={isLoading}
               onClick={handleFundValidator}
             >
-              {isLoading ? <><span className="btn-spinner" />Processing...</> : 'Register & Stake'}
+              {isLoading ? <><span className="btn-spinner" />Processing...</> : 'Register as Validator'}
             </button>
           </div>
         )}
 
         {/* PIN Verification Step - SECURITY: Required before signing */}
         {step === 'pin' && (
-          <div className="step-section pin-confirmation-section">
-            <div className="pin-header">
-              <div className="lock-icon-container">
+          <div className="step-section">
+            <div className="pin-header" style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <div style={{ margin: '0 auto 16px', width: '48px', height: '48px' }}>
                 <LockIcon />
               </div>
               <h3>Confirm with PIN</h3>
-              <p className="text-muted">Enter your 6-digit PIN to authorize registration</p>
+              <p className="text-muted">Enter your 6-digit PIN to authorize this transaction</p>
             </div>
 
-            <div className="summary-card">
+            <div className="summary-card" style={{ marginBottom: '24px' }}>
               <div className="summary-row">
-                <span className="label">Action</span>
-                <span className="value">Register Validator</span>
+                <span>To Validator</span>
+                <span className="mono">{validatorAddress.slice(0, 10)}...</span>
               </div>
               <div className="summary-row highlight">
-                <span className="label">Stake</span>
-                <span className="value">10,000 SLTN</span>
+                <span>Amount</span>
+                <span>10,000 SLTN</span>
               </div>
             </div>
 
-            <div className="pin-input-group">
-              <div className="pin-input">
-                {pin.map((digit, index) => (
-                  <div key={index} className="pin-digit-container">
-                    <input
-                      ref={(el) => { pinInputRefs.current[index] = el; }}
-                      type="password"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handlePinChange(index, e.target.value)}
-                      onKeyDown={(e) => handlePinKeyDown(index, e)}
-                      className="pin-digit"
-                      autoComplete="off"
-                    />
-                  </div>
-                ))}
-              </div>
+            <div className="pin-input">
+              {pin.map((digit, index) => (
+                <div key={index} className="pin-digit-container">
+                  <input
+                    ref={(el) => { pinInputRefs.current[index] = el; }}
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handlePinChange(index, e.target.value)}
+                    onKeyDown={(e) => handlePinKeyDown(index, e)}
+                    className="pin-digit"
+                    autoComplete="off"
+                  />
+                </div>
+              ))}
             </div>
 
-            {error && <p className="text-error" style={{ textAlign: 'center', marginTop: '16px' }}>{error}</p>}
+            {error && <p className="text-error" style={{ textAlign: 'center' }}>{error}</p>}
 
-            <div className="pin-actions">
+            <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
               <button 
                 className="btn btn-secondary"
+                style={{ flex: 1 }}
                 onClick={() => {
                   setStep('fund');
                   setPin(['', '', '', '', '', '']);
@@ -562,10 +591,11 @@ export default function BecomeValidator() {
               </button>
               <button 
                 className="btn btn-primary"
+                style={{ flex: 1 }}
                 onClick={handlePinSubmit}
                 disabled={isLoading || pin.some(d => !d)}
               >
-                {isLoading ? <><span className="btn-spinner" />Registering...</> : 'Confirm Registration'}
+                {isLoading ? <><span className="btn-spinner" />Processing...</> : 'Confirm & Fund'}
               </button>
             </div>
           </div>

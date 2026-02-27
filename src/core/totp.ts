@@ -1,20 +1,19 @@
 /**
  * TOTP (Time-based One-Time Password) Implementation
  * 
- * RFC 6238 compliant implementation using @noble/hashes.
- * Uses @noble/hashes for HMAC-SHA1 to avoid SubtleCrypto cross-realm issues.
+ * RFC 6238 compliant implementation using Web Crypto API.
+ * No external dependencies required.
  * 
  * Used for optional 2FA at login (not for transaction signing).
  */
-
-import { hmac } from '@noble/hashes/hmac';
-import { sha1 } from '@noble/hashes/sha1';
 
 // ============================================================================
 // Constants
 // ============================================================================
 
 /** TOTP time step in seconds (standard is 30) */
+import { hmac } from '@noble/hashes/hmac';
+import { sha1 } from '@noble/hashes/sha1';
 export const TOTP_TIME_STEP = 30;
 
 /** Number of digits in TOTP code */

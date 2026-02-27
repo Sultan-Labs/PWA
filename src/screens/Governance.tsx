@@ -117,6 +117,16 @@ export default function Governance() {
   const [discordUrl, setDiscordUrl] = useState('https://discord.com/channels/1375878827460395142/1453111965428875537');
   const [telegramUrl, setTelegramUrl] = useState('');
 
+  // SoftwareUpgrade-specific fields
+  const [binaryUrl, setBinaryUrl] = useState('');
+  const [binarySha256, setBinarySha256] = useState('');
+  const [upgradeHeight, setUpgradeHeight] = useState('');
+  const [upgradeVersion, setUpgradeVersion] = useState('');
+
+  // ParameterChange-specific fields
+  const [paramKey, setParamKey] = useState('');
+  const [paramValue, setParamValue] = useState('');
+
   const votingPower = SultanWallet.formatSLTN(stakingData?.staked || '0');
   const availableBalance = SultanWallet.formatSLTN(balanceData?.available || '0');
   const availableBalanceRaw = SultanWallet.formatSLTNRaw(balanceData?.available || '0').replace(/,/g, '');
@@ -228,6 +238,32 @@ export default function Governance() {
       setError('Telegram URL must start with https://t.me/');
       return;
     }
+    // SoftwareUpgrade requires binary_url + binary_sha256
+    if (proposalType === 'SoftwareUpgrade') {
+      if (!binaryUrl.trim()) {
+        setError('Binary URL is required for Software Upgrade proposals');
+        return;
+      }
+      if (!binaryUrl.startsWith('https://github.com/')) {
+        setError('Binary URL must be an HTTPS GitHub URL (https://github.com/...)');
+        return;
+      }
+      if (!binarySha256.trim() || !/^[a-fA-F0-9]{64}$/.test(binarySha256.trim())) {
+        setError('Binary SHA256 must be a valid 64-character hex hash');
+        return;
+      }
+      if (upgradeHeight.trim() && (isNaN(Number(upgradeHeight)) || Number(upgradeHeight) < 1)) {
+        setError('Upgrade height must be a positive number');
+        return;
+      }
+    }
+    // ParameterChange requires at least one parameter
+    if (proposalType === 'ParameterChange') {
+      if (!paramKey.trim() || !paramValue.trim()) {
+        setError('Parameter name and value are required for Parameter Change proposals');
+        return;
+      }
+    }
     const deposit = Number(depositAmount);
     if (isNaN(deposit) || deposit < MIN_DEPOSIT) {
       setError(`Minimum deposit is ${MIN_DEPOSIT} SLTN`);
@@ -259,6 +295,19 @@ export default function Governance() {
 
       const signature = await wallet.signTransaction(txData, currentAccount.index);
       
+      // Build parameters for typed proposals
+      let parameters: Record<string, string> | undefined;
+      if (proposalType === 'SoftwareUpgrade') {
+        parameters = {
+          binary_url: binaryUrl.trim(),
+          binary_sha256: binarySha256.trim().toLowerCase(),
+        };
+        if (upgradeHeight.trim()) parameters.upgrade_height = upgradeHeight.trim();
+        if (upgradeVersion.trim()) parameters.version = upgradeVersion.trim();
+      } else if (proposalType === 'ParameterChange') {
+        parameters = { [paramKey.trim()]: paramValue.trim() };
+      }
+
       const result = await sultanAPI.submitProposal({
         proposer: currentAccount.address,
         title: proposalTitle,
@@ -269,9 +318,10 @@ export default function Governance() {
         publicKey: currentAccount.publicKey,
         telegramDiscussionUrl: telegramUrl.trim() || undefined,
         discordDiscussionUrl: discordUrl.trim() || undefined,
+        parameters,
       });
 
-      setSubmitSuccess(`Proposal submitted successfully! ID: ${result.proposalId}`);
+      setSubmitSuccess(`Proposal #${result.proposalId} submitted successfully! 2-day discussion period started.`);
       
       // Reset form
       setProposalTitle('');
@@ -376,6 +426,92 @@ export default function Governance() {
                 <option value="CommunityPool">Community Pool Spend</option>
               </select>
             </div>
+
+            {/* SoftwareUpgrade-specific fields */}
+            {proposalType === 'SoftwareUpgrade' && (
+              <div className="upgrade-params">
+                <h4>Upgrade Parameters</h4>
+                <div className="form-group">
+                  <label htmlFor="binaryUrl">Binary URL (GitHub) *</label>
+                  <input
+                    id="binaryUrl"
+                    type="url"
+                    value={binaryUrl}
+                    onChange={(e) => setBinaryUrl(e.target.value)}
+                    placeholder="https://github.com/Sultan-Labs/0xv7/releases/download/v0.3.0/sultan-node"
+                    disabled={isSubmitting}
+                  />
+                  <span className="field-hint">Must be an HTTPS URL from github.com</span>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="binarySha256">Binary SHA256 Hash *</label>
+                  <input
+                    id="binarySha256"
+                    type="text"
+                    value={binarySha256}
+                    onChange={(e) => setBinarySha256(e.target.value)}
+                    placeholder="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                    maxLength={64}
+                    disabled={isSubmitting}
+                  />
+                  <span className="field-hint">64-character hex SHA256 of the binary</span>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="upgradeVersion">Version Tag</label>
+                  <input
+                    id="upgradeVersion"
+                    type="text"
+                    value={upgradeVersion}
+                    onChange={(e) => setUpgradeVersion(e.target.value)}
+                    placeholder="v0.3.0"
+                    maxLength={32}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="upgradeHeight">Upgrade Height (optional)</label>
+                  <input
+                    id="upgradeHeight"
+                    type="number"
+                    value={upgradeHeight}
+                    onChange={(e) => setUpgradeHeight(e.target.value)}
+                    placeholder="0 = immediate after approval"
+                    min={0}
+                    disabled={isSubmitting}
+                  />
+                  <span className="field-hint">Block height to execute the upgrade (0 or empty = immediate)</span>
+                </div>
+              </div>
+            )}
+
+            {/* ParameterChange-specific fields */}
+            {proposalType === 'ParameterChange' && (
+              <div className="param-change-fields">
+                <h4>Parameter to Change</h4>
+                <div className="form-group">
+                  <label htmlFor="paramKey">Parameter Name *</label>
+                  <input
+                    id="paramKey"
+                    type="text"
+                    value={paramKey}
+                    onChange={(e) => setParamKey(e.target.value)}
+                    placeholder="e.g. max_validators, block_time_ms"
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="paramValue">New Value *</label>
+                  <input
+                    id="paramValue"
+                    type="text"
+                    value={paramValue}
+                    onChange={(e) => setParamValue(e.target.value)}
+                    placeholder="e.g. 100, 2000"
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="form-group">
               <label htmlFor="description">Description *</label>
@@ -511,6 +647,54 @@ export default function Governance() {
                 <span className="meta-value">{SultanWallet.formatSLTN(selectedProposal.totalDeposit)} SLTN</span>
               </div>
             </div>
+
+            {/* Show upgrade parameters for SoftwareUpgrade proposals */}
+            {selectedProposal.proposalType === 'SoftwareUpgrade' && selectedProposal.parameters && (
+              <div className="upgrade-params">
+                <h4>Upgrade Details</h4>
+                {selectedProposal.parameters.binary_url && (
+                  <div className="meta-item">
+                    <span className="meta-label">Binary URL</span>
+                    <span className="meta-value" style={{ wordBreak: 'break-all', fontSize: '0.8rem' }}>
+                      {selectedProposal.parameters.binary_url}
+                    </span>
+                  </div>
+                )}
+                {selectedProposal.parameters.binary_sha256 && (
+                  <div className="meta-item">
+                    <span className="meta-label">SHA256</span>
+                    <span className="meta-value" style={{ fontFamily: 'monospace', fontSize: '0.75rem', wordBreak: 'break-all' }}>
+                      {selectedProposal.parameters.binary_sha256}
+                    </span>
+                  </div>
+                )}
+                {selectedProposal.parameters.version && (
+                  <div className="meta-item">
+                    <span className="meta-label">Version</span>
+                    <span className="meta-value">{selectedProposal.parameters.version}</span>
+                  </div>
+                )}
+                {selectedProposal.parameters.upgrade_height && (
+                  <div className="meta-item">
+                    <span className="meta-label">Upgrade Height</span>
+                    <span className="meta-value">{selectedProposal.parameters.upgrade_height}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Show parameter changes for ParameterChange proposals */}
+            {selectedProposal.proposalType === 'ParameterChange' && selectedProposal.parameters && (
+              <div className="param-change-fields">
+                <h4>Parameter Changes</h4>
+                {Object.entries(selectedProposal.parameters).map(([key, value]) => (
+                  <div className="meta-item" key={key}>
+                    <span className="meta-label">{key}</span>
+                    <span className="meta-value">{value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {selectedProposal.finalTally && (
               <div className="tally-results">

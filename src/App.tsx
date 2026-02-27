@@ -39,6 +39,10 @@ function App() {
     if (location.pathname === '/connect' && location.search) {
       sessionStorage.setItem('sultan_pending_connect', location.pathname + location.search);
     }
+    // Preserve /become-validator deep link params through unlock flow
+    if (location.pathname === '/become-validator' && location.search) {
+      sessionStorage.setItem('sultan_pending_validator', location.pathname + location.search);
+    }
   }, [location]);
 
   // Navigate to PWA approval screen when dApp requests come in via BroadcastChannel

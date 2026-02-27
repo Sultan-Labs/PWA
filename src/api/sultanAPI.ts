@@ -85,6 +85,7 @@ export interface Proposal {
   votingEndHeight: number;
   totalDeposit: string;
   finalTally?: TallyResult;
+  parameters?: Record<string, string>;
 }
 
 export interface TallyResult {
@@ -854,6 +855,7 @@ export const sultanAPI = {
         submit_time: number;
         voting_end_height: number;
         total_deposit: number;
+        parameters?: Record<string, string>;
         final_tally?: {
           yes: number;
           no: number;
@@ -877,6 +879,7 @@ export const sultanAPI = {
         submitTime: p.submit_time,
         votingEndHeight: p.voting_end_height,
         totalDeposit: String(p.total_deposit),
+        parameters: p.parameters,
         finalTally: p.final_tally ? {
           yes: String(p.final_tally.yes),
           no: String(p.final_tally.no),
@@ -911,6 +914,7 @@ export const sultanAPI = {
         submit_time: number;
         voting_end_height: number;
         total_deposit: number;
+        parameters?: Record<string, string>;
         final_tally?: {
           yes: number;
           no: number;
@@ -934,6 +938,7 @@ export const sultanAPI = {
         submitTime: p.submit_time,
         votingEndHeight: p.voting_end_height,
         totalDeposit: String(p.total_deposit),
+        parameters: p.parameters,
         finalTally: p.final_tally ? {
           yes: String(p.final_tally.yes),
           no: String(p.final_tally.no),
@@ -1017,6 +1022,7 @@ export const sultanAPI = {
     publicKey: string;
     telegramDiscussionUrl?: string;
     discordDiscussionUrl?: string;
+    parameters?: Record<string, string>;
   }): Promise<{ proposalId: number }> => {
     const typeMap: Record<ProposalType, string> = {
       'ParameterChange': 'parameter_change',
@@ -1036,6 +1042,7 @@ export const sultanAPI = {
         initial_deposit: parseInt(req.deposit, 10),
         telegram_discussion_url: req.telegramDiscussionUrl,
         discord_discussion_url: req.discordDiscussionUrl,
+        parameters: req.parameters,
       }
     );
     return { proposalId: result.proposal_id };

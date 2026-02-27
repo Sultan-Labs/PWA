@@ -206,60 +206,58 @@ export function DeepLinkConnect() {
   // Connected - show approval screen
   return (
     <div className="approval-screen">
-      <div className="approval-container">
-        {/* Origin Card */}
-        <div className="origin-card">
-          <div className="type-icon connect" style={{ margin: 0, width: '48px', height: '48px' }}>
-            <Globe size={24} />
-          </div>
-          <div className="origin-info">
-            <span className="origin-name">{request?.dappName || 'Unknown dApp'}</span>
-            <span className="origin-url">{request?.dappOrigin || 'Unknown origin'}</span>
-          </div>
+      {/* Origin Card */}
+      <div className="origin-card">
+        <div className="type-icon connect" style={{ margin: 0, width: '48px', height: '48px' }}>
+          <Globe size={24} />
         </div>
+        <div className="origin-info">
+          <span className="origin-name">{request?.dappName || 'Unknown dApp'}</span>
+          <span className="origin-url">{request?.dappOrigin || 'Unknown origin'}</span>
+        </div>
+      </div>
 
-        {/* Request Content */}
-        <div className="request-card">
-          <h2 className="request-title">Connection Request</h2>
-          <p className="request-description">A dApp wants to connect to your wallet</p>
-          
-          <div className="permissions-list">
-            <div className="permission-item">
-              <Check size={16} className="text-success" />
-              <span>View your wallet address</span>
-            </div>
-            <div className="permission-item">
-              <Check size={16} className="text-success" />
-              <span>Request transaction signatures</span>
-            </div>
-            <div className="permission-item">
-              <Check size={16} className="text-success" />
-              <span>Request message signatures</span>
-            </div>
+      {/* Request Content */}
+      <div className="request-card">
+        <h2 className="request-title">Connection Request</h2>
+        <p className="request-description">A dApp wants to connect to your wallet</p>
+        
+        <div className="permissions-list">
+          <div className="permission-item">
+            <Check size={16} className="text-success" />
+            <span>View your wallet address</span>
+          </div>
+          <div className="permission-item">
+            <Check size={16} className="text-success" />
+            <span>Request transaction signatures</span>
+          </div>
+          <div className="permission-item">
+            <Check size={16} className="text-success" />
+            <span>Request message signatures</span>
           </div>
         </div>
+      </div>
 
-        {/* Warning */}
-        <div className="warning-banner">
-          <AlertTriangle className="warning-icon" />
-          <span>Only connect to sites you trust. Never approve transactions you don't understand.</span>
-        </div>
+      {/* Warning */}
+      <div className="warning-banner">
+        <AlertTriangle className="warning-icon" />
+        <span>Only connect to sites you trust. Never approve transactions you don't understand.</span>
+      </div>
 
-        {/* Actions */}
-        <div className="approval-actions">
-          <button
-            className="btn btn-approve"
-            onClick={handleApprove}
-          >
-            Connect
-          </button>
-          <button
-            className="btn btn-reject"
-            onClick={handleReject}
-          >
-            Reject
-          </button>
-        </div>
+      {/* Actions */}
+      <div className="approval-actions">
+        <button
+          className="btn btn-approve"
+          onClick={handleApprove}
+        >
+          Connect
+        </button>
+        <button
+          className="btn btn-reject"
+          onClick={handleReject}
+        >
+          Reject
+        </button>
       </div>
     </div>
   );

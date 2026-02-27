@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Check, AlertTriangle, Globe, FileText, ArrowRightLeft, Coins, Star } from 'lucide-react';
+import { Shield, X, Check, AlertTriangle, Globe, FileText, ArrowRightLeft, Coins, Star } from 'lucide-react';
 import { useWallet } from '../hooks/useWallet';
 import { broadcastTransaction } from '../api/sultanAPI';
 import {
@@ -259,22 +259,7 @@ export function ApprovalScreen() {
   const getTypeDescription = () => {
     switch (current.type) {
       case 'connect':
-        return (
-          <div className="permissions-list">
-            <div className="permission-item">
-              <Check size={16} className="text-success" />
-              <span>View your wallet address</span>
-            </div>
-            <div className="permission-item">
-              <Check size={16} className="text-success" />
-              <span>Request transaction signatures</span>
-            </div>
-            <div className="permission-item">
-              <Check size={16} className="text-success" />
-              <span>Request message signatures</span>
-            </div>
-          </div>
-        );
+        return 'This site wants to connect to your Sultan Wallet';
       case 'signMessage':
         return 'This site wants you to sign a message';
       case 'signTransaction':
@@ -286,155 +271,164 @@ export function ApprovalScreen() {
 
   return (
     <div className="approval-screen">
-      <div className="approval-container">
-        {/* Phishing Warning */}
-        {Boolean((current.data as Record<string, unknown>)?.phishingWarning) && (
-          <div className="phishing-warning">
-            <AlertTriangle className="warning-icon" />
-            <div className="warning-content">
-              <strong>⚠️ Phishing Warning</strong>
-              <p>This site matches known phishing patterns. Proceed with extreme caution.</p>
-            </div>
+      {/* Header */}
+      <header className="approval-header">
+        <Shield className="shield-icon" />
+        <span className="header-title">Sultan Wallet</span>
+        {approvals.length > 1 && (
+          <span className="approval-count">
+            {currentIndex + 1} of {approvals.length}
+          </span>
+        )}
+      </header>
+
+      {/* Phishing Warning */}
+      {Boolean((current.data as Record<string, unknown>)?.phishingWarning) && (
+        <div className="phishing-warning">
+          <AlertTriangle className="warning-icon" />
+          <div className="warning-content">
+            <strong>⚠️ Phishing Warning</strong>
+            <p>This site matches known phishing patterns. Proceed with extreme caution.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Origin */}
+      <div className="origin-card">
+        <img 
+          src={getFaviconUrl(current.origin)} 
+          alt="" 
+          className="origin-favicon"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = 'none';
+          }}
+        />
+        <div className="origin-info">
+          <span className="origin-name">{formatOrigin(current.origin)}</span>
+          <span className="origin-url">{current.origin}</span>
+        </div>
+      </div>
+
+      {/* Request Type */}
+      <div className="request-card">
+        {getTypeIcon()}
+        <h2 className="request-title">{getTypeTitle()}</h2>
+        <p className="request-description">{getTypeDescription()}</p>
+      </div>
+
+      {/* Request Details */}
+      <div className="details-card">
+        {current.type === 'connect' && currentAccount && (
+          <div className="detail-row">
+            <span className="detail-label">Account</span>
+            <span className="detail-value">{currentAccount.name}</span>
           </div>
         )}
 
-        {/* Origin */}
-        <div className="origin-card">
-          <img 
-            src={getFaviconUrl(current.origin)} 
-            alt="" 
-            className="origin-favicon"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
-          <div className="origin-info">
-            <span className="origin-name">{formatOrigin(current.origin)}</span>
-            <span className="origin-url">{current.origin}</span>
+        {current.type === 'signMessage' && (
+          <div className="message-preview">
+            <span className="detail-label">Message</span>
+            <pre className="message-content">
+              {(() => {
+                const hex = current.data.message as string;
+                const bytes = new Uint8Array(hex.match(/.{1,2}/g)!.map(b => parseInt(b, 16)));
+                return new TextDecoder().decode(bytes);
+              })()}
+            </pre>
           </div>
-        </div>
+        )}
 
-        {/* Request Type */}
-        <div className="request-card">
-          {getTypeIcon()}
-          <h2 className="request-title">{getTypeTitle()}</h2>
-          <p className="request-description">{getTypeDescription()}</p>
-        </div>
-
-        {/* Request Details */}
-        <div className="details-card">
-          {current.type === 'connect' && currentAccount && (
-            <div className="detail-row">
-              <span className="detail-label">Account</span>
-              <span className="detail-value">{currentAccount.name}</span>
-            </div>
-          )}
-
-          {current.type === 'signMessage' && (
-            <div className="message-preview">
-              <span className="detail-label">Message</span>
-              <pre className="message-content">
-                {(() => {
-                  const hex = current.data.message as string;
-                  const bytes = new Uint8Array(hex.match(/.{1,2}/g)!.map(b => parseInt(b, 16)));
-                  return new TextDecoder().decode(bytes);
-                })()}
+        {current.type === 'signTransaction' && (
+          <>
+            <TransactionSimulation 
+              transaction={current.data.transaction as any}
+            />
+            <div className="transaction-preview">
+              <span className="detail-label">Raw Transaction</span>
+              <pre className="transaction-content">
+                {JSON.stringify(current.data.transaction, null, 2)}
               </pre>
             </div>
-          )}
-
-          {current.type === 'signTransaction' && (
-            <>
-              <TransactionSimulation 
-                transaction={current.data.transaction as any}
-              />
-              <div className="transaction-preview">
-                <span className="detail-label">Raw Transaction</span>
-                <pre className="transaction-content">
-                  {JSON.stringify(current.data.transaction, null, 2)}
-                </pre>
-              </div>
-            </>
-          )}
-
-          {current.type === 'addToken' && (
-            <>
-              <div className="detail-row">
-                <span className="detail-label">Symbol</span>
-                <span className="detail-value">{(current.data.token as any)?.symbol}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Denom</span>
-                <span className="detail-value">{(current.data.token as any)?.denom}</span>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Warning */}
-        <div className="warning-banner">
-          <AlertTriangle className="warning-icon" />
-          <span>Only approve requests from sites you trust</span>
-        </div>
-
-        {/* Remember This Site */}
-        {current.type === 'connect' && !alreadyTrusted && (
-          <label className="remember-site-option">
-            <input
-              type="checkbox"
-              checked={rememberSite}
-              onChange={(e) => setRememberSite(e.target.checked)}
-            />
-            <Star className="remember-icon" size={16} />
-            <span>Remember this site (auto-approve future connections)</span>
-          </label>
+          </>
         )}
 
-        {alreadyTrusted && (
-          <div className="trusted-badge">
-            <Star className="trusted-icon" size={16} />
-            <span>Trusted site</span>
-          </div>
-        )}
-
-        {/* Error */}
-        {error && (
-          <div className="error-banner">
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="approval-actions">
-          <button 
-            className="btn btn-reject"
-            onClick={handleReject}
-            disabled={processing}
-          >
-            <X className="btn-icon" />
-            Reject
-          </button>
-          <button 
-            className="btn btn-approve"
-            onClick={handleApprove}
-            disabled={processing}
-          >
-            <Check className="btn-icon" />
-            Approve
-          </button>
-        </div>
-
-        {/* Reject All */}
-        {approvals.length > 1 && (
-          <button 
-            className="btn-link reject-all"
-            onClick={handleRejectAll}
-            disabled={processing}
-          >
-            Reject all {approvals.length} requests
-          </button>
+        {current.type === 'addToken' && (
+          <>
+            <div className="detail-row">
+              <span className="detail-label">Symbol</span>
+              <span className="detail-value">{(current.data.token as any)?.symbol}</span>
+            </div>
+            <div className="detail-row">
+              <span className="detail-label">Denom</span>
+              <span className="detail-value">{(current.data.token as any)?.denom}</span>
+            </div>
+          </>
         )}
       </div>
+
+      {/* Warning */}
+      <div className="warning-banner">
+        <AlertTriangle className="warning-icon" />
+        <span>Only approve requests from sites you trust</span>
+      </div>
+
+      {/* Remember This Site */}
+      {current.type === 'connect' && !alreadyTrusted && (
+        <label className="remember-site-option">
+          <input
+            type="checkbox"
+            checked={rememberSite}
+            onChange={(e) => setRememberSite(e.target.checked)}
+          />
+          <Star className="remember-icon" size={16} />
+          <span>Remember this site (auto-approve future connections)</span>
+        </label>
+      )}
+
+      {alreadyTrusted && (
+        <div className="trusted-badge">
+          <Star className="trusted-icon" size={16} />
+          <span>Trusted site</span>
+        </div>
+      )}
+
+      {/* Error */}
+      {error && (
+        <div className="error-banner">
+          <span>{error}</span>
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="approval-actions">
+        <button 
+          className="btn btn-reject"
+          onClick={handleReject}
+          disabled={processing}
+        >
+          <X className="btn-icon" />
+          Reject
+        </button>
+        <button 
+          className="btn btn-approve"
+          onClick={handleApprove}
+          disabled={processing}
+        >
+          <Check className="btn-icon" />
+          Approve
+        </button>
+      </div>
+
+      {/* Reject All */}
+      {approvals.length > 1 && (
+        <button 
+          className="btn-link reject-all"
+          onClick={handleRejectAll}
+          disabled={processing}
+        >
+          Reject all {approvals.length} requests
+        </button>
+      )}
     </div>
   );
 }
