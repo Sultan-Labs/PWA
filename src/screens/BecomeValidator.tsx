@@ -452,7 +452,7 @@ export default function BecomeValidator() {
                 onChange={(e) => setValidatorAddress(e.target.value)}
               />
               <p className="input-hint" style={{ color: 'var(--text-muted)', marginTop: '4px' }}>
-                Copy from server terminal: "Validator Address: sultan1..."
+                Copy from server terminal: "Server Validator Address: sultan1..."
               </p>
             </div>
 
@@ -466,7 +466,7 @@ export default function BecomeValidator() {
                 onChange={(e) => setServerPublicKey(e.target.value)}
               />
               <p className="input-hint" style={{ color: 'var(--text-muted)', marginTop: '4px' }}>
-                Copy from server terminal: "Public Key: ..."
+                Copy from server terminal: "Server Public Key: ..."
               </p>
             </div>
 

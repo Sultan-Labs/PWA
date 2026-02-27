@@ -194,7 +194,7 @@ KEYEOF
     fi
 fi  # end EXISTING_INSTALL check
 
-echo -e "${CYAN}   Validator Address: ${VALIDATOR_ADDR}${NC}"
+echo -e "${CYAN}   Server Validator Address: ${VALIDATOR_ADDR}${NC}"
 echo "$VALIDATOR_ADDR" > "${INSTALL_DIR}/validator.address"
 echo "$VALIDATOR_NAME" > "${INSTALL_DIR}/validator.name"
 
@@ -333,9 +333,9 @@ echo -e "${CYAN}╔════════════════════�
 echo -e "${CYAN}║               ✅ VALIDATOR INSTALLATION COMPLETE                  ║${NC}"
 echo -e "${CYAN}╠═══════════════════════════════════════════════════════════════════╣${NC}"
 echo -e "${CYAN}║  Validator Name:    ${GREEN}${VALIDATOR_NAME}${NC}"
-echo -e "${CYAN}║  Validator Address: ${GREEN}${VALIDATOR_ADDR}${NC}"
+echo -e "${CYAN}║  Server Validator Address: ${GREEN}${VALIDATOR_ADDR}${NC}"
 if [ -n "$VALIDATOR_PUBKEY" ]; then
-echo -e "${CYAN}║  Public Key:        ${GREEN}${VALIDATOR_PUBKEY}${NC}"
+echo -e "${CYAN}║  Server Public Key: ${GREEN}${VALIDATOR_PUBKEY}${NC}"
 fi
 echo -e "${CYAN}║  Public IP:         ${GREEN}${PUBLIC_IP}${NC}"
 echo -e "${CYAN}║  RPC:               ${GREEN}http://localhost:${RPC_PORT}${NC}"
