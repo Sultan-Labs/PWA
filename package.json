@@ -1,6 +1,6 @@
 {
   "name": "sultan-wallet",
-  "version": "1.0.0",
+  "version": "1.7.4",
   "description": "Sultan Wallet - Zero-fee blockchain wallet and browser extension",
   "type": "module",
   "scripts": {
@@ -32,7 +32,6 @@
     "bech32": "^2.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "drizzle-kit": "^0.31.9",
     "fast-json-stable-stringify": "^2.1.0",
     "jsqr": "^1.4.0",
     "lucide-react": "^0.562.0",

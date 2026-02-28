@@ -1,5 +1,5 @@
 #!/bin/bash
-# Sultan Validator Node - One-Line Installer v0.6.0
+# Sultan Validator Node - One-Line Installer v0.7.0
 # Usage: curl -L https://wallet.sltn.io/install.sh -o install.sh && bash install.sh
 #
 # STEP 1: Create wallet at https://wallet.sltn.io
@@ -16,10 +16,12 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-VERSION="0.6.0"
-BINARY_URL="https://github.com/Sultan-Labs/0xv7/releases/download/v0.2.4/sultan-node"
-EXPECTED_SHA256="40a4330517a174c1e9fd927180c281977a83ee365cf0fa74ec71beaa409ba4a3"
+VERSION="0.7.0"
+BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.12/sultan-node"
+EXPECTED_SHA256="4cf03880f6ea1957f6ae32494174ebdb739c5e31177fcbb4a0a039a0a7681950"
 BOOTSTRAP_IP="206.189.224.142"
+# Multiple bootstrap peers for geographic redundancy (NYC, NJF, CHL)
+BOOTSTRAP_PEERS="/ip4/206.189.224.142/tcp/26656,/ip4/216.128.149.115/tcp/26656,/ip4/45.77.181.158/tcp/26656"
 BOOTSTRAP_PEER="/ip4/${BOOTSTRAP_IP}/tcp/26656"
 GENESIS_WALLET="sultan15g5nwnlemn7zt6rtl7ch46ssvx2ym2v2umm07g"
 # Genesis validators: addresses that are auto-registered at startup.
@@ -264,7 +266,7 @@ ExecStart=${BINARY_PATH} \\
   --enable-p2p \\
   --p2p-addr /ip4/0.0.0.0/tcp/${P2P_PORT} \\
   --rpc-addr 0.0.0.0:${RPC_PORT} \\
-  --bootstrap-peers "${BOOTSTRAP_PEER}" \\
+  --bootstrap-peers "${BOOTSTRAP_PEERS}" \\
   --genesis "${GENESIS_WALLET}:500000000000000000" \\
   --genesis-validators "${GENESIS_VALIDATORS}" \\
   --enable-sharding \\
