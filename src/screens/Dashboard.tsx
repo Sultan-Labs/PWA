@@ -360,7 +360,7 @@ export default function Dashboard() {
                 <SproutIcon />
               </div>
               <div className="opportunity-text">
-                <span className="opportunity-title">Start Earning ~{stakingData?.stakingAPY || 13.33}% APY</span>
+                <span className="opportunity-title">Start Earning Rewards</span>
                 <span className="opportunity-subtitle">Stake your SLTN to earn rewards</span>
               </div>
             </div>
