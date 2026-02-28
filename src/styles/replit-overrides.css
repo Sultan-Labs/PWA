@@ -115,6 +115,8 @@ html, body {
 .nft-content,
 .import-content,
 .settings-content {
+  display: flex !important;
+  flex-direction: column !important;
   justify-content: center !important;
   flex: 1 !important;
 }
