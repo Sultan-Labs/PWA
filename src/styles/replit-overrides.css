@@ -101,6 +101,30 @@ html, body {
   width: 100% !important;
 }
 
+/* ============================================
+   FORM/CONTENT SCREENS — Vertical centering
+   On tall viewports, center form content vertically
+   so it doesn't sit squished at the top.
+   ============================================ */
+.send-content,
+.receive-content,
+.stake-content,
+.governance-content,
+.become-validator-content,
+.validator-content,
+.nft-content,
+.import-content,
+.settings-content {
+  justify-content: center !important;
+  flex: 1 !important;
+}
+
+/* Dashboard & activity are scrollable lists — keep top-aligned */
+.dashboard-content,
+.activity-content {
+  justify-content: flex-start !important;
+}
+
 /* Welcome screen — remove 380px width lock */
 .welcome-screen {
   width: 100% !important;
