@@ -130,6 +130,16 @@ const GovernanceIcon = () => (
   </svg>
 );
 
+// Trending up icon for staking opportunity
+const SproutIcon = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M7 20h10" />
+    <path d="M12 20v-8" />
+    <path d="M12 12c-3.5 0-6-2.5-6-6 3.5 0 6 2.5 6 6Z" />
+    <path d="M12 12c3.5 0 6-2.5 6-6-3.5 0-6 2.5-6 6Z" />
+  </svg>
+);
+
 // Skeleton loader component
 const BalanceSkeleton = () => (
   <div className="balance-skeleton">
@@ -346,6 +356,9 @@ export default function Dashboard() {
         ) : (
           <div className="staking-opportunity" onClick={() => { hapticFeedback.soft(); navigate('/stake'); }}>
             <div className="opportunity-content">
+              <div className="opportunity-icon">
+                <SproutIcon />
+              </div>
               <div className="opportunity-text">
                 <span className="opportunity-title">Start Earning Rewards</span>
                 <span className="opportunity-subtitle">Stake your SLTN to earn rewards</span>

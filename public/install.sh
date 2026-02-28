@@ -16,9 +16,9 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-VERSION="0.7.0"
-BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.12/sultan-node"
-EXPECTED_SHA256="4cf03880f6ea1957f6ae32494174ebdb739c5e31177fcbb4a0a039a0a7681950"
+VERSION="0.7.1"
+BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.13/sultan-node"
+EXPECTED_SHA256="d01a7f00c8db4fa8ffced036812728392944f93f866e5f481915a3e664837b12"
 BOOTSTRAP_IP="206.189.224.142"
 # Multiple bootstrap peers for geographic redundancy (NYC, NJF, CHL)
 BOOTSTRAP_PEERS="/ip4/206.189.224.142/tcp/26656,/ip4/216.128.149.115/tcp/26656,/ip4/45.77.181.158/tcp/26656"
