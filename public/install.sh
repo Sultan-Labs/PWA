@@ -1,5 +1,5 @@
 #!/bin/bash
-# Sultan Validator Node - One-Line Installer v0.7.0
+# Sultan Validator Node - One-Line Installer v0.7.1
 # Usage: curl -L https://wallet.sltn.io/install.sh -o install.sh && bash install.sh
 #
 # STEP 1: Create wallet at https://wallet.sltn.io
@@ -16,9 +16,9 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-VERSION="0.7.1"
-BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.13/sultan-node"
-EXPECTED_SHA256="d01a7f00c8db4fa8ffced036812728392944f93f866e5f481915a3e664837b12"
+VERSION="0.7.2"
+BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.14/sultan-node"
+EXPECTED_SHA256="7226ca0c0d998ab524a2f4d55662f875d5a971cc0462a3df7ce44e1afb59b655"
 BOOTSTRAP_IP="206.189.224.142"
 # Multiple bootstrap peers for geographic redundancy (NYC, NJF, CHL)
 BOOTSTRAP_PEERS="/ip4/206.189.224.142/tcp/26656,/ip4/216.128.149.115/tcp/26656,/ip4/45.77.181.158/tcp/26656"
