@@ -16,18 +16,18 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-VERSION="0.7.9"
-BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.21/sultan-node"
-EXPECTED_SHA256="22fdcd33809c50876d5fc7d36a6e5248ce109cbf9acc9e800928b61d3421acf0"
+VERSION="0.7.11"
+BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.23/sultan-node"
+EXPECTED_SHA256="98a9d8799ec146d2d88f90c75c364d88b5ca1d16c23efec49bafe0e191f87fec"
 BOOTSTRAP_IP="206.189.224.142"
-# NYC genesis node is the sole bootstrap peer. Once connected, libp2p gossipsub
-# peer discovery handles finding all other validators automatically.
+# Bootstrap peers: connect to NYC seed node for network discovery.
+# libp2p gossipsub handles finding additional peers automatically.
 BOOTSTRAP_PEERS="/ip4/206.189.224.142/tcp/26656"
 BOOTSTRAP_PEER="/ip4/${BOOTSTRAP_IP}/tcp/26656"
 GENESIS_WALLET="sultan15g5nwnlemn7zt6rtl7ch46ssvx2ym2v2umm07g"
 # Genesis validators: addresses that are auto-registered at startup.
 # All validators are equal peers — no special privileges.
-GENESIS_VALIDATORS="sultan15g5nwnlemn7zt6rtl7ch46ssvx2ym2v2umm07g"
+GENESIS_VALIDATORS="sultan15g5nwnlemn7zt6rtl7ch46ssvx2ym2v2umm07g,sultan1f6d79474e40684c74bf8e7e43a2ea85844c86bc7,sultan1a981098cdaef8c8b4c58dcac36cfd467dc139dba,sultan1931e7d4fc1b91b66668289d019aa18f249fc7f6f"
 INSTALL_DIR="/opt/sultan"
 DATA_DIR="/opt/sultan/data"
 BINARY_PATH="${INSTALL_DIR}/sultan-node"
