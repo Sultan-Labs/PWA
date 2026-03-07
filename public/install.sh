@@ -16,9 +16,9 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-VERSION="0.7.5"
-BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.17/sultan-node"
-EXPECTED_SHA256="fabf7e9a008c8f4833c275cf83cc702f72fc1802f0c5df9cd9eeec3ef067a0f9"
+VERSION="0.7.6"
+BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.18/sultan-node"
+EXPECTED_SHA256="2081d577b56f8427fa1fa488dd7681482e0f20382ab7c8960557ad5d46f319c7"
 BOOTSTRAP_IP="206.189.224.142"
 # NYC genesis node is the sole bootstrap peer. Once connected, libp2p gossipsub
 # peer discovery handles finding all other validators automatically.
