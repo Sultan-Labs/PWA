@@ -378,7 +378,7 @@ export default function BecomeValidator() {
               </div>
               <div className="req-card">
                 <span className="req-label">Server Cost</span>
-                <span className="req-val">~$6/month</span>
+                <span className="req-val">~$55/month</span>
               </div>
               <div className="req-card">
                 <span className="req-label">Difficulty</span>
@@ -412,10 +412,24 @@ export default function BecomeValidator() {
           <div className="step-section">
             <h3>1. Server Setup</h3>
             <p className="text-muted">
-              Get a VPS from <strong>Vultr</strong>, <strong>DigitalOcean</strong>, <strong>Hetzner</strong>, or similar.
-              Select: <strong>Ubuntu 22.04+</strong>, <strong>1 vCPU</strong>, <strong>2 GB RAM</strong>, <strong>25 GB NVMe</strong>, <strong>2 TB bandwidth</strong> (~$6/mo).
-              Choose a location nearest you for best latency.
+              Get a <strong>Dedicated CPU</strong> VPS from <strong>Vultr</strong>, <strong>DigitalOcean</strong>, <strong>Hetzner</strong>, or similar.
+              Validators require dedicated (not shared) CPU to keep up with consensus.
             </p>
+
+            <div className="info-box" style={{ marginBottom: '12px' }}>
+              <p style={{ fontWeight: 600, marginBottom: '8px' }}>Minimum Requirements</p>
+              <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.9em' }}>
+                <li><strong>2 dedicated vCPUs</strong> (not shared/burstable)</li>
+                <li><strong>8 GB RAM</strong></li>
+                <li><strong>100 GB SSD/NVMe</strong></li>
+                <li><strong>Ubuntu 22.04+</strong></li>
+              </ul>
+              <p style={{ fontSize: '0.85em', marginTop: '8px', color: 'var(--text-muted)' }}>
+                Recommended: Vultr Dedicated CPU (vx1-g-2c-8g-120s ~$55/mo), DigitalOcean Dedicated (c-2-8GiB ~$63/mo), or Hetzner CPX31 (~€13/mo).
+                The installer will verify your server meets these requirements.
+              </p>
+            </div>
+
             <p className="text-muted">
               Find your server's root password (Server Details → Overview), open the console, log in as <strong>root</strong>, and run:
             </p>
@@ -428,7 +442,7 @@ export default function BecomeValidator() {
             </div>
 
             <div className="info-box">
-              <p>The installer downloads the node, generates your validator keys, and starts syncing. When complete, it displays a <strong>registration link</strong> that brings you back here with everything pre-filled.</p>
+              <p>The installer checks hardware requirements, downloads the node, generates your validator keys, and starts syncing. When complete, it displays a <strong>registration link</strong> that brings you back here with everything pre-filled.</p>
             </div>
 
             <button className="btn btn-primary btn-full" onClick={() => setStep('address')}>

@@ -1,9 +1,9 @@
 #!/bin/bash
-# Sultan Validator Node - One-Line Installer v0.7.1
+# Sultan Validator Node - One-Line Installer v0.9.0
 # Usage: curl -L https://wallet.sltn.io/install.sh -o install.sh && bash install.sh
 #
 # STEP 1: Create wallet at https://wallet.sltn.io
-# STEP 2: Get a VPS (2 vCPU, 4GB RAM, Ubuntu 22.04+)
+# STEP 2: Get a DEDICATED CPU VPS (2+ vCPU, 8GB+ RAM, 100GB+ SSD, Ubuntu 22.04+)
 # STEP 3: SSH in and run this script
 # STEP 4: Register via wallet with the address this script outputs
 
@@ -16,18 +16,22 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-VERSION="0.7.11"
-BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.23/sultan-node"
-EXPECTED_SHA256="98a9d8799ec146d2d88f90c75c364d88b5ca1d16c23efec49bafe0e191f87fec"
+VERSION="0.9.0"
+
+# Minimum hardware requirements for validators
+MIN_CPU_CORES=2
+MIN_RAM_GB=8
+MIN_DISK_GB=100
+BINARY_URL="https://github.com/Sultan-Labs/DOCS/releases/download/v0.2.14/sultan-node"
+EXPECTED_SHA256="32dad791a8992b3a495133065b7c1be54ea044bc052473fa3f1e01d681f67ce0"
 BOOTSTRAP_IP="206.189.224.142"
-# Bootstrap peers: connect to NYC seed node for network discovery.
-# libp2p gossipsub handles finding additional peers automatically.
-BOOTSTRAP_PEERS="/ip4/206.189.224.142/tcp/26656"
+# Multiple bootstrap peers for geographic redundancy (NYC, NJF, CHL)
+BOOTSTRAP_PEERS="/ip4/206.189.224.142/tcp/26656,/ip4/216.128.149.115/tcp/26656,/ip4/45.77.181.158/tcp/26656"
 BOOTSTRAP_PEER="/ip4/${BOOTSTRAP_IP}/tcp/26656"
 GENESIS_WALLET="sultan15g5nwnlemn7zt6rtl7ch46ssvx2ym2v2umm07g"
 # Genesis validators: addresses that are auto-registered at startup.
 # All validators are equal peers — no special privileges.
-GENESIS_VALIDATORS="sultan15g5nwnlemn7zt6rtl7ch46ssvx2ym2v2umm07g,sultan1f6d79474e40684c74bf8e7e43a2ea85844c86bc7,sultan1a981098cdaef8c8b4c58dcac36cfd467dc139dba,sultan1931e7d4fc1b91b66668289d019aa18f249fc7f6f"
+GENESIS_VALIDATORS="sultan15g5nwnlemn7zt6rtl7ch46ssvx2ym2v2umm07g"
 INSTALL_DIR="/opt/sultan"
 DATA_DIR="/opt/sultan/data"
 BINARY_PATH="${INSTALL_DIR}/sultan-node"
@@ -56,6 +60,80 @@ else
     echo -e "${RED}❌ Unable to detect OS. Ubuntu 22.04+ required.${NC}"
     exit 1
 fi
+
+# ── Hardware requirement checks ──────────────────────────────────────────────
+echo ""
+echo -e "${YELLOW}🔍 Checking hardware requirements...${NC}"
+HW_FAIL=false
+
+# CPU cores
+CPU_CORES=$(nproc 2>/dev/null || grep -c ^processor /proc/cpuinfo 2>/dev/null || echo 0)
+if [ "$CPU_CORES" -lt "$MIN_CPU_CORES" ]; then
+    echo -e "${RED}❌ CPU: ${CPU_CORES} cores detected (minimum: ${MIN_CPU_CORES})${NC}"
+    HW_FAIL=true
+else
+    echo -e "${GREEN}✓ CPU: ${CPU_CORES} cores${NC}"
+fi
+
+# RAM (in GB, rounded down)
+RAM_KB=$(grep MemTotal /proc/meminfo 2>/dev/null | awk '{print $2}' || echo 0)
+RAM_GB=$(( RAM_KB / 1024 / 1024 ))
+# Allow 7 GB to account for OS overhead on 8 GB machines
+MIN_RAM_ACTUAL=$(( MIN_RAM_GB - 1 ))
+if [ "$RAM_GB" -lt "$MIN_RAM_ACTUAL" ]; then
+    RAM_MB=$(( RAM_KB / 1024 ))
+    echo -e "${RED}❌ RAM: ${RAM_MB} MB detected (minimum: ${MIN_RAM_GB} GB)${NC}"
+    HW_FAIL=true
+else
+    echo -e "${GREEN}✓ RAM: $(( RAM_KB / 1024 )) MB${NC}"
+fi
+
+# Available disk space on target partition
+DISK_AVAIL_KB=$(df --output=avail "$(dirname $INSTALL_DIR)" 2>/dev/null | tail -1 | tr -d ' ' || echo 0)
+DISK_AVAIL_GB=$(( DISK_AVAIL_KB / 1024 / 1024 ))
+if [ "$DISK_AVAIL_GB" -lt "$MIN_DISK_GB" ]; then
+    echo -e "${RED}❌ Disk: ${DISK_AVAIL_GB} GB available (minimum: ${MIN_DISK_GB} GB)${NC}"
+    HW_FAIL=true
+else
+    echo -e "${GREEN}✓ Disk: ${DISK_AVAIL_GB} GB available${NC}"
+fi
+
+# SSD/NVMe check (warn on rotational disks)
+ROOT_DISK=$(lsblk -ndo NAME,TYPE 2>/dev/null | awk '$2=="disk"{print $1; exit}' || true)
+if [ -n "$ROOT_DISK" ] && [ -f "/sys/block/${ROOT_DISK}/queue/rotational" ]; then
+    IS_ROTATIONAL=$(cat "/sys/block/${ROOT_DISK}/queue/rotational" 2>/dev/null || echo "0")
+    if [ "$IS_ROTATIONAL" = "1" ]; then
+        echo -e "${YELLOW}⚠  Disk appears to be an HDD (rotational). SSD/NVMe strongly recommended.${NC}"
+        echo -e "${YELLOW}   HDD validators will fall behind during consensus and hurt network performance.${NC}"
+    else
+        echo -e "${GREEN}✓ Disk: SSD/NVMe detected${NC}"
+    fi
+fi
+
+if [ "$HW_FAIL" = true ]; then
+    echo ""
+    echo -e "${RED}╔═══════════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${RED}║  HARDWARE REQUIREMENTS NOT MET                                    ║${NC}"
+    echo -e "${RED}╠═══════════════════════════════════════════════════════════════════╣${NC}"
+    echo -e "${RED}║  Sultan validators require dedicated resources to maintain         ║${NC}"
+    echo -e "${RED}║  consensus performance across the network.                        ║${NC}"
+    echo -e "${RED}║                                                                   ║${NC}"
+    echo -e "${RED}║  Minimum: ${MIN_CPU_CORES} dedicated vCPUs │ ${MIN_RAM_GB} GB RAM │ ${MIN_DISK_GB} GB SSD            ║${NC}"
+    echo -e "${RED}║                                                                   ║${NC}"
+    echo -e "${RED}║  Recommended providers:                                           ║${NC}"
+    echo -e "${RED}║    Vultr Dedicated CPU (vx1-g-2c-8g-120s) ─ \$0.076/hr            ║${NC}"
+    echo -e "${RED}║    DigitalOcean Dedicated (c-2-8GiB) ─ \$63/mo                    ║${NC}"
+    echo -e "${RED}║    Hetzner Dedicated (CPX31) ─ €12.49/mo                          ║${NC}"
+    echo -e "${RED}╚═══════════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+    echo -e "${YELLOW}Use --skip-hw-check to bypass (NOT recommended — your node may be slashed).${NC}"
+    if [[ " $* " != *" --skip-hw-check "* ]] && [[ "${1:-}" != "--skip-hw-check" ]]; then
+        exit 1
+    fi
+    echo -e "${YELLOW}⚠  Proceeding with --skip-hw-check. Performance issues are your responsibility.${NC}"
+fi
+echo ""
+# ─────────────────────────────────────────────────────────────────────────────
 
 for cmd in curl jq xxd; do
     if ! command -v "$cmd" &> /dev/null; then
@@ -272,6 +350,7 @@ ExecStart=${BINARY_PATH} \\
   --genesis-validators "${GENESIS_VALIDATORS}" \\
   --enable-sharding \\
   --shard-count ${SHARD_COUNT} \\
+  --block-time-ms 1500 \
   --allowed-origins "*"
 Restart=always
 RestartSec=5
