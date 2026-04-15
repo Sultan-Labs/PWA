@@ -60,9 +60,22 @@ Keep versions aligned when possible:
 
 | Version | Extension | PWA | Notes |
 |---------|-----------|-----|-------|
+| 1.7.0 | ✅ | ✅ | Hex-encoded address charset support (v25 node compat) |
 | 1.6.8 | ✅ | ✅ | Floating-point epsilon fix for balance validation |
 | 1.6.7 | ✅ | ✅ | MAX button fix, comma formatting |
 | 1.6.6 | ✅ | ✅ | Initial sync completed |
+
+### v1.7.0 Sync Completed (Apr 15, 2026)
+
+Address charset updated for v25 node compatibility. Node-generated validator
+addresses use hex-encoded format (charset `0-9a-hj-np-z`) instead of pure
+bech32. All validation, logging, and tests updated to accept both formats.
+
+Files synced from `wallet-extension/`:
+- `src/core/security.ts` - `validateSultanAddressInternal()` regex: `[0-9a-hj-np-z]`
+- `src/core/wallet.ts` - `isValidAddress()` bech32 + hex fallback
+- `src/core/logger.ts` - SENSITIVE_PATTERNS updated to new charset
+- `src/core/__tests__/logger.test.ts` - Test patterns updated
 
 ### v1.6.8 Sync Completed (Feb 7, 2026)
 

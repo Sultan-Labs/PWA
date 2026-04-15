@@ -601,9 +601,11 @@ function validateSultanAddressInternal(address: string): { valid: boolean; error
     return { valid: false, error: 'Invalid Sultan address length' };
   }
   
-  // Accept bech32 characters after sultan1 prefix
+  // Accept both bech32-encoded and hex-encoded addresses after sultan1 prefix
   // Bech32 charset: qpzry9x8gf2tvdw0s3jn54khce6mua7l
-  const validChars = /^sultan1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]+$/;
+  // Hex charset adds: 1, b (used by node-generated validator addresses)
+  // Combined valid charset: 0123456789abcdefghjklmnpqrstuvwxyz
+  const validChars = /^sultan1[0-9a-hj-np-z]+$/;
   if (!validChars.test(address)) {
     return { valid: false, error: 'Sultan address contains invalid characters' };
   }

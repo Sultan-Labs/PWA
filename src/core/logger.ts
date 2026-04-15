@@ -21,7 +21,7 @@ const SENSITIVE_PATTERNS = [
   /password/i,
   /pin/i,
   /[a-f0-9]{64}/i, // Private key hex pattern (32 bytes)
-  /^sultan1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{30,}$/i, // Bech32 Sultan addresses (38+ total chars)
+  /^sultan1[0-9a-hj-np-z]{30,}$/i, // Sultan addresses — bech32 + hex-encoded (38+ total chars)
 ];
 
 /**

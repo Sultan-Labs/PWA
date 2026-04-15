@@ -23,7 +23,7 @@ describe('Logger Sensitive Patterns', () => {
     /password/i,
     /pin/i,
     /[a-f0-9]{64}/i, // Private key hex pattern (32 bytes)
-    /^sultan1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{30,}$/i, // Bech32 Sultan addresses
+    /^sultan1[0-9a-hj-np-z]{30,}$/i, // Sultan addresses — bech32 + hex-encoded
   ];
 
   function containsSensitiveData(args: unknown[]): boolean {
@@ -153,7 +153,7 @@ describe('Logger Sanitization', () => {
     /password/i,
     /pin/i,
     /[a-f0-9]{64}/i,
-    /^sultan1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{30,}$/i,
+    /^sultan1[0-9a-hj-np-z]{30,}$/i,
   ];
 
   function sanitizeArgs(args: unknown[]): unknown[] {

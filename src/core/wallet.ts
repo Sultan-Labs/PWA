@@ -524,10 +524,16 @@ export function parseSLTN(displayUnits: string): bigint {
  * Validate Sultan address format
  */
 export function isValidAddress(address: string): boolean {
+  // Try bech32 decode first (wallet-generated addresses)
   try {
     const decoded = bech32.decode(address);
     return decoded.prefix === SULTAN_PREFIX && decoded.words.length > 0;
   } catch {
+    // Fall back to hex-encoded address validation (node-generated addresses)
+    // Format: sultan1 + 32-52 hex-like chars (charset: 0-9, a-h except i, j-n except o, p-z)
+    if (address.startsWith('sultan1') && address.length >= 39 && address.length <= 59) {
+      return /^sultan1[0-9a-hj-np-z]+$/.test(address);
+    }
     return false;
   }
 }
